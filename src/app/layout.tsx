@@ -2,6 +2,8 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Comfortaa } from 'next/font/google';
 
+import Provider from '@/app/_trpc/Provider';
+
 const comfortaa = Comfortaa({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -16,7 +18,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
-      <body className={comfortaa.className}>{children}</body>
+      <body className={comfortaa.className}>
+        <Provider>{children}</Provider>
+      </body>
     </html>
   );
 }
