@@ -2,9 +2,9 @@
 
 **NOTE: Any content starting with [+] is <u>NOT</u> included in the alpha deployment version**
 
-The deployment version will have some of the following [[#Requirements]]:
+The deployment version will have some of the following requirements:
 
-1. [[#Client area]] such that users can
+1. Client area such that users can
    1. manage
       1. orders
       2. shipping labels
@@ -14,7 +14,7 @@ The deployment version will have some of the following [[#Requirements]]:
          1. ship-from
          2. package presets; weight and dimensions
    3. upload and download CSVs
-2. [[#Admin panel]] such that administrators can
+2. Admin panel such that administrators can
    1. manage
       1. client
          1. onboarding
@@ -27,20 +27,17 @@ The deployment version will have some of the following [[#Requirements]]:
 
 ## Stack
 
-[T3](https://create.t3.gg/)
-
 ### Front-end
 
 [Next.js](https://nextjs.org/docs)
 [TypeScript](https://www.typescriptlang.org/docs/)
 [Tailwind CSS](https://tailwindcss.com/docs/installation)
-[DaisyUI](https://daisyui.com/docs/install/)
 
 ### Back-end
 
 [Next.js](https://nextjs.org/docs)
-[MongoDB](https://www.mongodb.com/docs/) and/or [Supabase](https://supabase.com/docs)
-[Prisma](https://www.prisma.io/docs/concepts/database-connectors/mongodb)
+[SQLite](https://www.sqlite.org/docs.html)
+[Drizzle](https://orm.drizzle.team/docs/overview)
 
 ### Additional dependencies
 
@@ -257,8 +254,6 @@ By day, week, month
 - profit
 
 #### Database architecture
-
-![[pg-shipping-db-architecture.svg]]
 
 ##### Schema
 
