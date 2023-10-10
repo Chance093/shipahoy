@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
-      <body className={comfortaa.className}>
+      <body className={`min-h-screen bg-gradient-to-b from-gradientStart to-gradientEnd ${comfortaa.className} text-primaryTypography`}>
         <Provider>{children}</Provider>
       </body>
     </html>
