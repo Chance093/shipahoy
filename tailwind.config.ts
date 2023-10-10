@@ -8,7 +8,15 @@ const config: Config = {
   ],
   mode: 'jit',
   theme: {
-    
+    colors: {
+      'primary': '#3bf',
+      'secondary': '#66f',
+      'tertiary': '#b3f',
+      'gradientStart': '#181c2e',
+      'gradientEnd': '#250958',
+      'primaryTypography': '#f3eeff',
+      'secondaryTypography': '#c3b4fc'
+    }
   },
   plugins: [],
 }
