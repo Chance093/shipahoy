@@ -1,15 +1,20 @@
 import { v4 as uuid } from 'uuid';
 import { sql } from 'drizzle-orm';
-import { integer, sqliteTable, text, real } from 'drizzle-orm/sqlite-core';
+import {
+  integer,
+  sqliteTable,
+  text,
+  real,
+  blob,
+} from 'drizzle-orm/sqlite-core';
 
 export const user = sqliteTable('user', {
   userId: text('user_id').primaryKey().default(uuid()),
-  isAdmin: integer('is_admin', {mode: 'boolean'}),
-  username: text('username'),
-  passwordHash: text('password_hash'),
-  name: text('name'),
-  email: text('email'),
-  company: text('company'),
+  isAdmin: integer('is_admin', { mode: 'boolean' }),
+  passwordHash: text('password_hash').notNull(),
+  name: text('name').notNull(),
+  email: text('email').notNull(),
+  company: text('company').notNull(),
   updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
@@ -17,18 +22,20 @@ export const user = sqliteTable('user', {
 export const balance = sqliteTable('balance', {
   balanceId: text('balance_id').primaryKey().default(uuid()),
   userId: text('user_id').references(() => user.userId),
-  amount: real('amount'),
+  amount: real('amount').notNull(),
   updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
 
-export const invoice = sqliteTable('invoice', {
-  invoiceId: text('invoice_id').primaryKey().default(uuid()),
+type ReceiptStatus = 'pending' | 'denied' | 'completed';
+
+export const receipt = sqliteTable('receipt', {
+  receiptId: text('receipt_id').primaryKey().default(uuid()),
   userId: text('user_id').references(() => user.userId),
   balanceId: text('balance_id').references(() => balance.balanceId),
-  amount: real('amount'),
-  method: text('method'),
-  status: text('status'),
+  amount: real('amount').notNull(),
+  method: text('method').notNull(),
+  status: text('status').notNull().$type<ReceiptStatus>(),
   updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
@@ -36,23 +43,23 @@ export const invoice = sqliteTable('invoice', {
 export const csv = sqliteTable('csv', {
   csvId: text('csv_id').primaryKey().default(uuid()),
   userId: text('user_id').references(() => user.userId),
-  fileName: text('file_name'),
-  uploadDate: text('upload_date'),
-  downloadDate: text('download_date'),
-  updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
-  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+  fileName: text('file_name').notNull(),
+  uploadDate: text('upload_date').default(sql`CURRENT_TIMESTAMP`),
 });
 
 export const paymentMethod = sqliteTable('payment_method', {
   paymentMethodId: text('method_id').primaryKey().default(uuid()),
   userId: text('user_id').references(() => user.userId),
-  isPrimary: integer('is_primary', { mode: 'boolean' }),
-  methodName: text('method_name'),
-  cardNumber: integer('card_number', { mode: 'number'}),
-  cardExpiration: integer('card_expiration', { mode: 'timestamp'}),
-  cardSecurityCode: integer('card_security_code', { mode: 'number'}),
-  bankRouting: integer('bank_routing', { mode: 'number'}),
-  bankAccountNumber: integer('bank_account_number', { mode: 'number'}),
+  isPrimary: integer('is_primary', { mode: 'boolean' }).notNull(),
+  methodName: text('method_name').notNull(),
+  cardNumber: integer('card_number', { mode: 'number' }).notNull(),
+  last4CardNumber: integer('last_4_card_number', { mode: 'number' }).notNull(),
+  cardExpiration: text('card_expiration').notNull(),
+  cardSecurityCode: integer('card_security_code', { mode: 'number' }).notNull(),
+  bankRouting: integer('bank_routing', { mode: 'number' }).notNull(),
+  bankAccountNumber: integer('bank_account_number', {
+    mode: 'number',
+  }).notNull(),
   updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
@@ -60,18 +67,22 @@ export const paymentMethod = sqliteTable('payment_method', {
 export const labelGroup = sqliteTable('label_group', {
   labelGroupId: text('label_group_id').primaryKey().default(uuid()),
   userId: text('user_id').references(() => user.userId),
-  invoiceId: text('invoice_id').references(() => invoice.invoiceId),
-  labelCount: text('label_count'),
-  amount: real('amount'),
+  receiptId: text('receipt_id').references(() => receipt.receiptId),
+  labelCount: text('label_count').notNull(),
+  amount: real('amount').notNull(),
+  csv: blob('csv', { mode: 'json' }),
+  pdf: blob('pdf', { mode: 'json' }).notNull(),
   updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
 
 export const label = sqliteTable('label', {
   labelId: text('label_id').primaryKey().default(uuid()),
-  labelGroupId: text('label_group_id').references(() => labelGroup.labelGroupId),
+  labelGroupId: text('label_group_id').references(
+    () => labelGroup.labelGroupId
+  ),
   amount: real('amount').notNull(),
-  tracking: text('tracking').notNull(), // problem
+  tracking: text('tracking').notNull(),
   from_name: text('from_name').notNull(),
   from_company: text('from_company').notNull(),
   from_addressOne: text('from_address_one').notNull(),
@@ -95,16 +106,6 @@ export const label = sqliteTable('label', {
   length: text('length').notNull(),
   width: text('width').notNull(),
   height: text('height').notNull(),
-  status: text('status').notNull(),
-  updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
-  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
-});
-
-export const order = sqliteTable('order', {
-  orderId: text('order_id').primaryKey().default(uuid()),
-  userId: text('user_id').references(() => user.userId),
-  status: text('status'),
-  dateCreated: text('date_created'),
   updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
