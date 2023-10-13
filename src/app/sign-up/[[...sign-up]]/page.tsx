@@ -2,7 +2,7 @@ import { SignUp } from '@clerk/nextjs';
 
 export default function Page() {
   return (
-    <main className='grid place-items-center pt-4'>
+    <main className='h-screen flex justify-center items-center'>
       <SignUp />
     </main>
   );
