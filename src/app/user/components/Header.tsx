@@ -1,3 +1,10 @@
+import { UserButton } from '@clerk/nextjs';
+
 export default function Header() {
-  return <header>This is the head</header>;
+  return (
+    <header>
+      <div>hamburger</div>
+      <UserButton afterSignOutUrl='/' />
+    </header>
+  );
 }
