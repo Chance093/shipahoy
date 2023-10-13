@@ -19,7 +19,7 @@
 }
 
 .default {
-    @apply bg-purple-200/10 border border-purple-200/20 transition-colors duration-300 hover:bg-purple/20 hover:border-purple-200/35 focus:purple-200-50;
+    @apply bg-purple-200/10 border border-purple-200/20 transition-colors duration-300 hover:bg-purple-200/20 hover:border-purple-200/30 focus:border-purple-200/50;
 }
 
 .btn-primary {
