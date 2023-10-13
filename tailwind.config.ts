@@ -12,11 +12,14 @@ const config: Config = {
       'primary': '#3bf',
       'secondary': '#66f',
       'tertiary': '#b3f',
-      'gradientStart': '#181c2e',
-      'gradientEnd': '#250958',
-      'primaryTypography': '#f3eeff',
-      'secondaryTypography': '#c3b4fc'
-    }
+      'gradient-start': '#181c2e',
+      'gradient-end': '#250958',
+      'btn-primary': '#1e293b',
+      'btn-secondary': '#f3eeff',
+      'heading': '#f3eeff',
+      'hyperlink': '#9333ea',
+      'paragraph': '#c3b4fc'
+    },
   },
   plugins: [],
 }
