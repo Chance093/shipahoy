@@ -23,7 +23,7 @@
 }
 
 .btn-primary {
-    @apply px-3 py-2 flex items-center bg-purple-100 rounded-full font-semibold text-btn-primary text-sm cursor-pointer transition-colors duration-500 hover:bg-purple-200 hover:no-underline md:px-5 md:text-base lg:px-4 lg:py-3
+    @apply px-3 py-2 flex items-center bg-purple-100 rounded-full font-semibold text-btn-primary text-sm cursor-pointer transition-colors duration-500 hover:bg-purple-200 hover:no-underline md:px-5 md:text-base lg:px-4 lg:py-3;
 }
 
 .btn-secondary {
