@@ -1,0 +1,14 @@
+{
+  "hasSrc": true,
+  "packages": [
+    "drizzle",
+    "clerk",
+    "trpc"
+  ],
+  "preferredPackageManager": "npm",
+  "rootPath": "src/",
+  "driver": "sqlite",
+  "provider": "better-sqlite3",
+  "orm": "drizzle",
+  "auth": "clerk"
+}

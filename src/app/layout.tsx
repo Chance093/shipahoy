@@ -1,8 +1,8 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Comfortaa } from 'next/font/google';
-
-import Provider from '@/app/_trpc/Provider';
+import { ClerkProvider } from '@clerk/nextjs';
+import TrpcProvider from '@/lib/trpc/Provider';
 
 const comfortaa = Comfortaa({ subsets: ['latin'] });
 
@@ -18,8 +18,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
-      <body className={`min-h-screen bg-gradient-to-b from-gradientStart to-gradientEnd ${comfortaa.className} text-primaryTypography`}>
-        <Provider>{children}</Provider>
+      <body
+        className={`min-h-screen bg-gradient-to-b from-gradientStart to-gradientEnd ${comfortaa.className} text-primaryTypography`}
+      >
+        <ClerkProvider>
+          <TrpcProvider>{children}</TrpcProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

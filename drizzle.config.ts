@@ -1,10 +1,11 @@
 import type { Config } from 'drizzle-kit';
+import { env } from "@/lib/env.mjs";
 
 export default {
-  schema: './src/db/schema.ts',
-  out: './drizzle',
+  schema: './src/lib/db/schema',
+  out: './src/lib/db/migrations',
   driver: 'better-sqlite',
   dbCredentials: {
-    url: 'sqlite.db',
+    url: env.DATABASE_URL,
   },
 } satisfies Config;
