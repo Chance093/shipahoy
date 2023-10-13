@@ -1,9 +1,12 @@
-import { serverClient } from '@/app/_trpc/server';
+import { getUserAuth } from '@/lib/auth/utils';
+import { UserButton } from '@clerk/nextjs';
 
 export default async function Home() {
-  return (
-    <main>
-      <div>Hello World!</div>
-    </main>
-  );
+	const userAuth = await getUserAuth();
+	return (
+		<main className=''>
+			<UserButton afterSignOutUrl='/' />
+			<pre>{JSON.stringify(userAuth, null, 2)}</pre>
+		</main>
+	);
 }
