@@ -18,6 +18,10 @@
   @apply mt-4 text-base text-hyperlink md:text-lg;
 }
 
+.card {
+  @apply bg-heading/5 border-2 border-purple-200/10 rounded-md;
+}
+
 .default {
   @apply bg-purple-200/10 border border-purple-200/20 transition-colors duration-300 hover:bg-purple-200/20 hover:border-purple-200/30 focus:border-purple-200/50;
 }
