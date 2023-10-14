@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "74e0d7ca-6bb4-4dd6-9a49-9a64f03c6e24",
+  "id": "44be85a7-7d03-4dab-8447-50d7438f7cc2",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "computers": {
@@ -43,13 +43,13 @@
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false,
-          "default": "'a7578bfa-e1b2-429b-92e9-f86de8b55b29'"
+          "default": "'76c7caba-0b14-4b25-a264-805a4282cdf0'"
         },
         "user_id": {
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "amount": {
@@ -77,21 +77,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "balance_user_id_user_user_id_fk": {
-          "name": "balance_user_id_user_user_id_fk",
-          "tableFrom": "balance",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "user_id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -104,13 +90,13 @@
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false,
-          "default": "'5f23f48e-0617-4a68-ad6a-c786b715fdf7'"
+          "default": "'0240b21e-9448-4cf5-97cc-bf631b9edecc'"
         },
         "user_id": {
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "file_name": {
@@ -130,21 +116,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "csv_user_id_user_user_id_fk": {
-          "name": "csv_user_id_user_user_id_fk",
-          "tableFrom": "csv",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "user_id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -157,7 +129,7 @@
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false,
-          "default": "'32a62429-cf16-46e2-be04-c5bf6bd11d29'"
+          "default": "'777fe232-e8a1-498a-8145-a9901f43c105'"
         },
         "label_group_id": {
           "name": "label_group_id",
@@ -386,13 +358,13 @@
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false,
-          "default": "'86c2618f-c5a6-4542-8a86-e46a51326843'"
+          "default": "'7011c936-2b09-46a5-a126-4e57f7c93aed'"
         },
         "user_id": {
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "receipt_id": {
@@ -449,19 +421,6 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "label_group_user_id_user_user_id_fk": {
-          "name": "label_group_user_id_user_user_id_fk",
-          "tableFrom": "label_group",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "user_id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
         "label_group_receipt_id_receipt_receipt_id_fk": {
           "name": "label_group_receipt_id_receipt_receipt_id_fk",
           "tableFrom": "label_group",
@@ -488,13 +447,13 @@
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false,
-          "default": "'afb36862-dcdd-4b87-9ac6-e105f8e04e5c'"
+          "default": "'d56324e4-eb9f-43d0-8bf2-2f47d09a5543'"
         },
         "user_id": {
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "is_primary": {
@@ -571,21 +530,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "payment_method_user_id_user_user_id_fk": {
-          "name": "payment_method_user_id_user_user_id_fk",
-          "tableFrom": "payment_method",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "user_id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -598,13 +543,13 @@
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false,
-          "default": "'aea17fcc-8b86-4d73-9d24-1dd614190579'"
+          "default": "'26189328-a981-4195-bc4a-f3e7c23cd3dc'"
         },
         "user_id": {
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "balance_id": {
@@ -654,19 +599,6 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "receipt_user_id_user_user_id_fk": {
-          "name": "receipt_user_id_user_user_id_fk",
-          "tableFrom": "receipt",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "user_id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
         "receipt_balance_id_balance_balance_id_fk": {
           "name": "receipt_balance_id_balance_balance_id_fk",
           "tableFrom": "receipt",
@@ -681,74 +613,6 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "user": {
-      "name": "user",
-      "columns": {
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'f56fd64d-e421-4d5d-93b3-6d3da0c99684'"
-        },
-        "is_admin": {
-          "name": "is_admin",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "password_hash": {
-          "name": "password_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "company": {
-          "name": "company",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "CURRENT_TIMESTAMP"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "CURRENT_TIMESTAMP"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     }

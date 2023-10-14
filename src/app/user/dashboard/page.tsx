@@ -1,13 +1,13 @@
 'use client';
 
-import { useUser } from '@clerk/nextjs';
+import { useUser, useAuth } from '@clerk/nextjs';
 
 export default function Dashboard() {
   const { user } = useUser();
-
+  const { userId } = useAuth();
   return (
     <main className='flex flex-col gap-6 px-5 py-7 '>
-      {/* <p>user id: </p> */}
+      <p>user id: {userId}</p>
       <h1 className='heading'>Welcome Back, {user?.firstName}!</h1>
       <section className='h-32 flex flex-col justify-between card p-5'>
         <p className='font-bold'>Balance</p>
@@ -22,11 +22,8 @@ export default function Dashboard() {
               <tr className='border-b border-purple-200/20'>
                 <th className='p-5'>Invoice#</th>
                 <th className='p-5'>Date</th>
-                <th className='p-5'>To</th>
-                <th className='p-5'>From</th>
                 <th className='p-5'>Size</th>
                 <th className='p-5'>Type</th>
-                <th className='p-5'>Tracking</th>
                 <th className='p-5'>Price</th>
                 <th className='p-5'>Files</th>
               </tr>
@@ -35,22 +32,16 @@ export default function Dashboard() {
               <tr className='border-b border-purple-200/20 text-xs'>
                 <td className='p-5'>PG0001</td>
                 <td className='p-5'>10/11/2023</td>
-                <td className='p-5'>Bigho Schlung</td>
-                <td className='p-5'>Pwoss Iboy</td>
                 <td className='p-5'>200</td>
                 <td className='p-5'>Priority</td>
-                <td className='p-5'>757647767976545648764765</td>
                 <td className='p-5'>$420.69</td>
                 <td className='p-5'>^</td>
               </tr>
               <tr className='border-b border-purple-200/20 text-xs'>
                 <td className='p-5'>PG0001</td>
                 <td className='p-5'>10/11/2023</td>
-                <td className='p-5'>Bigho Schlung</td>
-                <td className='p-5'>Pwoss Iboy</td>
                 <td className='p-5'>200</td>
                 <td className='p-5'>Priority</td>
-                <td className='p-5'>757647767976545648764765</td>
                 <td className='p-5'>$420.69</td>
                 <td className='p-5'>^</td>
               </tr>

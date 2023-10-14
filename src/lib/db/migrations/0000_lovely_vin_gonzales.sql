@@ -5,24 +5,22 @@ CREATE TABLE `computers` (
 );
 --> statement-breakpoint
 CREATE TABLE `balance` (
-	`balance_id` text PRIMARY KEY DEFAULT 'a7578bfa-e1b2-429b-92e9-f86de8b55b29' NOT NULL,
-	`user_id` text,
+	`balance_id` text PRIMARY KEY DEFAULT '76c7caba-0b14-4b25-a264-805a4282cdf0' NOT NULL,
+	`user_id` text NOT NULL,
 	`amount` real NOT NULL,
 	`updated_at` text DEFAULT CURRENT_TIMESTAMP,
-	`created_at` text DEFAULT CURRENT_TIMESTAMP,
-	FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON UPDATE no action ON DELETE no action
+	`created_at` text DEFAULT CURRENT_TIMESTAMP
 );
 --> statement-breakpoint
 CREATE TABLE `csv` (
-	`csv_id` text PRIMARY KEY DEFAULT '5f23f48e-0617-4a68-ad6a-c786b715fdf7' NOT NULL,
-	`user_id` text,
+	`csv_id` text PRIMARY KEY DEFAULT '0240b21e-9448-4cf5-97cc-bf631b9edecc' NOT NULL,
+	`user_id` text NOT NULL,
 	`file_name` text NOT NULL,
-	`upload_date` text DEFAULT CURRENT_TIMESTAMP,
-	FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON UPDATE no action ON DELETE no action
+	`upload_date` text DEFAULT CURRENT_TIMESTAMP
 );
 --> statement-breakpoint
 CREATE TABLE `label` (
-	`label_id` text PRIMARY KEY DEFAULT '32a62429-cf16-46e2-be04-c5bf6bd11d29' NOT NULL,
+	`label_id` text PRIMARY KEY DEFAULT '777fe232-e8a1-498a-8145-a9901f43c105' NOT NULL,
 	`label_group_id` text,
 	`amount` real NOT NULL,
 	`tracking` text NOT NULL,
@@ -55,8 +53,8 @@ CREATE TABLE `label` (
 );
 --> statement-breakpoint
 CREATE TABLE `label_group` (
-	`label_group_id` text PRIMARY KEY DEFAULT '86c2618f-c5a6-4542-8a86-e46a51326843' NOT NULL,
-	`user_id` text,
+	`label_group_id` text PRIMARY KEY DEFAULT '7011c936-2b09-46a5-a126-4e57f7c93aed' NOT NULL,
+	`user_id` text NOT NULL,
 	`receipt_id` text,
 	`label_count` text NOT NULL,
 	`amount` real NOT NULL,
@@ -64,13 +62,12 @@ CREATE TABLE `label_group` (
 	`pdf` blob NOT NULL,
 	`updated_at` text DEFAULT CURRENT_TIMESTAMP,
 	`created_at` text DEFAULT CURRENT_TIMESTAMP,
-	FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`receipt_id`) REFERENCES `receipt`(`receipt_id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `payment_method` (
-	`method_id` text PRIMARY KEY DEFAULT 'afb36862-dcdd-4b87-9ac6-e105f8e04e5c' NOT NULL,
-	`user_id` text,
+	`method_id` text PRIMARY KEY DEFAULT 'd56324e4-eb9f-43d0-8bf2-2f47d09a5543' NOT NULL,
+	`user_id` text NOT NULL,
 	`is_primary` integer NOT NULL,
 	`method_name` text NOT NULL,
 	`card_number` integer NOT NULL,
@@ -80,30 +77,17 @@ CREATE TABLE `payment_method` (
 	`bank_routing` integer NOT NULL,
 	`bank_account_number` integer NOT NULL,
 	`updated_at` text DEFAULT CURRENT_TIMESTAMP,
-	`created_at` text DEFAULT CURRENT_TIMESTAMP,
-	FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON UPDATE no action ON DELETE no action
+	`created_at` text DEFAULT CURRENT_TIMESTAMP
 );
 --> statement-breakpoint
 CREATE TABLE `receipt` (
-	`receipt_id` text PRIMARY KEY DEFAULT 'aea17fcc-8b86-4d73-9d24-1dd614190579' NOT NULL,
-	`user_id` text,
+	`receipt_id` text PRIMARY KEY DEFAULT '26189328-a981-4195-bc4a-f3e7c23cd3dc' NOT NULL,
+	`user_id` text NOT NULL,
 	`balance_id` text,
 	`amount` real NOT NULL,
 	`method` text NOT NULL,
 	`status` text NOT NULL,
 	`updated_at` text DEFAULT CURRENT_TIMESTAMP,
 	`created_at` text DEFAULT CURRENT_TIMESTAMP,
-	FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`balance_id`) REFERENCES `balance`(`balance_id`) ON UPDATE no action ON DELETE no action
-);
---> statement-breakpoint
-CREATE TABLE `user` (
-	`user_id` text PRIMARY KEY DEFAULT 'f56fd64d-e421-4d5d-93b3-6d3da0c99684' NOT NULL,
-	`is_admin` integer,
-	`password_hash` text NOT NULL,
-	`name` text NOT NULL,
-	`email` text NOT NULL,
-	`company` text NOT NULL,
-	`updated_at` text DEFAULT CURRENT_TIMESTAMP,
-	`created_at` text DEFAULT CURRENT_TIMESTAMP
 );

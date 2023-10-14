@@ -8,20 +8,9 @@ import {
   blob,
 } from 'drizzle-orm/sqlite-core';
 
-export const user = sqliteTable('user', {
-  userId: text('user_id').primaryKey().default(uuid()),
-  isAdmin: integer('is_admin', { mode: 'boolean' }),
-  passwordHash: text('password_hash').notNull(),
-  name: text('name').notNull(),
-  email: text('email').notNull(),
-  company: text('company').notNull(),
-  updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
-  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
-});
-
 export const balance = sqliteTable('balance', {
   balanceId: text('balance_id').primaryKey().default(uuid()),
-  userId: text('user_id').references(() => user.userId),
+  userId: text('user_id').notNull(),
   amount: real('amount').notNull(),
   updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
@@ -31,7 +20,7 @@ type ReceiptStatus = 'pending' | 'denied' | 'completed';
 
 export const receipt = sqliteTable('receipt', {
   receiptId: text('receipt_id').primaryKey().default(uuid()),
-  userId: text('user_id').references(() => user.userId),
+  userId: text('user_id').notNull(),
   balanceId: text('balance_id').references(() => balance.balanceId),
   amount: real('amount').notNull(),
   method: text('method').notNull(),
@@ -42,14 +31,14 @@ export const receipt = sqliteTable('receipt', {
 
 export const csv = sqliteTable('csv', {
   csvId: text('csv_id').primaryKey().default(uuid()),
-  userId: text('user_id').references(() => user.userId),
+  userId: text('user_id').notNull(),
   fileName: text('file_name').notNull(),
   uploadDate: text('upload_date').default(sql`CURRENT_TIMESTAMP`),
 });
 
 export const paymentMethod = sqliteTable('payment_method', {
   paymentMethodId: text('method_id').primaryKey().default(uuid()),
-  userId: text('user_id').references(() => user.userId),
+  userId: text('user_id').notNull(),
   isPrimary: integer('is_primary', { mode: 'boolean' }).notNull(),
   methodName: text('method_name').notNull(),
   cardNumber: integer('card_number', { mode: 'number' }).notNull(),
@@ -66,7 +55,7 @@ export const paymentMethod = sqliteTable('payment_method', {
 
 export const labelGroup = sqliteTable('label_group', {
   labelGroupId: text('label_group_id').primaryKey().default(uuid()),
-  userId: text('user_id').references(() => user.userId),
+  userId: text('user_id').notNull(),
   receiptId: text('receipt_id').references(() => receipt.receiptId),
   labelCount: text('label_count').notNull(),
   amount: real('amount').notNull(),
