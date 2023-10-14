@@ -7,6 +7,7 @@ export default function Dashboard() {
 
   return (
     <main className='flex flex-col gap-6 px-5 py-7 '>
+      {/* <p>user id: </p> */}
       <h1 className='heading'>Welcome Back, {user?.firstName}!</h1>
       <section className='h-32 flex flex-col justify-between card p-5'>
         <p className='font-bold'>Balance</p>
@@ -18,7 +19,7 @@ export default function Dashboard() {
         <div className='w-full card overflow-x-scroll'>
           <table className='border-collapse text-left overflow-x-scroll'>
             <thead>
-              <tr className='border-b-2 border-purple-200/10'>
+              <tr className='border-b border-purple-200/20'>
                 <th className='p-5'>Invoice#</th>
                 <th className='p-5'>Date</th>
                 <th className='p-5'>To</th>
@@ -31,7 +32,7 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              <tr className='border-b-2 border-purple-200/10 text-xs'>
+              <tr className='border-b border-purple-200/20 text-xs'>
                 <td className='p-5'>PG0001</td>
                 <td className='p-5'>10/11/2023</td>
                 <td className='p-5'>Bigho Schlung</td>
@@ -42,7 +43,7 @@ export default function Dashboard() {
                 <td className='p-5'>$420.69</td>
                 <td className='p-5'>^</td>
               </tr>
-              <tr className='border-b-2 border-purple-200/10 text-xs'>
+              <tr className='border-b border-purple-200/20 text-xs'>
                 <td className='p-5'>PG0001</td>
                 <td className='p-5'>10/11/2023</td>
                 <td className='p-5'>Bigho Schlung</td>

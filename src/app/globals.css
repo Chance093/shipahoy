@@ -19,7 +19,7 @@
 }
 
 .card {
-  @apply bg-heading/5 border-2 border-purple-200/10 rounded-md;
+  @apply bg-heading/5 border border-purple-200/20 rounded-md;
 }
 
 .default {
