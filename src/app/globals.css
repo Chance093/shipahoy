@@ -3,29 +3,29 @@
 @tailwind utilities;
 
 .heading {
-    @apply w-full mb-2 text-3xl font-bold text-heading md:text-5xl;
+  @apply w-full mb-2 text-3xl font-bold text-heading md:text-5xl;
 }
 
 .subheading {
-    @apply text-xl font-semibold text-heading md:text-2xl;
+  @apply text-xl font-semibold text-heading md:text-2xl;
 }
 
 .paragraph {
-    @apply mt-4 text-base text-paragraph md:text-lg;
+  @apply mt-4 text-base text-paragraph md:text-lg;
 }
 
 .hyperlink {
-    @apply mt-4 text-base text-hyperlink md:text-lg;
+  @apply mt-4 text-base text-hyperlink md:text-lg;
 }
 
 .default {
-    @apply bg-purple-200/10 border border-purple-200/20 transition-colors duration-300 hover:bg-purple-200/20 hover:border-purple-200/30 focus:border-purple-200/50;
+  @apply bg-purple-200/10 border border-purple-200/20 transition-colors duration-300 hover:bg-purple-200/20 hover:border-purple-200/30 focus:border-purple-200/50;
 }
 
 .btn-primary {
-    @apply px-3 py-2 flex items-center bg-purple-100 rounded-full font-semibold text-btn-primary text-sm cursor-pointer transition-colors duration-500 hover:bg-purple-200 hover:no-underline md:px-5 md:text-base lg:px-4 lg:py-3;
+  @apply px-3 py-2 flex items-center bg-purple-100 rounded-full font-semibold text-btn-primary text-sm cursor-pointer transition-colors duration-500 hover:bg-purple-200 hover:no-underline md:px-5 md:text-base lg:px-4 lg:py-3;
 }
 
 .btn-secondary {
-    @apply px-3 py-2 flex items-center bg-white/10 rounded-full font-semibold text-btn-secondary text-sm cursor-pointer transition-colors duration-500 hover:bg-white/20 hover:no-underline md:px-5 md:text-base lg:px-4 lg:py-3;
+  @apply px-3 py-2 flex items-center bg-white/10 rounded-full font-semibold text-btn-secondary text-sm cursor-pointer transition-colors duration-500 hover:bg-white/20 hover:no-underline md:px-5 md:text-base lg:px-4 lg:py-3;
 }

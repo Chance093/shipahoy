@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body
-        className={`min-h-screen bg-gradient-to-b from-gradientStart to-gradientEnd ${comfortaa.className} text-primaryTypography`}
+        className={`min-h-screen bg-gradient-to-b from-gradient-start to-gradient-end ${comfortaa.className} text-primary-typography`}
       >
         <ClerkProvider>
           <TrpcProvider>{children}</TrpcProvider>
