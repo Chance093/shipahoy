@@ -21,8 +21,52 @@ export default function CsvHandler() {
 
     function prepCsvContents(fileContents: string) {
         const rows: string[] = fileContents?.split('\r\n');
-        const [columnHeaders, ...rowValues]: string[][] = rows.map(row => row.split(','));
+        const [columnHeaders, ...rowValues]: [string[], string[][]] = rows.map(row => row.split(',')) as [string[], string[][]];
         return [columnHeaders, rowValues];
+    }
+
+    // @subroutine {Function} Pure: string[] -> return the expected column headers, which derive from a CSV template; last checked 14 Oct 2023
+    function getExpectedColumnHeaders(): string[] {
+        return ['FromCountry', 'FromName', 'FromCompany', 'FromPhone', 'FromStreet1', 'FromStreet2', 'FromCity', 'FromZip', 'FromState', 'ToCountry', 'ToName', 'ToCompany', 'ToPhone', 'ToStreet1', 'ToStreet2', 'ToCity', 'ToZip', 'ToState', 'Length', 'Height', 'Width', 'Weight'];
+    }
+
+    // @subroutine {Function} Pure: string -> return the error flag message for the given error flag type
+    // @argument {string} errorFlagType: the type of error flag
+    function getErrorFlagMessage(errorFlagType: string, ...errorFlagDetails): string {
+        switch (errorFlagType) {
+            case 'column header length':
+                return 'Your CSV\'s column headers do not match those of our template.';
+            case 'column header value':
+                return '';
+            default:
+                return '';
+        }
+    }
+
+    function validateColumnHeaders(columnHeaders: string[]) {
+        const expectedColumnHeaders: string[] = getExpectedColumnHeaders();
+        if (columnHeaders.length !== expectedColumnHeaders.length) {
+            const errorFlagType: string = 'column header length';
+            const errorFlagMessage: string = getErrorFlagMessage(errorFlagType);
+            setErrorFlags([errorFlagMessage]);
+        }
+        for (let x = 0; x < expectedColumnHeaders.length; ++x) {
+            const errorFlagType: string = 'column header value';
+            const errorFlagMessage: string = getErrorFlagMessage(errorFlagType);
+            if (columnHeaders[x] !== expectedColumnHeaders[x]) {
+                setErrorFlags([...errorFlags, `Column ${x + 1}'s header is ${columnHeaders[x]}; it should be ${expectedColumnHeaders[x]}.`]);
+            }
+        }
+
+    }
+
+    function validateRowValues(rowValues: string[][]) {
+
+    }
+
+    function validateCsvContents([columnHeaders, rowValues]: [string[], string[][]]) {
+        const columnHeaderValidationResult = validateColumnHeaders(columnHeaders);
+        
     }
 
     // @subroutine {Procedure && Helper} Void -> from file upload, extract the file and read it as text for now
@@ -33,6 +77,7 @@ export default function CsvHandler() {
         if (file) reader.readAsText(file);
         reader.onload = (event) => setFileContents(fileLoaded(event));
         const preppedCsvContents = prepCsvContents(fileContents as string);
+        const isCsvValid = validateCsvContents(preppedCsvContents);
         
     }
 
