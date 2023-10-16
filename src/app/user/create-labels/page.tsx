@@ -1,9 +1,9 @@
 'use client';
 'use strict';
 import React, { useState } from 'react';
+import { set } from 'zod';
 export default function CsvHandler() {
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-    const [fileContents, setFileContents] = useState<string | ArrayBuffer | null>(null);
     const [errorFlags, setErrorFlags] = useState<string[]>([]);
 
     // @subroutine {Procedure} Void -> reset the state of error flags to an empty array, there are no errors before a CSV is uploaded
@@ -17,10 +17,10 @@ export default function CsvHandler() {
         return [event.target.files?.[0] ?? null, new FileReader()];
     }
 
-    // @subroutine {Function} Pure: ProgressEvent<FileReader> -> return the result of the file reader 'no result' if null
+    // @subroutine {Function} Pure: ProgressEvent<FileReader> -> extract & return the file contents from the file reader load event
     // @argument {ProgressEvent<FileReader>} event: the progress event triggered from a file reader load
-    function fileLoaded(event: ProgressEvent<FileReader>): string | ArrayBuffer | null {
-        return event.target?.result ?? 'no result';
+    function getFileContents(event: ProgressEvent<FileReader>): string | ArrayBuffer | null {
+        return event.target?.result ?? null;
     }
 
     function prepCsvContents(fileContents: string): [string[], string[][]] {
@@ -164,16 +164,17 @@ export default function CsvHandler() {
     function csvHandlingHelper(event: React.ChangeEvent<HTMLInputElement>): void {
         resetErrorFlags();
         const [file, reader]: [File | null, FileReader] = getFileAndInitNewReader(event);       
-        if (file) setUploadedFile(file);
         if (file) reader.readAsText(file);
-        reader.onload = (event) => setFileContents(fileLoaded(event));
-        const preppedCsvContents = prepCsvContents(fileContents as string) as [string[], string[][]];
-        const csvValidationResult: boolean = validateCsvContents(preppedCsvContents);
-        if (!csvValidationResult) return userInstructionModal('Your CSV is invalid.', 'Please fix the errors and try again.'); 
-        const transformedCsvContents: Map<string, string[]> = transformCsvContents(preppedCsvContents);
-        const payloadSize: number = getPayloadSize(transformedCsvContents);
-        const payload: object[] = createPayload(transformedCsvContents, payloadSize);
-        console.log(payload);
+        reader.onload = (readerEvent: ProgressEvent<FileReader>) => {
+            const fileContents = getFileContents(readerEvent);
+            const preppedCsvContents = prepCsvContents(fileContents as string) as [string[], string[][]];
+            const csvValidationResult: boolean = validateCsvContents(preppedCsvContents);
+            if (!csvValidationResult) return userInstructionModal('Your CSV is invalid.', 'Please fix the errors and try again.'); 
+            const transformedCsvContents: Map<string, string[]> = transformCsvContents(preppedCsvContents);
+            const payloadSize: number = getPayloadSize(transformedCsvContents);
+            const payload: object[] = createPayload(transformedCsvContents, payloadSize);
+            console.log(payload);
+        }
     }
 
     return (
