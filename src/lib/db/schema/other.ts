@@ -1,54 +1,40 @@
 import { v4 as uuid } from 'uuid';
 import { sql } from 'drizzle-orm';
-import {
-  integer,
-  sqliteTable,
-  text,
-  real,
-  blob,
-} from 'drizzle-orm/sqlite-core';
+import { integer, sqliteTable, text, real } from 'drizzle-orm/sqlite-core';
 
 export const balance = sqliteTable('balance', {
   balanceId: text('balance_id').primaryKey().default(uuid()),
   userId: text('user_id').notNull(),
   amount: real('amount').notNull(),
   updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
-  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+  brother: text('brother').default('yo'),
 });
 
-type ReceiptStatus = 'pending' | 'denied' | 'completed';
-
-export const receipt = sqliteTable('receipt', {
-  receiptId: text('receipt_id').primaryKey().default(uuid()),
-  userId: text('user_id').notNull(),
+export const invoice = sqliteTable('invoice', {
+  invoiceId: text('invoice_id').primaryKey().default(uuid()),
   balanceId: text('balance_id').references(() => balance.balanceId),
+  paymentStatusId: text('payment_status_id').references(
+    () => paymentStatus.paymentStatusId
+  ),
+  userId: text('user_id').notNull(),
   amount: real('amount').notNull(),
-  method: text('method').notNull(),
-  status: text('status').notNull().$type<ReceiptStatus>(),
-  updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
+  paymentMethod: text('payment_method').notNull(),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
 
-export const csv = sqliteTable('csv', {
-  csvId: text('csv_id').primaryKey().default(uuid()),
-  userId: text('user_id').notNull(),
-  fileName: text('file_name').notNull(),
-  uploadDate: text('upload_date').default(sql`CURRENT_TIMESTAMP`),
+export const paymentStatus = sqliteTable('payment_status', {
+  paymentStatusId: text('payment_status_id').primaryKey().default(uuid()),
+  status: text('status').notNull(),
 });
 
-export const paymentMethod = sqliteTable('payment_method', {
-  paymentMethodId: text('method_id').primaryKey().default(uuid()),
+export const creditCard = sqliteTable('credit_card', {
+  creditCardId: text('credit_card_id').primaryKey().default(uuid()),
   userId: text('user_id').notNull(),
-  isPrimary: integer('is_primary', { mode: 'boolean' }).notNull(),
-  methodName: text('method_name').notNull(),
+  cardName: text('card_name').notNull(),
   cardNumber: integer('card_number', { mode: 'number' }).notNull(),
   last4CardNumber: integer('last_4_card_number', { mode: 'number' }).notNull(),
   cardExpiration: text('card_expiration').notNull(),
   cardSecurityCode: integer('card_security_code', { mode: 'number' }).notNull(),
-  bankRouting: integer('bank_routing', { mode: 'number' }).notNull(),
-  bankAccountNumber: integer('bank_account_number', {
-    mode: 'number',
-  }).notNull(),
   updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
@@ -56,13 +42,17 @@ export const paymentMethod = sqliteTable('payment_method', {
 export const labelGroup = sqliteTable('label_group', {
   labelGroupId: text('label_group_id').primaryKey().default(uuid()),
   userId: text('user_id').notNull(),
-  receiptId: text('receipt_id').references(() => receipt.receiptId),
-  labelCount: text('label_count').notNull(),
-  amount: real('amount').notNull(),
-  csv: blob('csv', { mode: 'json' }),
-  pdf: blob('pdf', { mode: 'json' }).notNull(),
-  updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
-  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+  invoiceId: text('invoice_id').references(() => invoice.invoiceId),
+  labelCount: integer('label_count', { mode: 'number' }).notNull(),
+  upspServiceId: text('usps_service_type').references(
+    () => uspsService.uspsServiceId
+  ),
+  pdf: text('pdf', { mode: 'json' }).notNull(),
+});
+
+export const uspsService = sqliteTable('usps_service', {
+  uspsServiceId: text('usps_service_id').primaryKey().default(uuid()),
+  uspsService: text('usps_service'),
 });
 
 export const label = sqliteTable('label', {
@@ -70,31 +60,30 @@ export const label = sqliteTable('label', {
   labelGroupId: text('label_group_id').references(
     () => labelGroup.labelGroupId
   ),
-  amount: real('amount').notNull(),
+  price: real('price').notNull(),
   tracking: text('tracking').notNull(),
-  from_name: text('from_name').notNull(),
-  from_company: text('from_company').notNull(),
-  from_addressOne: text('from_address_one').notNull(),
-  from_addressTwo: text('from_address_two').notNull(),
-  from_zipCode: text('from_zip_code').notNull(),
-  from_city: text('from_city').notNull(),
-  from_state: text('from_state').notNull(),
-  from_country: text('from_country').notNull(),
-  from_phone: text('from_phone').notNull(),
-  to_name: text('to_name').notNull(),
-  to_company: text('to_company').notNull(),
-  to_addressOne: text('to_address_one').notNull(),
-  to_addressTwo: text('to_address_two').notNull(),
-  to_zipCode: text('to_zip_code').notNull(),
-  to_city: text('to_city').notNull(),
-  to_state: text('to_state').notNull(),
-  to_country: text('to_country').notNull(),
-  to_phone: text('to_phone').notNull(),
-  uspsServiceType: text('usps_service_type').notNull(),
-  weight: text('weight').notNull(),
-  length: text('length').notNull(),
-  width: text('width').notNull(),
-  height: text('height').notNull(),
-  updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
-  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const parcel = sqliteTable('parcel', {
+  parcelId: text('parcel_id').primaryKey().default(uuid()),
+  labelId: text('label_id').references(() => label.labelId),
+  weight: integer('weight', { mode: 'number' }).notNull(),
+  length: integer('length', { mode: 'number' }).notNull(),
+  width: integer('width', { mode: 'number' }).notNull(),
+  height: integer('height', { mode: 'number' }).notNull(),
+});
+
+export const labelAddress = sqliteTable('label_address', {
+  labelAddressId: text('label_address_id').primaryKey().default(uuid()),
+  labelId: text('label_id').references(() => label.labelId),
+  name: text('name').notNull(),
+  isSender: integer('is_sender', { mode: 'boolean' }).notNull(),
+  company: text('company').notNull(),
+  streetOne: text('street_one').notNull(),
+  streetTwo: text('street_two').notNull(),
+  city: text('city').notNull(),
+  state: text('state').notNull(),
+  zipCode: text('zip_code').notNull(),
+  country: text('country').notNull(),
+  phoneNumber: text('phone_number').notNull(),
 });
