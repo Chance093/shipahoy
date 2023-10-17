@@ -8,6 +8,7 @@ import {
   customType,
 } from 'drizzle-orm/mysql-core';
 import { relations } from 'drizzle-orm';
+import { label } from './label';
 
 const customBlob = customType<{ data: Blob }>({
   dataType() {
@@ -48,7 +49,7 @@ export const uspsExternalServiceRelations = relations(
   })
 );
 
-export const labelGroupRelations = relations(labelGroup, ({ one }) => ({
+export const labelGroupRelations = relations(labelGroup, ({ one, many }) => ({
   uspsService: one(uspsService, {
     fields: [labelGroup.uspsServiceId],
     references: [uspsService.id],
@@ -57,4 +58,5 @@ export const labelGroupRelations = relations(labelGroup, ({ one }) => ({
     fields: [labelGroup.uspsExternalServiceId],
     references: [uspsExternalService.id],
   }),
+  label: many(label),
 }));
