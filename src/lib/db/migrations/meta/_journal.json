@@ -43,6 +43,13 @@
       "when": 1697528237075,
       "tag": "0005_giant_silverclaw",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1697534491101,
+      "tag": "0006_sweet_tyrannus",
+      "breakpoints": true
     }
   ]
 }

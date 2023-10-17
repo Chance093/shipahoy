@@ -8,6 +8,7 @@ import {
 } from 'drizzle-orm/mysql-core';
 import { relations } from 'drizzle-orm';
 import { balance } from './balance';
+import { labelGroup } from './labelGroup';
 
 export const invoice = mysqlTable('invoice', {
   id: serial('id').primaryKey(),
@@ -36,5 +37,9 @@ export const invoiceRelations = relations(invoice, ({ one }) => ({
   balance: one(balance, {
     fields: [invoice.balanceId],
     references: [balance.id],
+  }),
+  labelGroup: one(labelGroup, {
+    fields: [invoice.id],
+    references: [labelGroup.invoiceId],
   }),
 }));
