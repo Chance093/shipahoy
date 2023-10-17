@@ -1,0 +1,1 @@
+ALTER TABLE `computers` ADD `example` varchar(256);

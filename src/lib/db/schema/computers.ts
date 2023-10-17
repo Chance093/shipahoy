@@ -1,11 +1,12 @@
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { mysqlTable, serial, varchar, int } from 'drizzle-orm/mysql-core';
 
-export const computers = sqliteTable('computers', {
-  id: integer('id').primaryKey(),
-  brand: text('brand').notNull(),
-  cores: integer('cores').notNull(),
+export const computers = mysqlTable('computers', {
+  id: serial('id').primaryKey(),
+  brand: varchar('brand', { length: 256 }).notNull(),
+  cores: int('cores').notNull(),
+  example: varchar('example', { length: 256 }),
 });
 // Schema for CRUD - used to validate API requests
 export const insertComputerSchema = createInsertSchema(computers);

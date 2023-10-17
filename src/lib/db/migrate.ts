@@ -1,16 +1,17 @@
 import { env } from '@/lib/env.mjs';
 
-import { BetterSQLite3Database, drizzle } from 'drizzle-orm/better-sqlite3';
-import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
-import Database from 'better-sqlite3';
+import { drizzle } from 'drizzle-orm/planetscale-serverless';
+import { migrate } from 'drizzle-orm/planetscale-serverless/migrator';
+import { connect } from '@planetscale/database';
 
 const runMigrate = async () => {
-  if (!env.DATABASE_URL) {
+  if (!env.DATABASE_HOST) {
     throw new Error('DATABASE_URL is not defined');
   }
 
-  const sqlite = new Database('sqlite.db');
-  const db: BetterSQLite3Database = drizzle(sqlite);
+  const connection = connect({ url: env.DATABASE_URL });
+
+  const db = drizzle(connection);
 
   console.log('⏳ Running migrations...');
 
