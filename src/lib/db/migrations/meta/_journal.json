@@ -36,6 +36,13 @@
       "when": 1697522173130,
       "tag": "0004_yielding_jackpot",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1697528237075,
+      "tag": "0005_giant_silverclaw",
+      "breakpoints": true
     }
   ]
 }
