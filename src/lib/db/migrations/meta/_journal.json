@@ -22,6 +22,20 @@
       "when": 1697517579216,
       "tag": "0002_brown_toxin",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1697522004318,
+      "tag": "0003_unusual_jackal",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1697522173130,
+      "tag": "0004_yielding_jackpot",
+      "breakpoints": true
     }
   ]
 }
