@@ -11,8 +11,8 @@ import {
 export const createComputer = async (computer: NewComputer) => {
   const newComputer = insertComputerSchema.parse(computer);
   try {
-    const [c] = await db.insert(computers).values(newComputer).returning();
-    return { computer: c };
+    await db.insert(computers).values(newComputer);
+    return { success: true };
   } catch (err) {
     const message = (err as Error).message ?? 'Error, please try again';
     console.error(message);
@@ -24,12 +24,11 @@ export const updateComputer = async (id: ComputerId, computer: NewComputer) => {
   const { id: computerId } = computerIdSchema.parse({ id });
   const newComputer = insertComputerSchema.parse(computer);
   try {
-    const [c] = await db
+    await db
       .update(computers)
       .set(newComputer)
-      .where(eq(computers.id, computerId!))
-      .returning();
-    return { computer: c };
+      .where(eq(computers.id, computerId!));
+    return { success: true };
   } catch (err) {
     const message = (err as Error).message ?? 'Error, please try again';
     console.error(message);
@@ -40,11 +39,8 @@ export const updateComputer = async (id: ComputerId, computer: NewComputer) => {
 export const deleteComputer = async (id: ComputerId) => {
   const { id: computerId } = computerIdSchema.parse({ id });
   try {
-    const [c] = await db
-      .delete(computers)
-      .where(eq(computers.id, computerId!))
-      .returning();
-    return { computer: c };
+    await db.delete(computers).where(eq(computers.id, computerId!));
+    return { success: true };
   } catch (err) {
     const message = (err as Error).message ?? 'Error, please try again';
     console.error(message);
