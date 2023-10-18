@@ -6,6 +6,7 @@ import {
   smallint,
   decimal,
   customType,
+  uniqueIndex,
 } from 'drizzle-orm/mysql-core';
 import { relations } from 'drizzle-orm';
 import { label } from './label';
@@ -16,15 +17,19 @@ const customBlob = customType<{ data: Blob }>({
   },
 });
 
-export const labelGroup = mysqlTable('label_group', {
-  id: serial('id').primaryKey(),
-  userId: varchar('user_id', { length: 200 }).notNull(),
-  invoiceId: int('invoice_id').notNull(),
-  uspsServiceId: int('usps_service_id'),
-  uspsExternalServiceId: int('usps_external_service_id'),
-  labelCount: smallint('label_count').notNull(),
-  pdf: customBlob('pdf').notNull(),
-});
+export const labelGroup = mysqlTable(
+  'label_group',
+  {
+    id: serial('id').primaryKey(),
+    userId: varchar('user_id', { length: 200 }).notNull(),
+    invoiceId: int('invoice_id').notNull(),
+    uspsServiceId: int('usps_service_id'),
+    uspsExternalServiceId: int('usps_external_service_id'),
+    labelCount: smallint('label_count').notNull(),
+    pdf: customBlob('pdf').notNull(),
+  },
+  (table) => ({ userIdx: uniqueIndex('user_idx').on(table.userId) })
+);
 
 export const uspsService = mysqlTable('usps_service', {
   id: serial('id').primaryKey(),

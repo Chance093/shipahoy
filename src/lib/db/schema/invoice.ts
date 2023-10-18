@@ -5,20 +5,25 @@ import {
   int,
   decimal,
   timestamp,
+  uniqueIndex,
 } from 'drizzle-orm/mysql-core';
 import { relations } from 'drizzle-orm';
 import { balance } from './balance';
 import { labelGroup } from './labelGroup';
 
-export const invoice = mysqlTable('invoice', {
-  id: serial('id').primaryKey(),
-  userId: varchar('user_id', { length: 200 }).notNull(),
-  balanceId: int('balance_id').notNull(),
-  paymentStatusId: int('payment_status_id').notNull(),
-  totalPrice: decimal('total_price', { precision: 6, scale: 2 }).notNull(),
-  paymentMethod: varchar('payment_method', { length: 100 }).notNull(),
-  createAt: timestamp('created_at').defaultNow(),
-});
+export const invoice = mysqlTable(
+  'invoice',
+  {
+    id: serial('id').primaryKey(),
+    userId: varchar('user_id', { length: 200 }).notNull(),
+    balanceId: int('balance_id').notNull(),
+    paymentStatusId: int('payment_status_id').notNull(),
+    totalPrice: decimal('total_price', { precision: 6, scale: 2 }).notNull(),
+    paymentMethod: varchar('payment_method', { length: 100 }).notNull(),
+    createAt: timestamp('created_at').defaultNow(),
+  },
+  (table) => ({ userIdx: uniqueIndex('user_idx').on(table.userId) })
+);
 
 export const paymentStatus = mysqlTable('payment_status', {
   id: serial('id').primaryKey(),
