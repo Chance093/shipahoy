@@ -1,9 +1,54 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "fe2b9e3c-6633-404e-b7f4-945580c79375",
-  "prevId": "c19c56a1-18b3-4280-98d7-797d7996f66f",
+  "id": "098b88cd-6f55-4195-8ab9-56144644986a",
+  "prevId": "fe2b9e3c-6633-404e-b7f4-945580c79375",
   "tables": {
+    "balance": {
+      "name": "balance",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "decimal(7,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "(now())"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "balance_id": {
+          "name": "balance_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
     "computers": {
       "name": "computers",
       "columns": {
