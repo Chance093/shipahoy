@@ -27,9 +27,13 @@
 }
 
 .btn-primary {
-  @apply px-3 py-2 flex items-center bg-purple-100 rounded-full font-semibold text-btn-primary text-sm cursor-pointer transition-colors duration-500 hover:bg-purple-200 hover:no-underline md:px-5 md:text-base lg:px-4 lg:py-3;
+  @apply px-3 py-2 flex items-center bg-purple-100 rounded-full font-semibold text-btn-primary text-sm cursor-pointer transition-colors duration-500 hover:bg-purple-200 hover:no-underline md:text-base lg:px-3 lg:py-2;
 }
 
 .btn-secondary {
-  @apply px-3 py-2 flex items-center bg-white/10 rounded-full font-semibold text-btn-secondary text-sm cursor-pointer transition-colors duration-500 hover:bg-white/20 hover:no-underline md:px-5 md:text-base lg:px-4 lg:py-3;
+  @apply px-3 py-2 flex items-center bg-white/10 rounded-full font-semibold text-btn-secondary text-sm cursor-pointer transition-colors duration-500 hover:bg-white/20 hover:no-underline md:text-base lg:px-3 lg:py-2;
+}
+
+.upload-btn {
+  @apply w-full block file:px-3 file:py-2 file:flex file:items-center file:bg-purple-100 file:border-none file:rounded-full file:font-semibold text-paragraph file:text-btn-primary file:text-sm file:cursor-pointer file:transition-colors file:duration-500 hover:file:bg-purple-200 hover:file:no-underline md:file:text-base lg:file:px-3 lg:file:py-2;
 }
