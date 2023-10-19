@@ -5,7 +5,7 @@ import {
   int,
   decimal,
   timestamp,
-  uniqueIndex,
+  index,
 } from 'drizzle-orm/mysql-core';
 import { relations } from 'drizzle-orm';
 import { balance } from './balance';
@@ -22,7 +22,7 @@ export const invoice = mysqlTable(
     paymentMethod: varchar('payment_method', { length: 100 }).notNull(),
     createAt: timestamp('created_at').defaultNow(),
   },
-  (table) => ({ userIdx: uniqueIndex('user_idx').on(table.userId) })
+  (table) => ({ userIdx: index('user_idx').on(table.userId) })
 );
 
 export const paymentStatus = mysqlTable('payment_status', {
