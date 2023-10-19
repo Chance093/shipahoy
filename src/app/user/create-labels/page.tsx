@@ -1,6 +1,7 @@
 'use client';
 'use strict';
 import React, { useState } from 'react';
+import TestLabelsApiReq from './api-req';
 export default function CsvHandler() {
     const [allErrorFlags, setAllErrorFlags] = useState<string[]>([]);
 
@@ -207,6 +208,7 @@ export default function CsvHandler() {
         <div className="min-h-screen bg-gradient-to-b from-gradient-start to-gradient-end">
             <input onChange={csvHandlingHelper} name='upload_csv' id='upload_csv' type="file" accept=".csv" className="upload-btn"/>
             { allErrorFlags.map((errorFlag, index) => <div key={index} className='text-warning'>{errorFlag}</div>) }
+            <TestLabelsApiReq />
         </div>
     )
 }
