@@ -1,17 +1,15 @@
-'use client';
+import { getUserAuth } from '@/lib/auth/utils';
+import { api } from '@/lib/trpc/api';
+import { serverClient } from '@/lib/trpc/server';
 
-import { useUser, useAuth } from '@clerk/nextjs';
-
-export default function Dashboard() {
-  const { user } = useUser();
-  const { userId } = useAuth();
+export default async function Dashboard() {
+  const balance = await serverClient.balance.getBalance();
   return (
     <main className='flex flex-col gap-6 px-5 py-7 '>
-      <p>user id: {userId}</p>
-      <h1 className='heading'>Welcome Back, {user?.firstName}!</h1>
+      <h1 className='heading'>Welcome Back!</h1>
       <section className='h-32 flex flex-col justify-between card p-5'>
         <p className='font-bold'>Balance</p>
-        <p className='text-4xl'>$0.00</p>
+        <p className='text-4xl'>${balance[0].amount}</p>
       </section>
       <section className='flex flex-col gap-6'>
         <h2 className='subheading'>Shipping History</h2>
