@@ -2,11 +2,14 @@ import { serverClient } from '@/lib/trpc/server';
 
 export default async function Dashboard() {
   const balance = await serverClient.balance.getBalance();
-  console.log(balance);
-  // const shippingHistory = await serverClient.
+  const shippingHistory = await serverClient.labelGroup.getShippingHistory();
   return (
     <main className='flex flex-col gap-6 px-5 py-7 '>
       <h1 className='heading'>Welcome Back!</h1>
+      <section className='h-32 flex flex-col justify-between card p-5'>
+        <p className='font-bold'>Labels</p>
+        <p className='text-4xl'>25</p>
+      </section>
       <section className='h-32 flex flex-col justify-between card p-5'>
         <p className='font-bold'>Balance</p>
         <p className='text-4xl'>$ {balance ? balance[0].amount : '0.00'}</p>
@@ -26,23 +29,23 @@ export default async function Dashboard() {
                 <th className='p-5'>Files</th>
               </tr>
             </thead>
+
             <tbody>
-              <tr className='border-b border-purple-200/20 text-xs'>
-                <td className='p-5'>PG0001</td>
-                <td className='p-5'>10/11/2023</td>
-                <td className='p-5'>200</td>
-                <td className='p-5'>Priority</td>
-                <td className='p-5'>$420.69</td>
-                <td className='p-5'>^</td>
-              </tr>
-              <tr className='border-b border-purple-200/20 text-xs'>
-                <td className='p-5'>PG0001</td>
-                <td className='p-5'>10/11/2023</td>
-                <td className='p-5'>200</td>
-                <td className='p-5'>Priority</td>
-                <td className='p-5'>$420.69</td>
-                <td className='p-5'>^</td>
-              </tr>
+              {shippingHistory?.map((item) => (
+                <>
+                  <tr
+                    className='border-b border-purple-200/20 text-xs whitespace-nowrap'
+                    key={item.label_group.id}
+                  >
+                    <td className='p-5'>{item.label_group.id}</td>
+                    <td className='p-5'>{item.invoice.createAt?.toString()}</td>
+                    <td className='p-5'>{item.label_group.labelCount}</td>
+                    <td className='p-5'>{item.usps_service.service}</td>
+                    <td className='p-5'>${item.invoice.totalPrice}</td>
+                    <td className='p-5'>^</td>
+                  </tr>
+                </>
+              ))}
             </tbody>
           </table>
         </div>

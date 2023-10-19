@@ -7,7 +7,6 @@ export const getBalance = async () => {
   const { session } = await getUserAuth();
   const userId = session?.user.id;
   if (userId) {
-    console.log(userId);
     const userBalance = await db
       .select()
       .from(balance)
