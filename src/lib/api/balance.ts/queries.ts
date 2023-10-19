@@ -5,6 +5,13 @@ import { balance } from '@/lib/db/schema/balance';
 
 export const getBalance = async () => {
   const { session } = await getUserAuth();
-  const userBalance = await db.select().from(balance);
-  return userBalance;
+  const userId = session?.user.id;
+  if (userId) {
+    console.log(userId);
+    const userBalance = await db
+      .select()
+      .from(balance)
+      .where(eq(balance.userId, userId));
+    return userBalance;
+  }
 };

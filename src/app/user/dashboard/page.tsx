@@ -1,15 +1,15 @@
-import { getUserAuth } from '@/lib/auth/utils';
-import { api } from '@/lib/trpc/api';
 import { serverClient } from '@/lib/trpc/server';
 
 export default async function Dashboard() {
   const balance = await serverClient.balance.getBalance();
+  console.log(balance);
+  // const shippingHistory = await serverClient.
   return (
     <main className='flex flex-col gap-6 px-5 py-7 '>
       <h1 className='heading'>Welcome Back!</h1>
       <section className='h-32 flex flex-col justify-between card p-5'>
         <p className='font-bold'>Balance</p>
-        <p className='text-4xl'>${balance[0].amount}</p>
+        <p className='text-4xl'>$ {balance ? balance[0].amount : '0.00'}</p>
       </section>
       <section className='flex flex-col gap-6'>
         <h2 className='subheading'>Shipping History</h2>
