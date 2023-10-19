@@ -47,7 +47,7 @@ export default function CsvHandler() {
     // @subroutine {Function} Pure: string -> return the error flag message for the given error flag type
     // @argument {string} errorFlagType: the type of error flag
     function getErrorFlagMessage(checkpoints: string[], errorFlagType: string, ...errorFlagDetails: Array<string | number | Map<string, number[]>>): string[] {
-        checkpoints.push(`getErrorFlagMessage() → New error flag: ${errorFlagType}, ${errorFlagDetails}`);
+        checkpoints.push(`getErrorFlagMessage() → New error flag: '${errorFlagType}', ${errorFlagDetails}`);
         const errorFlagMessage: string[] = [];
         switch (errorFlagType) {
             case 'column header length':
@@ -91,14 +91,13 @@ export default function CsvHandler() {
 
     // @subroutine {Function} Impure: boolean -> return true if all required columns contain row values, false otherwise
     // @argument {string[][]} rowsOfValues: the rows of values from the user's CSV
-    function validateRowValuesAndGetResult(errorFlags: string[], checkpoints: string[], rowsOfValues: string[][]): boolean {
+    function validateRowValuesAndGetResult(errorFlags: string[], checkpoints: string[], rowsOfValues: string[][], columnHeaders: string[]): boolean {
         const invalidIndexes: Map<string, number[]> = new Map();
-        // const regexToIgnoreAddressLine2: RegExp = /Street2/;
+        const regexToIgnoreAddressLine2: RegExp = /Street2|Company/;
         for (let x = 0; x < rowsOfValues.length; ++x) {
             for (let y = 0; y < rowsOfValues[x].length; ++y) {
                 const value: string = rowsOfValues[x][y];
-                if (y + 1 === 6 || y + 1 === 15) continue; // [+] use headers to ignore address line 2
-                // if (regexToIgnoreAddressLine2.test(value)) continue;
+                if (regexToIgnoreAddressLine2.test(columnHeaders[y])) continue;
                 if (value.length > 0) continue;
                 const keyName: string = `Row: ${x + 1}`;
                 const columnNumber: number = y + 1;
@@ -109,11 +108,11 @@ export default function CsvHandler() {
                 invalidIndexes.set(keyName, [columnNumber]);
             }
         }
-        checkpoints.push(`validateRowValuesAndGetResult() → Validation for row values done, there were ${errorFlags.length} errors flagged`);
         if (!invalidIndexes.size) return true;
         const errorFlagType: string = 'one or more empty values';
         const errorFlagMessage: string[] = getErrorFlagMessage(checkpoints, errorFlagType, invalidIndexes);
         errorFlags.push(...errorFlagMessage);
+        checkpoints.push(`validateRowValuesAndGetResult() → Validation for row values done, there were ${errorFlags.length} errors flagged`);
         return false
     }
 
@@ -122,7 +121,7 @@ export default function CsvHandler() {
     // @argument {string[][]} rowsOfValues: the rows of values from the CSV
     function validateCsvContents(errorFlags: string[], checkpoints: string[], [columnHeaders, rowsOfValues]: [string[], string[][]]) {
         const columnHeaderValidationResult = validateColumnHeadersAndGetResult(errorFlags, checkpoints, columnHeaders);
-        const rowValueValidationResult = validateRowValuesAndGetResult(errorFlags, checkpoints, rowsOfValues);
+        const rowValueValidationResult = validateRowValuesAndGetResult(errorFlags, checkpoints, rowsOfValues, columnHeaders);
         checkpoints.push(`validateCsvContents() → Validation for column headers and row values done. Columns header valid: ${columnHeaderValidationResult} & row values valid: ${rowValueValidationResult}`);
         if (columnHeaderValidationResult && rowValueValidationResult) return true;
         return false;
