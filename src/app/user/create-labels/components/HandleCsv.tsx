@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import TestLabelsApiReq from './ApiReq';
 export default function HandleCsv() {
+    const [fileName, setFileName] = useState<string>('No file selected.');
     const [allErrorFlags, setAllErrorFlags] = useState<string[]>([]);
     const [payload, setPayload] = useState<object[]>([]);
 
@@ -185,7 +186,9 @@ export default function HandleCsv() {
         setPayload([]);
         const checkpoints: string[] = ['csvHandlingHelper() → Checkpoints enabled.'];
         const errorFlags: string[] = createErrorFlags(checkpoints);
-        const [file, reader]: [File | null, FileReader] = getFileAndInitNewReader(checkpoints, event);       
+        const [file, reader]: [File | null, FileReader] = getFileAndInitNewReader(checkpoints, event);
+        const fileName: string = file?.name ?? 'No file selected.';
+        setFileName(fileName);     
         if (file) reader.readAsText(file), checkpoints.push('csvHandlingHelper() → ProgressEvent<FileReader> triggered.');
         reader.onload = (readerEvent: ProgressEvent<FileReader>) => {
             checkpoints.push('csvHandlingHelper() → ProgressEvent<FileReader> loaded.');
@@ -208,7 +211,11 @@ export default function HandleCsv() {
 
     return (
         <section className="flex flex-col justify-center items-center gap-24 card">
-            <input onChange={csvHandlingHelper} name='upload_csv' id='upload_csv' type="file" accept=".csv" className="upload-btn"/>
+            <div className='flex gap-4'>
+                <label htmlFor="upload_csv" className='btn-primary'>Upload a CSV</label>
+                <div className='paragraph'>{ fileName }</div>
+                <input onChange={csvHandlingHelper} name='upload_csv' id='upload_csv' type="file" accept=".csv" className='hidden'/>
+            </div>
             { allErrorFlags.map((errorFlag, index) => <div key={index} className='text-warning'>{errorFlag}</div>) }
             <TestLabelsApiReq payload={ payload }/>
         </section>

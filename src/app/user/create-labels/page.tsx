@@ -5,9 +5,7 @@ export default function placeholder() {
 
     return (
         <main className="">
-            <section className='std-padding'>
-                <HandleCsv />
-            </section>
+            <HandleCsv />
         </main>
     )
 }
