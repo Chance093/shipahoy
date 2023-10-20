@@ -33,49 +33,42 @@ export default function ShippingHistoryTable({
   shippingHistory: ShippingHistory;
 }) {
   return (
-    <div className='w-full card overflow-x-scroll'>
-      <table className='border-collapse text-left overflow-x-scroll'>
-        <thead>
-          <tr className='border-b border-purple-200/20'>
-            <th className='p-5'>#</th>
-            <th className='p-5'>Date</th>
-            <th className='p-5'>Size</th>
-            <th className='p-5'>Type</th>
-            <th className='p-5'>Price</th>
-            <th className='p-5'>Files</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {shippingHistory?.map((item) => (
-            <>
-              <tr
-                className='border-b border-purple-200/20 text-xs whitespace-nowrap'
-                key={item.label_group.id}
-              >
-                <td className='p-5' key={item.label_group.id}>
-                  {item.invoice.id}
-                </td>
-                <td className='p-5' key={item.label_group.id}>
-                  {format(item.invoice.createAt!, 'MM-dd-yyyy')}
-                </td>
-                <td className='p-5' key={item.label_group.id}>
-                  {item.label_group.labelCount}
-                </td>
-                <td className='p-5' key={item.label_group.id}>
-                  {item.shipping_service.service}
-                </td>
-                <td className='p-5' key={item.label_group.id}>
-                  ${item.invoice.totalPrice}
-                </td>
-                <td className='p-5' key={item.label_group.id}>
-                  ^
-                </td>
-              </tr>
-            </>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <ul className='w-full card overflow-x-scroll text-left'>
+      <li className='border-b border-purple-200/20 flex justify-between'>
+        <p className='p-5'>#</p>
+        <p className='p-5'>Date</p>
+        <p className='p-5'>Size</p>
+        <p className='p-5'>Type</p>
+        <p className='p-5'>Price</p>
+        <p className='p-5'>Files</p>
+      </li>
+      {shippingHistory?.map((item) => (
+        <>
+          <li
+            className='border-b border-purple-200/20 text-xs flex justify-between'
+            key={item.label_group.id}
+          >
+            <p className='p-5' key={item.label_group.id}>
+              {item.invoice.id}
+            </p>
+            <p className='p-5' key={item.label_group.id}>
+              {format(item.invoice.createAt!, 'MM-dd-yyyy')}
+            </p>
+            <p className='p-5' key={item.label_group.id}>
+              {item.label_group.labelCount}
+            </p>
+            <p className='p-5' key={item.label_group.id}>
+              {item.shipping_service.service}
+            </p>
+            <p className='p-5' key={item.label_group.id}>
+              ${item.invoice.totalPrice}
+            </p>
+            <p className='p-5' key={item.label_group.id}>
+              ^
+            </p>
+          </li>
+        </>
+      ))}
+    </ul>
   );
 }
