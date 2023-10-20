@@ -64,6 +64,13 @@
       "when": 1697756969238,
       "tag": "0008_tearful_jackpot",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1697791731671,
+      "tag": "0009_curly_pestilence",
+      "breakpoints": true
     }
   ]
 }

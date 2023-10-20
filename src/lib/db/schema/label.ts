@@ -14,6 +14,8 @@ import { labelGroup } from './labelGroup';
 export const label = mysqlTable('label', {
   id: serial('id').primaryKey(),
   labelGroupId: int('label_group_id').notNull(),
+  uspsServiceId: int('usps_service_id'),
+  uspsExternalServiceId: int('usps_external_service_id'),
   price: decimal('price', { precision: 4, scale: 2 }).notNull(),
   tracking: varchar('tracking', { length: 24 }),
 });
@@ -42,6 +44,18 @@ export const parcel = mysqlTable('parcel', {
   height: double('height').notNull(),
 });
 
+export const uspsService = mysqlTable('usps_service', {
+  id: serial('id').primaryKey(),
+  service: varchar('usps_service', { length: 24 }).notNull(),
+  price: decimal('price', { precision: 4, scale: 2 }).notNull(),
+});
+
+export const uspsExternalService = mysqlTable('usps_external_service', {
+  id: serial('id').primaryKey(),
+  service: varchar('usps_service', { length: 29 }).notNull(),
+  price: decimal('price', { precision: 4, scale: 2 }).notNull(),
+});
+
 export const labelRelations = relations(label, ({ one, many }) => ({
   labelAddress: many(labelAddress),
   parcel: one(parcel, {
@@ -52,6 +66,14 @@ export const labelRelations = relations(label, ({ one, many }) => ({
     fields: [label.labelGroupId],
     references: [labelGroup.id],
   }),
+  uspsService: one(uspsService, {
+    fields: [label.uspsServiceId],
+    references: [uspsService.id],
+  }),
+  uspsExternalService: one(uspsExternalService, {
+    fields: [label.uspsExternalServiceId],
+    references: [uspsExternalService.id],
+  }),
 }));
 
 export const labelAddressRelations = relations(labelAddress, ({ one }) => ({
@@ -60,3 +82,14 @@ export const labelAddressRelations = relations(labelAddress, ({ one }) => ({
     references: [label.id],
   }),
 }));
+
+export const uspsServiceRelations = relations(uspsService, ({ many }) => ({
+  labelGroup: many(labelGroup),
+}));
+
+export const uspsExternalServiceRelations = relations(
+  uspsExternalService,
+  ({ many }) => ({
+    labelGroup: many(labelGroup),
+  })
+);
