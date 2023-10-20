@@ -1,9 +1,8 @@
 import { db } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 import { getUserAuth } from '@/lib/auth/utils';
-import { labelGroup } from '@/lib/db/schema/labelGroup';
+import { labelGroup, shippingService } from '@/lib/db/schema/labelGroup';
 import { invoice } from '@/lib/db/schema/invoice';
-import { uspsService } from '@/lib/db/schema/labelGroup';
 
 export const getShippingHistory = async () => {
   const { session } = await getUserAuth();
@@ -13,7 +12,10 @@ export const getShippingHistory = async () => {
       .select()
       .from(labelGroup)
       .where(eq(labelGroup.userId, userId))
-      .innerJoin(uspsService, eq(labelGroup.uspsServiceId, uspsService.id))
+      .innerJoin(
+        shippingService,
+        eq(labelGroup.shippingServiceId, shippingService.id)
+      )
       .innerJoin(invoice, eq(labelGroup.invoiceId, invoice.id));
     return shippingHistory;
   }

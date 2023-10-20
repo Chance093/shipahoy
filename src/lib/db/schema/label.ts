@@ -46,13 +46,13 @@ export const parcel = mysqlTable('parcel', {
 
 export const uspsService = mysqlTable('usps_service', {
   id: serial('id').primaryKey(),
-  service: varchar('usps_service', { length: 24 }).notNull(),
+  service: varchar('service', { length: 24 }).notNull(),
   price: decimal('price', { precision: 4, scale: 2 }).notNull(),
 });
 
 export const uspsExternalService = mysqlTable('usps_external_service', {
   id: serial('id').primaryKey(),
-  service: varchar('usps_service', { length: 29 }).notNull(),
+  service: varchar('service', { length: 29 }).notNull(),
   price: decimal('price', { precision: 4, scale: 2 }).notNull(),
 });
 
@@ -84,12 +84,12 @@ export const labelAddressRelations = relations(labelAddress, ({ one }) => ({
 }));
 
 export const uspsServiceRelations = relations(uspsService, ({ many }) => ({
-  labelGroup: many(labelGroup),
+  label: many(label),
 }));
 
 export const uspsExternalServiceRelations = relations(
   uspsExternalService,
   ({ many }) => ({
-    labelGroup: many(labelGroup),
+    label: many(label),
   })
 );
