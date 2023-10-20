@@ -37,3 +37,7 @@
 .upload-btn {
   @apply w-full block file:px-3 file:py-2 file:flex file:items-center file:bg-purple-100 file:border-none file:rounded-full file:font-semibold text-paragraph file:text-btn-primary file:text-sm file:cursor-pointer file:transition-colors file:duration-500 hover:file:bg-purple-200 hover:file:no-underline md:file:text-base lg:file:px-3 lg:file:py-2;
 }
+
+.std-padding {
+  @apply px-5 py-5;
+}
