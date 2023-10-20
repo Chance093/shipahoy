@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "1b8a4698-d93a-4100-8fcd-30451c61cf06",
+  "id": "8ea268db-c6a5-446b-84b1-f279396e3976",
   "prevId": "b253b4dc-2c01-4df7-af9e-6d7dde1e61b9",
   "tables": {
     "balance": {
@@ -183,7 +183,7 @@
           "columns": [
             "user_id"
           ],
-          "isUnique": true
+          "isUnique": false
         }
       },
       "foreignKeys": {},
@@ -257,7 +257,7 @@
           "columns": [
             "user_id"
           ],
-          "isUnique": true
+          "isUnique": false
         }
       },
       "foreignKeys": {},
@@ -562,7 +562,7 @@
           "columns": [
             "user_id"
           ],
-          "isUnique": true
+          "isUnique": false
         }
       },
       "foreignKeys": {},

@@ -6,7 +6,7 @@ import {
   smallint,
   decimal,
   customType,
-  uniqueIndex,
+  index,
 } from 'drizzle-orm/mysql-core';
 import { relations } from 'drizzle-orm';
 import { label } from './label';
@@ -28,7 +28,7 @@ export const labelGroup = mysqlTable(
     labelCount: smallint('label_count').notNull(),
     pdf: customBlob('pdf').notNull(),
   },
-  (table) => ({ userIdx: uniqueIndex('user_idx').on(table.userId) })
+  (table) => ({ userIdx: index('user_idx').on(table.userId) })
 );
 
 export const uspsService = mysqlTable('usps_service', {

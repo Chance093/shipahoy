@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-//  import { getUserAuth } from "../auth/utils";
+import { getUserAuth } from '../auth/utils';
 import { appRouter } from '../server/routers/_app';
 import { loggerLink } from '@trpc/client';
 import { experimental_createTRPCNextAppDirServer as createTRPCNextAppDirServer } from '@trpc/next/app-dir/server';
@@ -12,7 +12,7 @@ import SuperJSON from 'superjson';
 export const api = createTRPCNextAppDirServer<typeof appRouter>({
   config() {
     return {
-      transformer: SuperJSON,
+      // transformer: SuperJSON,
       links: [
         loggerLink({
           enabled: (op) => true,
@@ -21,9 +21,9 @@ export const api = createTRPCNextAppDirServer<typeof appRouter>({
           revalidate: 1,
           router: appRouter,
           async createContext() {
-            //  const { session } = await getUserAuth();
+            const { session } = await getUserAuth();
             return {
-              //  session,
+              session,
               headers: {
                 cookie: cookies().toString(),
                 'x-trpc-source': 'rsc-invoke',

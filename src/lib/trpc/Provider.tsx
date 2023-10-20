@@ -15,7 +15,6 @@ export default function TrpcProvider({
   const [queryClient] = useState(() => new QueryClient({}));
   const [trpcClient] = useState(() =>
     trpc.createClient({
-      transformer: SuperJSON,
       links: [
         httpBatchLink({
           url: getUrl(),

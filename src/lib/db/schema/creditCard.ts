@@ -4,7 +4,7 @@ import {
   varchar,
   char,
   timestamp,
-  uniqueIndex,
+  index,
 } from 'drizzle-orm/mysql-core';
 
 export const creditCard = mysqlTable(
@@ -21,5 +21,5 @@ export const creditCard = mysqlTable(
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),
   },
-  (table) => ({ userIdx: uniqueIndex('user_idx').on(table.userId) })
+  (table) => ({ userIdx: index('user_idx').on(table.userId) })
 );

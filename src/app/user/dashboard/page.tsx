@@ -1,53 +1,27 @@
-'use client';
+import { serverClient } from '@/lib/trpc/server';
+import ShippingHistoryTable from './components/ShippingHistoryTable';
 
-import { useUser, useAuth } from '@clerk/nextjs';
+export default async function Dashboard() {
+  const balance = await serverClient.balance.getBalance();
+  const shippingHistory = await serverClient.labelGroup.getShippingHistory();
 
-export default function Dashboard() {
-  const { user } = useUser();
-  const { userId } = useAuth();
+  let totalLabels = 0;
+  shippingHistory?.map((item) => (totalLabels += item.label_group.labelCount));
+
   return (
     <main className='flex flex-col gap-6 px-5 py-7 '>
-      <p>user id: {userId}</p>
-      <h1 className='heading'>Welcome Back, {user?.firstName}!</h1>
+      <h1 className='heading pl-2'>Welcome Back!</h1>
+      <section className='h-32 flex flex-col justify-between card p-5'>
+        <p className='font-bold'>Labels</p>
+        <p className='text-4xl'>{totalLabels}</p>
+      </section>
       <section className='h-32 flex flex-col justify-between card p-5'>
         <p className='font-bold'>Balance</p>
-        <p className='text-4xl'>$0.00</p>
+        <p className='text-4xl'>$ {balance ? balance[0].amount : '0.00'}</p>
       </section>
       <section className='flex flex-col gap-6'>
-        <h2 className='subheading'>Shipping History</h2>
-
-        <div className='w-full card overflow-x-scroll'>
-          <table className='border-collapse text-left overflow-x-scroll'>
-            <thead>
-              <tr className='border-b border-purple-200/20'>
-                <th className='p-5'>Invoice#</th>
-                <th className='p-5'>Date</th>
-                <th className='p-5'>Size</th>
-                <th className='p-5'>Type</th>
-                <th className='p-5'>Price</th>
-                <th className='p-5'>Files</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className='border-b border-purple-200/20 text-xs'>
-                <td className='p-5'>PG0001</td>
-                <td className='p-5'>10/11/2023</td>
-                <td className='p-5'>200</td>
-                <td className='p-5'>Priority</td>
-                <td className='p-5'>$420.69</td>
-                <td className='p-5'>^</td>
-              </tr>
-              <tr className='border-b border-purple-200/20 text-xs'>
-                <td className='p-5'>PG0001</td>
-                <td className='p-5'>10/11/2023</td>
-                <td className='p-5'>200</td>
-                <td className='p-5'>Priority</td>
-                <td className='p-5'>$420.69</td>
-                <td className='p-5'>^</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <h2 className='subheading pl-2'>Shipping History</h2>
+        <ShippingHistoryTable shippingHistory={shippingHistory} />
       </section>
     </main>
   );
