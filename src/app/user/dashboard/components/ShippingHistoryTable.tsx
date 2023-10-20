@@ -11,10 +11,9 @@ type ShippingHistory =
         labelCount: number;
         pdf: Blob;
       };
-      usps_service: {
+      shipping_service: {
         id: number;
         service: string;
-        price: number;
       };
       invoice: {
         id: number;
@@ -64,7 +63,7 @@ export default function ShippingHistoryTable({
                   {item.label_group.labelCount}
                 </td>
                 <td className='p-5' key={item.label_group.id}>
-                  {item.usps_service.service}
+                  {item.shipping_service.service}
                 </td>
                 <td className='p-5' key={item.label_group.id}>
                   ${item.invoice.totalPrice}
