@@ -11,27 +11,35 @@
 }
 
 .paragraph {
-  @apply mt-4 text-base text-paragraph md:text-lg;
+  @apply text-base text-paragraph md:text-lg;
+}
+
+.field-label {
+  @apply font-semibold text-heading text-lg;
 }
 
 .hyperlink {
-  @apply mt-4 text-base text-hyperlink md:text-lg;
+  @apply text-base text-hyperlink md:text-lg;
 }
 
 .card {
   @apply bg-heading/5 border border-purple-200/20 rounded-md;
 }
 
-.default {
-  @apply bg-purple-200/10 border border-purple-200/20 transition-colors duration-300 hover:bg-purple-200/20 hover:border-purple-200/30 focus:border-purple-200/50;
+.card-heading {
+  @apply py-2 pl-4 bg-purple-200/20 rounded-t-md;
+}
+
+.input {
+  @apply w-full px-2 py-1 bg-heading/5 border border-purple-200/20 rounded-md outline-none transition-colors duration-300 hover:bg-heading/10 hover:border-purple-200/30 focus:border-purple-200/50;
 }
 
 .btn-primary {
-  @apply px-3 py-2 flex items-center bg-purple-100 rounded-full font-semibold text-btn-primary text-sm cursor-pointer transition-colors duration-500 hover:bg-purple-200 hover:no-underline md:text-base lg:px-3 lg:py-2;
+  @apply px-3 py-2 flex items-center bg-purple-100 rounded-full font-semibold text-btn-primary text-sm whitespace-nowrap cursor-pointer transition-colors duration-500 hover:bg-purple-200 hover:no-underline md:text-base lg:px-3 lg:py-2;
 }
 
 .btn-secondary {
-  @apply px-3 py-2 flex items-center bg-white/10 rounded-full font-semibold text-btn-secondary text-sm cursor-pointer transition-colors duration-500 hover:bg-white/20 hover:no-underline md:text-base lg:px-3 lg:py-2;
+  @apply px-3 py-2 flex items-center bg-white/10 rounded-full font-semibold text-btn-secondary text-sm whitespace-nowrap cursor-pointer transition-colors duration-500 hover:bg-white/20 hover:no-underline md:text-base lg:px-3 lg:py-2;
 }
 
 .upload-btn {
@@ -39,5 +47,5 @@
 }
 
 .std-padding {
-  @apply px-5 py-5;
+  @apply px-5 py-7;
 }
