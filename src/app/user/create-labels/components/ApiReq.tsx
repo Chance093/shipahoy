@@ -25,7 +25,7 @@ export default function TestLabelsApiReq({ payload }: Payload ) {
   return (
     <div>
         <button onClick={sendReq} className='btn-primary'>Test request</button>
-        { payload.map((label, index) => <div key={index} className='paragraph'>{JSON.stringify(label)}</div>) }
+        {/* { payload.map((label, index) => <div key={index} className='paragraph'>{JSON.stringify(label)}</div>) } */}
     </div>
   )
 }
