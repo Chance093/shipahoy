@@ -1,5 +1,9 @@
+'use strict';
 import axios from 'axios';
-export default function TestLabelsApiReq() {
+interface Payload {
+    payload: object[]
+}
+export default function TestLabelsApiReq({ payload }: Payload ) {
     async function sendReq() {
         const config = {
             method: 'get',
@@ -21,6 +25,7 @@ export default function TestLabelsApiReq() {
   return (
     <div>
         <button onClick={sendReq} className='btn-primary'>Test request</button>
+        { payload.map((label, index) => <div key={index} className='paragraph'>{JSON.stringify(label)}</div>) }
     </div>
   )
 }
