@@ -1,6 +1,10 @@
+import { api } from '~/trpc/server';
 import ShippingHistoryTable from './components/ShippingHistoryTable';
 
-export default function Dashboard() {
+export default async function Dashboard() {
+  // const hello = await api.balance.hello.query();
+  // console.log(hello);
+
   return (
     <main className='flex flex-col gap-6 px-5 py-7 ml-72 mt-16'>
       <h1 className='heading pl-2'>Welcome Back!</h1>
@@ -11,7 +15,7 @@ export default function Dashboard() {
         </section>
         <section className='h-32 flex flex-col flex-1 justify-between card p-5'>
           <p className='font-bold'>Balance</p>
-          <p className='text-4xl'>$</p>
+          <p className='text-4xl'></p>
         </section>
       </section>
       <section className='flex flex-col gap-6'>
