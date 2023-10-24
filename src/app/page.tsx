@@ -1,6 +1,6 @@
 import SignInButtons from './components/SignInButtons';
 
-export default async function Home() {
+export default function Home() {
   return (
     <main className=''>
       <div className=''>Welcome to home page</div>
