@@ -9,9 +9,21 @@ export const labelGroupRouter = createTRPCRouter({
       with: {
         labelGroup: {
           with: {
-            shippingService: true,
+            shippingService: {
+              columns: {
+                service: true,
+              },
+            },
+          },
+          columns: {
+            id: true,
+            labelCount: true,
           },
         },
+      },
+      columns: {
+        totalPrice: true,
+        createAt: true,
       },
     });
   }),
