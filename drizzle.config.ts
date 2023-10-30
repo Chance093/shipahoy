@@ -9,5 +9,4 @@ export default {
   dbCredentials: {
     connectionString: env.DATABASE_URL,
   },
-  tablesFilter: ['t3-test-clerk_*'],
 } satisfies Config;

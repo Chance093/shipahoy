@@ -60,9 +60,9 @@ export const invoice = mysqlTable(
     id: serial('id').primaryKey(),
     userId: varchar('user_id', { length: 200 }).notNull(),
     balanceId: int('balance_id').notNull(),
+    amount: decimal('amount', { precision: 6, scale: 2 }).notNull(),
+    paymentMethod: varchar('payment_method', { length: 50 }).notNull(),
     paymentStatusId: int('payment_status_id').notNull(),
-    totalPrice: decimal('total_price', { precision: 6, scale: 2 }).notNull(),
-    paymentMethod: varchar('payment_method', { length: 100 }).notNull(),
     createAt: timestamp('created_at').defaultNow(),
   },
   (table) => ({ userIdx: index('user_idx').on(table.userId) })
@@ -78,17 +78,13 @@ export const paymentStatusRelations = relations(paymentStatus, ({ many }) => ({
 }));
 
 export const invoiceRelations = relations(invoice, ({ one }) => ({
-  paymentStatus: one(paymentStatus, {
-    fields: [invoice.paymentStatusId],
-    references: [paymentStatus.id],
-  }),
   balance: one(balance, {
     fields: [invoice.balanceId],
     references: [balance.id],
   }),
-  labelGroup: one(labelGroup, {
-    fields: [invoice.id],
-    references: [labelGroup.invoiceId],
+  paymentStatus: one(paymentStatus, {
+    fields: [invoice.paymentStatusId],
+    references: [paymentStatus.id],
   }),
 }));
 
@@ -129,13 +125,13 @@ export const parcel = mysqlTable('parcel', {
 
 export const uspsService = mysqlTable('usps_service', {
   id: serial('id').primaryKey(),
-  service: varchar('service', { length: 24 }).notNull(),
+  service: varchar('service', { length: 50 }).notNull(),
   price: decimal('price', { precision: 4, scale: 2 }).notNull(),
 });
 
 export const uspsExternalService = mysqlTable('usps_external_service', {
   id: serial('id').primaryKey(),
-  service: varchar('service', { length: 29 }).notNull(),
+  service: varchar('service', { length: 50 }).notNull(),
   price: decimal('price', { precision: 4, scale: 2 }).notNull(),
 });
 
@@ -190,9 +186,9 @@ export const labelGroup = mysqlTable(
   {
     id: serial('id').primaryKey(),
     userId: varchar('user_id', { length: 200 }).notNull(),
-    invoiceId: int('invoice_id').notNull(),
     shippingServiceId: int('shipping_service_id').notNull(),
     labelCount: smallint('label_count').notNull(),
+    totalPrice: decimal('total_price', { precision: 6, scale: 2 }).notNull(),
     pdf: customBlob('pdf').notNull(),
   },
   (table) => ({ userIdx: index('user_idx').on(table.userId) })
@@ -200,7 +196,7 @@ export const labelGroup = mysqlTable(
 
 export const shippingService = mysqlTable('shipping_service', {
   id: serial('id').primaryKey(),
-  service: varchar('service', { length: 24 }).notNull(),
+  service: varchar('service', { length: 50 }).notNull(),
 });
 
 export const shippingServiceRelations = relations(

@@ -1,1 +1,0 @@
-ALTER TABLE `credit_card` ADD `card_alias` varchar(100);
