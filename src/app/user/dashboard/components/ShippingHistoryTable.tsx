@@ -1,37 +1,4 @@
-import { format } from 'date-fns';
-
-type ShippingHistory =
-  | {
-      label_group: {
-        id: number;
-        userId: string;
-        invoiceId: number;
-        uspsServiceId: number | null;
-        uspsExternalServiceId: number | null;
-        labelCount: number;
-        pdf: Blob;
-      };
-      shipping_service: {
-        id: number;
-        service: string;
-      };
-      invoice: {
-        id: number;
-        userId: string;
-        balanceId: number;
-        paymentStatusId: number;
-        totalPrice: number;
-        paymentMethod: string;
-        createAt: number;
-      };
-    }[]
-  | undefined;
-
-export default function ShippingHistoryTable({
-  shippingHistory,
-}: {
-  shippingHistory: ShippingHistory;
-}) {
+export default function ShippingHistoryTable() {
   return (
     <ul className='w-full card overflow-x-scroll text-left'>
       <li className='border-b border-purple-200/20 flex justify-between'>
@@ -42,7 +9,7 @@ export default function ShippingHistoryTable({
         <p className='p-5'>Price</p>
         <p className='p-5'>Files</p>
       </li>
-      {shippingHistory?.map((item) => (
+      {/* {shippingHistory?.map((item) => (
         <>
           <li
             className='border-b border-purple-200/20 text-xs flex justify-between'
@@ -68,7 +35,7 @@ export default function ShippingHistoryTable({
             </p>
           </li>
         </>
-      ))}
+      ))} */}
     </ul>
   );
 }
