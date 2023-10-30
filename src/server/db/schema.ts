@@ -63,7 +63,7 @@ export const invoice = mysqlTable(
     amount: decimal('amount', { precision: 6, scale: 2 }).notNull(),
     paymentMethod: varchar('payment_method', { length: 50 }).notNull(),
     paymentStatusId: int('payment_status_id').notNull(),
-    createAt: timestamp('created_at').defaultNow(),
+    createdAt: timestamp('created_at').defaultNow(),
   },
   (table) => ({ userIdx: index('user_idx').on(table.userId) })
 );
@@ -190,6 +190,7 @@ export const labelGroup = mysqlTable(
     labelCount: smallint('label_count').notNull(),
     totalPrice: decimal('total_price', { precision: 6, scale: 2 }).notNull(),
     pdf: customBlob('pdf').notNull(),
+    createdAt: timestamp('created_at').defaultNow(),
   },
   (table) => ({ userIdx: index('user_idx').on(table.userId) })
 );
