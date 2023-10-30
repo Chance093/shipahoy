@@ -10,7 +10,7 @@ export default async function Dashboard() {
       <section className='flex gap-12'>
         <section className='h-32 flex flex-col flex-1 justify-between card p-5'>
           <p className='font-bold'>Labels</p>
-          <p className='text-4xl'></p>
+          <p className='text-4xl'>{hello ? hello : ''}</p>
         </section>
         <section className='h-32 flex flex-col flex-1 justify-between card p-5'>
           <p className='font-bold'>Balance</p>
