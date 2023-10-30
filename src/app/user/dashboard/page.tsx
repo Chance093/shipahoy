@@ -2,8 +2,7 @@ import { api } from '~/trpc/server';
 import ShippingHistoryTable from './components/ShippingHistoryTable';
 
 export default async function Dashboard() {
-  // const hello = await api.balance.hello.query();
-  // console.log(hello);
+  const hello = await api.balance.hello.query();
 
   return (
     <main className='flex flex-col gap-6 px-5 py-7 ml-72 mt-16'>

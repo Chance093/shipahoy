@@ -3,10 +3,8 @@ import { protectedProcedure, publicProcedure, createTRPCRouter } from '../trpc';
 import { balance } from '~/server/db/schema';
 
 export const balanceRouter = createTRPCRouter({
-  hello: publicProcedure.query(({ ctx }) => {
-    return {
-      greeting: `Hello ${ctx.auth.userId}`,
-    };
+  hello: publicProcedure.query(() => {
+    return 'Hello';
   }),
 
   getAmount: protectedProcedure.query(({ ctx }) => {
