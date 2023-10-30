@@ -1,4 +1,9 @@
-export default function ShippingHistoryTable() {
+import { format } from 'date-fns';
+import { api } from '~/trpc/server';
+
+export default async function ShippingHistoryTable() {
+  const shippingHistory = await api.labelGroup.getShippingHistory.query();
+
   return (
     <ul className='w-full card overflow-x-scroll text-left'>
       <li className='border-b border-purple-200/20 flex justify-between'>
@@ -9,33 +14,21 @@ export default function ShippingHistoryTable() {
         <p className='p-5'>Price</p>
         <p className='p-5'>Files</p>
       </li>
-      {/* {shippingHistory?.map((item) => (
-        <>
-          <li
-            className='border-b border-purple-200/20 text-xs flex justify-between'
-            key={item.label_group.id}
-          >
-            <p className='p-5' key={item.label_group.id}>
-              {item.invoice.id}
-            </p>
-            <p className='p-5' key={item.label_group.id}>
-              {format(item.invoice.createAt!, 'MM-dd-yyyy')}
-            </p>
-            <p className='p-5' key={item.label_group.id}>
-              {item.label_group.labelCount}
-            </p>
-            <p className='p-5' key={item.label_group.id}>
-              {item.shipping_service.service}
-            </p>
-            <p className='p-5' key={item.label_group.id}>
-              ${item.invoice.totalPrice}
-            </p>
-            <p className='p-5' key={item.label_group.id}>
-              ^
-            </p>
-          </li>
-        </>
-      ))} */}
+      {shippingHistory?.map((item) => (
+        <li
+          className='border-b border-purple-200/20 text-xs flex justify-between'
+          key={item.labelGroup.id}
+        >
+          <p className='p-5'>{item.labelGroup.id}</p>
+          <p className='p-5'>
+            {item.createAt ? format(item.createAt, 'MM-dd-yyyy') : ''}
+          </p>
+          <p className='p-5'>{item.labelGroup.labelCount}</p>
+          <p className='p-5'>{item.labelGroup.shippingService.service}</p>
+          <p className='p-5'>${item.totalPrice}</p>
+          <p className='p-5'>^</p>
+        </li>
+      ))}
     </ul>
   );
 }
