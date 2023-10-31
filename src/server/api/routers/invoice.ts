@@ -7,6 +7,7 @@ export const invoiceRouter = createTRPCRouter({
     return ctx.db.query.invoice.findMany({
       where: eq(invoice.userId, ctx.auth.userId),
       columns: {
+        id: true,
         amount: true,
         paymentMethod: true,
         createdAt: true,
