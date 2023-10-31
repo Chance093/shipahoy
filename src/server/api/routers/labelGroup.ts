@@ -1,29 +1,23 @@
 import { eq } from 'drizzle-orm';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { invoice } from '~/server/db/schema';
+import { labelGroup } from '~/server/db/schema';
 
 export const labelGroupRouter = createTRPCRouter({
   getShippingHistory: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.invoice.findMany({
-      where: eq(invoice.userId, ctx.auth.userId),
+    return ctx.db.query.labelGroup.findMany({
+      where: eq(labelGroup.userId, ctx.auth.userId),
+      columns: {
+        id: true,
+        totalPrice: true,
+        labelCount: true,
+        createdAt: true,
+      },
       with: {
-        labelGroup: {
-          with: {
-            shippingService: {
-              columns: {
-                service: true,
-              },
-            },
-          },
+        shippingService: {
           columns: {
-            id: true,
-            labelCount: true,
+            service: true,
           },
         },
-      },
-      columns: {
-        totalPrice: true,
-        createAt: true,
       },
     });
   }),
