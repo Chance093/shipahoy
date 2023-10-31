@@ -5,7 +5,7 @@ export default async function Dashboard() {
   const balance = await api.balance.getAmount.query();
   const shippingHistory = await api.labelGroup.getShippingHistory.query();
   let labelCount = 0;
-  shippingHistory.map((item) => (labelCount += item.labelGroup.labelCount));
+  shippingHistory.map((item) => (labelCount += item.labelCount));
 
   return (
     <main className='flex flex-col gap-6 px-5 py-7 ml-72 mt-16'>

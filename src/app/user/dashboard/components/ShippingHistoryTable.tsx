@@ -17,14 +17,14 @@ export default async function ShippingHistoryTable() {
       {shippingHistory?.map((item) => (
         <li
           className='border-b border-purple-200/20 text-xs flex justify-between'
-          key={item.labelGroup.id}
+          key={item.id}
         >
-          <p className='p-5'>{item.labelGroup.id}</p>
+          <p className='p-5'>{item.id}</p>
           <p className='p-5'>
-            {item.createAt ? format(item.createAt, 'MM-dd-yyyy') : ''}
+            {item.createdAt ? format(item.createdAt, 'MM-dd-yyyy') : ''}
           </p>
-          <p className='p-5'>{item.labelGroup.labelCount}</p>
-          <p className='p-5'>{item.labelGroup.shippingService.service}</p>
+          <p className='p-5'>{item.labelCount}</p>
+          <p className='p-5'>{item.shippingService.service}</p>
           <p className='p-5'>${item.totalPrice}</p>
           <p className='p-5'>^</p>
         </li>
