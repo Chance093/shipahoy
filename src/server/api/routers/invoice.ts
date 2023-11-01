@@ -1,6 +1,7 @@
-import { eq } from 'drizzle-orm';
-import { protectedProcedure, createTRPCRouter } from '../trpc';
-import { invoice } from '~/server/db/schema';
+import { eq } from "drizzle-orm";
+import { protectedProcedure, createTRPCRouter } from "../trpc";
+import { invoice } from "~/server/db/schema";
+import { z } from "zod";
 
 export const invoiceRouter = createTRPCRouter({
   getInvoices: protectedProcedure.query(({ ctx }) => {
@@ -21,4 +22,23 @@ export const invoiceRouter = createTRPCRouter({
       },
     });
   }),
+
+  add: protectedProcedure
+    .input(
+      z.object({
+        balanceId: z.number(),
+        amount: z.string(),
+        paymentMethod: z.string(),
+        paymentStatusId: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.insert(invoice).values({
+        userId: ctx.auth.userId,
+        balanceId: input.balanceId,
+        amount: input.amount,
+        paymentMethod: input.paymentMethod,
+        paymentStatusId: input.paymentStatusId,
+      });
+    }),
 });

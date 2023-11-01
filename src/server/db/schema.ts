@@ -12,21 +12,21 @@ import {
   customType,
   boolean,
   double,
-} from 'drizzle-orm/mysql-core';
+} from "drizzle-orm/mysql-core";
 
-import { relations } from 'drizzle-orm';
+import { relations } from "drizzle-orm";
 
 // Balance
 
 export const balance = mysqlTable(
-  'balance',
+  "balance",
   {
-    id: serial('id').primaryKey(),
-    userId: varchar('user_id', { length: 200 }).notNull(),
-    amount: decimal('amount', { precision: 7, scale: 2 }),
-    updatedAt: timestamp('updated_at').defaultNow(),
+    id: serial("id").primaryKey(),
+    userId: varchar("user_id", { length: 200 }).notNull(),
+    amount: decimal("amount", { precision: 7, scale: 2 }),
+    updatedAt: timestamp("updated_at").defaultNow(),
   },
-  (table) => ({ userIdx: uniqueIndex('user_idx').on(table.userId) })
+  (table) => ({ userIdx: uniqueIndex("user_idx").on(table.userId) }),
 );
 
 export const balanceRelations = relations(balance, ({ many }) => ({
@@ -36,41 +36,41 @@ export const balanceRelations = relations(balance, ({ many }) => ({
 // Credit Card
 
 export const creditCard = mysqlTable(
-  'credit_card',
+  "credit_card",
   {
-    id: serial('id').primaryKey(),
-    userId: varchar('user_id', { length: 200 }).notNull(),
-    name: varchar('name', { length: 100 }).notNull(),
-    cardAlias: varchar('card_alias', { length: 100 }),
-    number: varchar('number', { length: 20 }).notNull(),
-    last4Number: char('last_4_number', { length: 4 }).notNull(),
-    expiration: char('expiration', { length: 5 }).notNull(),
-    securityCode: char('security_code', { length: 3 }).notNull(),
-    createdAt: timestamp('created_at').defaultNow(),
-    updatedAt: timestamp('updated_at').defaultNow(),
+    id: serial("id").primaryKey(),
+    userId: varchar("user_id", { length: 200 }).notNull(),
+    name: varchar("name", { length: 100 }).notNull(),
+    cardAlias: varchar("card_alias", { length: 100 }),
+    number: varchar("number", { length: 20 }).notNull(),
+    last4Number: char("last_4_number", { length: 4 }).notNull(),
+    expiration: char("expiration", { length: 5 }).notNull(),
+    securityCode: char("security_code", { length: 3 }).notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
   },
-  (table) => ({ userIdx: index('user_idx').on(table.userId) })
+  (table) => ({ userIdx: index("user_idx").on(table.userId) }),
 );
 
 // Invoice
 
 export const invoice = mysqlTable(
-  'invoice',
+  "invoice",
   {
-    id: serial('id').primaryKey(),
-    userId: varchar('user_id', { length: 200 }).notNull(),
-    balanceId: int('balance_id').notNull(),
-    amount: decimal('amount', { precision: 6, scale: 2 }).notNull(),
-    paymentMethod: varchar('payment_method', { length: 50 }).notNull(),
-    paymentStatusId: int('payment_status_id').notNull(),
-    createdAt: timestamp('created_at').defaultNow(),
+    id: serial("id").primaryKey(),
+    userId: varchar("user_id", { length: 200 }).notNull(),
+    balanceId: int("balance_id").notNull(),
+    amount: decimal("amount", { precision: 6, scale: 2 }).notNull(),
+    paymentMethod: varchar("payment_method", { length: 50 }).notNull(),
+    paymentStatusId: int("payment_status_id").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
   },
-  (table) => ({ userIdx: index('user_idx').on(table.userId) })
+  (table) => ({ userIdx: index("user_idx").on(table.userId) }),
 );
 
-export const paymentStatus = mysqlTable('payment_status', {
-  id: serial('id').primaryKey(),
-  status: varchar('status', { length: 8 }),
+export const paymentStatus = mysqlTable("payment_status", {
+  id: serial("id").primaryKey(),
+  status: varchar("status", { length: 8 }),
 });
 
 export const paymentStatusRelations = relations(paymentStatus, ({ many }) => ({
@@ -90,49 +90,49 @@ export const invoiceRelations = relations(invoice, ({ one }) => ({
 
 // Label
 
-export const label = mysqlTable('label', {
-  id: serial('id').primaryKey(),
-  labelGroupId: int('label_group_id').notNull(),
-  uspsServiceId: int('usps_service_id'),
-  uspsExternalServiceId: int('usps_external_service_id'),
-  price: decimal('price', { precision: 4, scale: 2 }).notNull(),
-  tracking: varchar('tracking', { length: 24 }),
+export const label = mysqlTable("label", {
+  id: serial("id").primaryKey(),
+  labelGroupId: int("label_group_id").notNull(),
+  uspsServiceId: int("usps_service_id"),
+  uspsExternalServiceId: int("usps_external_service_id"),
+  price: decimal("price", { precision: 4, scale: 2 }).notNull(),
+  tracking: varchar("tracking", { length: 24 }),
 });
 
-export const labelAddress = mysqlTable('label_address', {
-  id: serial('id').primaryKey(),
-  labelId: int('label_id').notNull(),
-  isSender: boolean('is_sender').notNull(),
-  name: varchar('name', { length: 100 }).notNull(),
-  company: varchar('company', { length: 100 }).notNull(),
-  streetOne: varchar('street_one', { length: 100 }).notNull(),
-  streetTwo: varchar('street_two', { length: 100 }).notNull(),
-  city: varchar('city', { length: 100 }).notNull(),
-  state: char('state', { length: 2 }).notNull(),
-  zipCode: varchar('zip_code', { length: 10 }).notNull(),
-  country: varchar('country', { length: 56 }).notNull(),
-  phoneNumber: varchar('phone_number', { length: 15 }).notNull(),
+export const labelAddress = mysqlTable("label_address", {
+  id: serial("id").primaryKey(),
+  labelId: int("label_id").notNull(),
+  isSender: boolean("is_sender").notNull(),
+  name: varchar("name", { length: 100 }).notNull(),
+  company: varchar("company", { length: 100 }).notNull(),
+  streetOne: varchar("street_one", { length: 100 }).notNull(),
+  streetTwo: varchar("street_two", { length: 100 }).notNull(),
+  city: varchar("city", { length: 100 }).notNull(),
+  state: char("state", { length: 2 }).notNull(),
+  zipCode: varchar("zip_code", { length: 10 }).notNull(),
+  country: varchar("country", { length: 56 }).notNull(),
+  phoneNumber: varchar("phone_number", { length: 15 }).notNull(),
 });
 
-export const parcel = mysqlTable('parcel', {
-  id: serial('id').primaryKey(),
-  labelId: int('label_id').notNull(),
-  weight: double('weight').notNull(),
-  length: double('length').notNull(),
-  width: double('width').notNull(),
-  height: double('height').notNull(),
+export const parcel = mysqlTable("parcel", {
+  id: serial("id").primaryKey(),
+  labelId: int("label_id").notNull(),
+  weight: double("weight").notNull(),
+  length: double("length").notNull(),
+  width: double("width").notNull(),
+  height: double("height").notNull(),
 });
 
-export const uspsService = mysqlTable('usps_service', {
-  id: serial('id').primaryKey(),
-  service: varchar('service', { length: 50 }).notNull(),
-  price: decimal('price', { precision: 4, scale: 2 }).notNull(),
+export const uspsService = mysqlTable("usps_service", {
+  id: serial("id").primaryKey(),
+  service: varchar("service", { length: 50 }).notNull(),
+  price: decimal("price", { precision: 4, scale: 2 }).notNull(),
 });
 
-export const uspsExternalService = mysqlTable('usps_external_service', {
-  id: serial('id').primaryKey(),
-  service: varchar('service', { length: 50 }).notNull(),
-  price: decimal('price', { precision: 4, scale: 2 }).notNull(),
+export const uspsExternalService = mysqlTable("usps_external_service", {
+  id: serial("id").primaryKey(),
+  service: varchar("service", { length: 50 }).notNull(),
+  price: decimal("price", { precision: 4, scale: 2 }).notNull(),
 });
 
 export const labelRelations = relations(label, ({ one, many }) => ({
@@ -170,7 +170,7 @@ export const uspsExternalServiceRelations = relations(
   uspsExternalService,
   ({ many }) => ({
     label: many(label),
-  })
+  }),
 );
 
 // Label Group
@@ -182,29 +182,30 @@ const customBlob = customType<{ data: Blob }>({
 });
 
 export const labelGroup = mysqlTable(
-  'label_group',
+  "label_group",
   {
-    id: serial('id').primaryKey(),
-    userId: varchar('user_id', { length: 200 }).notNull(),
-    shippingServiceId: int('shipping_service_id').notNull(),
-    labelCount: smallint('label_count').notNull(),
-    totalPrice: decimal('total_price', { precision: 6, scale: 2 }).notNull(),
-    pdf: customBlob('pdf').notNull(),
-    createdAt: timestamp('created_at').defaultNow(),
+    id: serial("id").primaryKey(),
+    userId: varchar("user_id", { length: 200 }).notNull(),
+    shippingServiceId: int("shipping_service_id").notNull(),
+    labelCount: smallint("label_count").notNull(),
+    // totalPrice: decimal('total_price', { precision: 6, scale: 2 }).notNull(),
+    totalPrice: varchar("total_price", { length: 200 }).notNull(),
+    pdf: customBlob("pdf").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
   },
-  (table) => ({ userIdx: index('user_idx').on(table.userId) })
+  (table) => ({ userIdx: index("user_idx").on(table.userId) }),
 );
 
-export const shippingService = mysqlTable('shipping_service', {
-  id: serial('id').primaryKey(),
-  service: varchar('service', { length: 50 }).notNull(),
+export const shippingService = mysqlTable("shipping_service", {
+  id: serial("id").primaryKey(),
+  service: varchar("service", { length: 50 }).notNull(),
 });
 
 export const shippingServiceRelations = relations(
   shippingService,
   ({ many }) => ({
     labelGroup: many(labelGroup),
-  })
+  }),
 );
 
 export const labelGroupRelations = relations(labelGroup, ({ one, many }) => ({
