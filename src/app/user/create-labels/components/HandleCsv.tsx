@@ -6,6 +6,7 @@ export default function HandleCsv() {
     const [fileName, setFileName] = useState<string>('No file selected.');
     const [allErrorFlags, setAllErrorFlags] = useState<string[]>([]);
     const [payload, setPayload] = useState<object[]>([]);
+    const [showErrorModal, setShowErrorModal] = useState<boolean>(false);
 
     // @subroutine {Procedure} Void -> initialize an array to store error flags
     function createErrorFlags(checkpoints: string[]): string[] {
@@ -33,11 +34,12 @@ export default function HandleCsv() {
 
     // @subroutine {Function} Pure: string -> return the column headers and rows of values from the CSV
     // @argument {string} fileContents: the contents of the CSV
-    function prepCsvContents(checkpoints: string[], fileContents: string): [string[], string[][]] {
+    function prepCsvContents(checkpoints: string[], fileContents: string): [string[], string[][]] | void {
         const rows: string[] = fileContents?.split('\r\n');
         const [columnHeaders, ...rowsOfValues]: string[][] = rows.map(row => row.split(','));
         checkpoints.push('prepCsvContents() → Column headers and rows of values are extracted from CSV.');
-        return [columnHeaders, rowsOfValues];
+        if (columnHeaders && rowsOfValues) return [columnHeaders, rowsOfValues];
+        checkpoints.push('prepCsvContents() → Column headers and rows of values are not extracted from CSV.');
     }
 
     // @subroutine {Function} Pure: string[] -> return the expected column headers, which derive from a CSV template; last checked 14 Oct 2023
@@ -49,7 +51,7 @@ export default function HandleCsv() {
 
     // @subroutine {Function} Pure: string -> return the error flag message for the given error flag type
     // @argument {string} errorFlagType: the type of error flag
-    function getErrorFlagMessage(checkpoints: string[], errorFlagType: string, ...errorFlagDetails: Array<string | number | Map<string, number[]>>): string[] {
+    function getErrorFlagMessage(checkpoints: string[], errorFlagType: string, ...errorFlagDetails: Array<string | number | Map<string, number[]> | undefined>): string[] {
         checkpoints.push(`getErrorFlagMessage() → New error flag: '${errorFlagType}', ${errorFlagDetails}`);
         const errorFlagMessage: string[] = [];
         switch (errorFlagType) {
@@ -98,9 +100,10 @@ export default function HandleCsv() {
         const invalidIndexes: Map<string, number[]> = new Map();
         const regexToIgnoreAddressLine2: RegExp = /Street2|Company/;
         for (let x = 0; x < rowsOfValues.length; ++x) {
-            for (let y = 0; y < rowsOfValues[x].length; ++y) {
-                const value: string = rowsOfValues[x][y];
-                if (regexToIgnoreAddressLine2.test(columnHeaders[y])) continue;
+            if (!rowsOfValues[x]) continue;
+            for (let y = 0; y < rowsOfValues[x]!.length; ++y) {
+                const value = rowsOfValues[x]![y] as string;
+                if (regexToIgnoreAddressLine2.test(columnHeaders[y]!)) continue;
                 if (value.length > 0) continue;
                 const keyName: string = `Row: ${x + 1}`;
                 const columnNumber: number = y + 1;
@@ -145,8 +148,8 @@ export default function HandleCsv() {
         for (const header of columnHeaders) transformedCsvContents.set(header, []);
         for (const row of rowsOfValues) {
             for (let x = 0; x < row.length; ++x) {
-                const header: string = columnHeaders[x];
-                transformedCsvContents.get(header)!.push(row[x]);
+                const header = columnHeaders[x] as string;
+                transformedCsvContents.get(header)!.push(row[x]!);
             }
         }
         checkpoints.push('transformCsvContents() → CSV contents transformed from (x, y) to (y, x).');
@@ -172,7 +175,7 @@ export default function HandleCsv() {
         for (let x = 0; x < payloadSize; ++x) {
             const payloadObject: { [key: string]: string} = {};
             for (const [columnHeader, rowsInColumn] of transformedCsvContents) {
-                payloadObject[columnHeader] = rowsInColumn[x];
+                payloadObject[columnHeader] = rowsInColumn[x] as string;
             }
             payload.push(payloadObject);
         }
@@ -205,29 +208,34 @@ export default function HandleCsv() {
             const payload: object[] = createPayload(checkpoints, transformedCsvContents, payloadSize);
             setAllErrorFlags(errorFlags);
             setPayload(payload)
-            // console.log(checkpoints.join('\n\n'));
+            console.log(checkpoints.join('\n\n'));
         }
     }
 
     return (
-        <section className="std-padding">
-            <div className='flex flex-col card'>
-                <div className='card-heading subheading'>Create a label group</div>
-                <div className='m-4 flex flex-col'>
-                    <div className='flex justify-between items-end py-4 paragraph'><span className='field-label'>Service:</span> USPS Priority 0-70lbs</div>
-                    <div className='flex justify-between items-end py-4 paragraph'><span className='field-label'>Label:</span> e-VS</div>
-                <div className='flex justify-between items-end py-4 field-label'>Upload a valid CSV to create a label group.</div>
-                    <div className='flex justify-center items-baseline gap-4 py-4'>
-                        <label htmlFor="upload_csv" className='btn-primary'>Choose a CSV</label>
-                        <div className='paragraph'>{ fileName }</div>
-                        <input onChange={csvHandlingHelper} id='upload_csv' type="file" accept=".csv" className='hidden'/>
+        <>
+            <section className="std-padding">
+                <div className='flex flex-col card'>
+                    <div className='card-heading subheading'>Create a label group</div>
+                    <div className='m-4 flex flex-col'>
+                        <div className='flex justify-between items-end py-4 paragraph'><span className='field-label'>Service:</span> USPS Priority 0-70lbs</div>
+                        <div className='flex justify-between items-end py-4 paragraph'><span className='field-label'>Label:</span> e-VS</div>
+                    <div className='flex justify-between items-end py-4 field-label'>Upload a valid CSV to create a label group.</div>
+                        <div className='flex justify-center items-baseline gap-4 py-4'>
+                            <label htmlFor="upload_csv" className='btn-primary'>Choose a CSV</label>
+                            <div className='paragraph'>{ fileName }</div>
+                            <input onChange={csvHandlingHelper} id='upload_csv' type="file" accept=".csv" className='hidden'/>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div>
-                { allErrorFlags.map((errorFlag, index) => <div key={index} className='text-warning'>{errorFlag}</div>) }
-            </div>
-            {/* <TestLabelsApiReq payload={ payload }/> */}
-        </section>
+                {/* <TestLabelsApiReq payload={ payload }/> */}
+            </section>
+            { allErrorFlags.length > 0 && (
+            <section className='std-padding'>
+                <div className='card p-4'>
+                    { allErrorFlags.map((errorFlag, index) => <div key={index} className='text-warning'>{errorFlag}</div>) }
+                </div>
+            </section> )}
+        </>
     )
 }
