@@ -1,8 +1,6 @@
+'use strict';
 // @subroutine {Function} Impure: boolean -> validate the column headers and row values then return true if both are vlaid, false otherwise
 // @argument {string[]} columnHeaders: the column headers from the CSV
-
-import { error } from "console";
-
 // @argument {string[][]} rowsOfValues: the rows of values from the CSV
 function useValidation([columnHeaders, rowsOfValues]: [string[], string[][]]): [boolean, string[], string[]] {
     type ErrorFlagDetails = Array<string | number | Map<string, number[]> | undefined>;
