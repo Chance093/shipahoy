@@ -2,7 +2,8 @@
 'use client';
 import { useState } from 'react';
 import TestLabelsApiReq from './ApiReq';
-import useValidation from '~/hooks/useValidation';
+import useValidation from '~/utils/handleValidation';
+import { render } from 'react-dom';
 export default function HandleCsv() {
     const [fileName, setFileName] = useState<string>('No file selected.');
     const [payload, setPayload] = useState<object[]>([]);
@@ -108,6 +109,7 @@ export default function HandleCsv() {
             for (const checkpoint of validationCheckpoints) newCheckpoint(checkpoint);
             if (errorFlags.length) {
                 console.log(checkpoints.join('\n\n'));
+                setRenderableErrorFlags(errorFlags);
                 return userInstructionModal('Your CSV is invalid.', 'Please fix the errors and try again.');
             }  
             const transformedCsvContents: Map<string, string[]> = transformCsvContents(preppedCsvContents);

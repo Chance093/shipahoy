@@ -1,6 +1,4 @@
 'use strict';
-'use client';
-import { useState } from 'react';
 // @subroutine {Function} Impure: boolean -> validate the column headers and row values then return true if both are vlaid, false otherwise
 // @argument {string[]} columnHeaders: the column headers from the CSV
 // @argument {string[][]} rowsOfValues: the rows of values from the CSV
@@ -8,7 +6,7 @@ function useValidation([columnHeaders, rowsOfValues]: [string[], string[][]]): [
     type ErrorFlagDetails = Array<string | number | Map<string, number[]> | undefined>;
     const EXPECTED_COLUMN_HEADERS: string[] = ['FromCountry', 'FromName', 'FromCompany', 'FromPhone', 'FromStreet1', 'FromStreet2', 'FromCity', 'FromZip', 'FromState', 'ToCountry', 'ToName', 'ToCompany', 'ToPhone', 'ToStreet1', 'ToStreet2', 'ToCity', 'ToZip', 'ToState', 'Length', 'Height', 'Width', 'Weight'];
     
-    const [errorFlags, setErrorFlags] = useState<string[]>([]);
+    const errorFlags: string[] = [];
 
     const validationCheckpoints: string[] = [];
     const newValidationCheckpoint = (checkpoint: string) => validationCheckpoints.push(checkpoint);
@@ -46,13 +44,13 @@ function useValidation([columnHeaders, rowsOfValues]: [string[], string[][]]): [
         if (columnHeaders.length !== EXPECTED_COLUMN_HEADERS.length) {
             const errorFlagType: string = 'column header length';
             const errorFlagMessage: string[] = getErrorFlagMessage(errorFlagType);
-            setErrorFlags(prevErrorFlags => [...prevErrorFlags, ...errorFlagMessage]);
+            errorFlags.push(...errorFlagMessage);
         }
         for (let x = 0; x < EXPECTED_COLUMN_HEADERS.length; ++x) {
             if (columnHeaders[x] === EXPECTED_COLUMN_HEADERS[x]) continue;
             const errorFlagType: string = 'column header value';
             const errorFlagMessage: string[] = getErrorFlagMessage(errorFlagType, x + 1, columnHeaders[x], EXPECTED_COLUMN_HEADERS[x]);
-            setErrorFlags(prevErrorFlags => [...prevErrorFlags, ...errorFlagMessage]);
+            errorFlags.push(...errorFlagMessage);
         }
         newValidationCheckpoint(`validateColumnHeaders() → Validation for column headers done, there were ${errorFlags.length} errors flagged`);
     }
@@ -80,7 +78,7 @@ function useValidation([columnHeaders, rowsOfValues]: [string[], string[][]]): [
         if (!invalidIndexes.size) return;
         const errorFlagType: string = 'one or more empty values';
         const errorFlagMessage: string[] = getErrorFlagMessage(errorFlagType, invalidIndexes);
-        setErrorFlags(prevErrorFlags => [...prevErrorFlags, ...errorFlagMessage]);
+        errorFlags.push(...errorFlagMessage);
         newValidationCheckpoint(`validateRowValues() → Validation for row values done, there were ${errorFlags.length} errors flagged`);
     }
 
