@@ -2,7 +2,7 @@
 // @subroutine {Function} Impure: boolean -> validate the column headers and row values then return true if both are vlaid, false otherwise
 // @argument {string[]} columnHeaders: the column headers from the CSV
 // @argument {string[][]} rowsOfValues: the rows of values from the CSV
-function useValidation([columnHeaders, rowsOfValues]: [string[], string[][]]): [boolean, string[], string[]] {
+function useValidation([columnHeaders, rowsOfValues]: [string[], string[][]]): [string[], string[]] {
     type ErrorFlagDetails = Array<string | number | Map<string, number[]> | undefined>;
     const EXPECTED_COLUMN_HEADERS: string[] = ['FromCountry', 'FromName', 'FromCompany', 'FromPhone', 'FromStreet1', 'FromStreet2', 'FromCity', 'FromZip', 'FromState', 'ToCountry', 'ToName', 'ToCompany', 'ToPhone', 'ToStreet1', 'ToStreet2', 'ToCity', 'ToZip', 'ToState', 'Length', 'Height', 'Width', 'Weight'];
 
@@ -39,7 +39,7 @@ function useValidation([columnHeaders, rowsOfValues]: [string[], string[][]]): [
 
     // @subroutine {Function} Impure: boolean -> return true if the user's CSV's column headers are equivalent to the expected column headers, false otherwise
     // @argument {string[]} columnHeaders: the column headers from the user's CSV
-    const validateColumnHeadersAndGetResult = (): boolean => {
+    const validateColumnHeaders = (): boolean => {
         if (columnHeaders.length !== EXPECTED_COLUMN_HEADERS.length) {
             const errorFlagType: string = 'column header length';
             const errorFlagMessage: string[] = getErrorFlagMessage(errorFlagType);
@@ -51,14 +51,14 @@ function useValidation([columnHeaders, rowsOfValues]: [string[], string[][]]): [
             const errorFlagMessage: string[] = getErrorFlagMessage(errorFlagType, x + 1, columnHeaders[x], EXPECTED_COLUMN_HEADERS[x]);
             errorFlags.push(...errorFlagMessage);
         }
-        newValidationCheckpoint(`validateColumnHeadersAndGetResult() → Validation for column headers done, there were ${errorFlags.length} errors flagged`);
+        newValidationCheckpoint(`validateColumnHeaders() → Validation for column headers done, there were ${errorFlags.length} errors flagged`);
         if (errorFlags.length) return false;
         return true;
     }
 
     // @subroutine {Function} Impure: boolean -> return true if all required columns contain row values, false otherwise
     // @argument {string[][]} rowsOfValues: the rows of values from the user's CSV
-    const validateRowValuesAndGetResult = (): boolean => {
+    const validateRowValues = (): boolean => {
         const invalidIndexes: Map<string, number[]> = new Map();
         const regexToIgnoreAddressLine2: RegExp = /Street2|Company/;
         for (let x = 0; x < rowsOfValues.length; ++x) {
@@ -80,16 +80,16 @@ function useValidation([columnHeaders, rowsOfValues]: [string[], string[][]]): [
         const errorFlagType: string = 'one or more empty values';
         const errorFlagMessage: string[] = getErrorFlagMessage(errorFlagType, invalidIndexes);
         errorFlags.push(...errorFlagMessage);
-        newValidationCheckpoint(`validateRowValuesAndGetResult() → Validation for row values done, there were ${errorFlags.length} errors flagged`);
+        newValidationCheckpoint(`validateRowValues() → Validation for row values done, there were ${errorFlags.length} errors flagged`);
         return false
     }
 
-    const columnHeaderValidationResult = validateColumnHeadersAndGetResult();
-    const rowValueValidationResult = validateRowValuesAndGetResult();
+    const areColumnHeadersValid = validateColumnHeaders();
+    const areRowValuesValid = validateRowValues();
 
-    newValidationCheckpoint(`validateCsvContents() → Validation for column headers and row values done. Columns header valid: ${columnHeaderValidationResult} & row values valid: ${rowValueValidationResult}`)
-    if (columnHeaderValidationResult && rowValueValidationResult) return [true, validationCheckpoints, errorFlags];
-    return [false, validationCheckpoints, errorFlags];
+    newValidationCheckpoint(`validateCsvContents() → Validation for column headers and row values done. Columns header valid: ${areColumnHeadersValid} & row values valid: ${areRowValuesValid}`)
+    if (areColumnHeadersValid && areRowValuesValid) return [validationCheckpoints, errorFlags];
+    return [validationCheckpoints, errorFlags];
 }
 
 export default useValidation;

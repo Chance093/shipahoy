@@ -104,9 +104,9 @@ export default function HandleCsv() {
             newCheckpoint('csvHandlingHelper() → ProgressEvent<FileReader> loaded.');
             const fileContents = getFileContents(readerEvent);
             const preppedCsvContents = prepCsvContents(fileContents as string) as [string[], string[][]];
-            const [csvValidationResult, validationCheckpoints, errorFlags]: [boolean, string[], string[]] = useValidation(preppedCsvContents);
+            const [validationCheckpoints, errorFlags]: [string[], string[]] = useValidation(preppedCsvContents);
             for (const checkpoint of validationCheckpoints) newCheckpoint(checkpoint);
-            if (!csvValidationResult) {
+            if (errorFlags.length) {
                 setAllErrorFlags(errorFlags);
                 console.log(checkpoints.join('\n\n'));
                 return userInstructionModal('Your CSV is invalid.', 'Please fix the errors and try again.');
