@@ -1,13 +1,13 @@
 'use strict';
 'use client';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import TestLabelsApiReq from './ApiReq';
 import useValidation from '~/hooks/useValidation';
 export default function HandleCsv() {
     const [fileName, setFileName] = useState<string>('No file selected.');
     const [payload, setPayload] = useState<object[]>([]);
     const [showErrorModal, setShowErrorModal] = useState<boolean>(false);
-    const [allErrorFlags, setAllErrorFlags] = useState<string[]>([]);
+    const [renderableErrorFlags, setRenderableErrorFlags] = useState<string[]>([]);
     const checkpoints: string[] = [];
 
     function newCheckpoint(checkpoint: string): void {
@@ -107,14 +107,13 @@ export default function HandleCsv() {
             const [validationCheckpoints, errorFlags]: [string[], string[]] = useValidation(preppedCsvContents);
             for (const checkpoint of validationCheckpoints) newCheckpoint(checkpoint);
             if (errorFlags.length) {
-                setAllErrorFlags(errorFlags);
                 console.log(checkpoints.join('\n\n'));
                 return userInstructionModal('Your CSV is invalid.', 'Please fix the errors and try again.');
             }  
             const transformedCsvContents: Map<string, string[]> = transformCsvContents(preppedCsvContents);
             const payloadSize: number = getPayloadSize(transformedCsvContents);
             const payload: object[] = createPayload(transformedCsvContents, payloadSize);
-            setAllErrorFlags(errorFlags);
+            setRenderableErrorFlags(errorFlags);
             setPayload(payload)
             console.log(checkpoints.join('\n\n'));
         }
@@ -138,10 +137,10 @@ export default function HandleCsv() {
                 </div>
                 {/* <TestLabelsApiReq payload={ payload }/> */}
             </section>
-            { allErrorFlags.length > 0 && (
+            { renderableErrorFlags.length > 0 && (
             <section className='std-padding'>
                 <div className='card p-4'>
-                    { allErrorFlags.map((errorFlag, index) => <div key={index} className='text-warning'>{errorFlag}</div>) }
+                    { renderableErrorFlags.map((errorFlag, index) => <div key={index} className='text-warning'>{errorFlag}</div>) }
                 </div>
             </section> )}
         </>
