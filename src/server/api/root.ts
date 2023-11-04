@@ -1,8 +1,9 @@
-import { createTRPCRouter } from '~/server/api/trpc';
-import { balanceRouter } from './routers/balance';
-import { labelGroupRouter } from './routers/labelGroup';
-import { pricingRouter } from './routers/pricing';
-import { invoiceRouter } from './routers/invoice';
+import { createTRPCRouter } from "~/server/api/trpc";
+import { balanceRouter } from "./routers/balance";
+import { labelGroupRouter } from "./routers/labelGroup";
+import { pricingRouter } from "./routers/pricing";
+import { invoiceRouter } from "./routers/invoice";
+import { labelRouter } from "./routers/label";
 
 /**
  * This is the primary router for your server.
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   labelGroup: labelGroupRouter,
   pricing: pricingRouter,
   invoice: invoiceRouter,
+  label: labelRouter,
 });
 
 // export type definition of API
