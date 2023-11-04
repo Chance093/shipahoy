@@ -30,9 +30,15 @@ export default function Modal({ title, onClose, onOk, children }: ModalProps) {
     }
 
     const modal: JSX.Element | null = showModal === 'true' ? (
-        <dialog ref={ modalRef }>
+        <dialog ref={ modalRef } className="backdrop:bg-gray-800/50">
             <div>
-                
+                <div>
+                    <h2>{ title }</h2>
+                    <button onClick={ closeModal }>✕</button>
+                </div>
+                <div>
+                    { children }
+                </div>
             </div>
         </dialog>
     ) : null;
