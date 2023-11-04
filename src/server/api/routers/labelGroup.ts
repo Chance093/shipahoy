@@ -1,6 +1,7 @@
-import { eq } from 'drizzle-orm';
-import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { labelGroup } from '~/server/db/schema';
+import { eq } from "drizzle-orm";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { labelGroup } from "~/server/db/schema";
+import { z } from "zod";
 
 export const labelGroupRouter = createTRPCRouter({
   getShippingHistory: protectedProcedure.query(({ ctx }) => {
@@ -21,4 +22,25 @@ export const labelGroupRouter = createTRPCRouter({
       },
     });
   }),
+
+  add: protectedProcedure
+    .input(
+      z.object({
+        shippingServiceId: z.number(),
+        labelCount: z.number(),
+        totalPrice: z.string(),
+        pdf: z.instanceof(File),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const newLabelGroup = await ctx.db.insert(labelGroup).values({
+        userId: ctx.auth.userId,
+        shippingServiceId: input.shippingServiceId,
+        labelCount: input.labelCount,
+        totalPrice: input.totalPrice,
+        pdf: input.pdf,
+      });
+
+      return newLabelGroup.insertId;
+    }),
 });
