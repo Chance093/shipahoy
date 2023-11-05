@@ -1,11 +1,11 @@
 import "~/styles/globals.css";
 import type { Metadata } from "next";
-import { Comfortaa, Poppins } from "next/font/google";
+import { Poppins } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { TRPCReactProvider } from "~/trpc/react";
 import { headers } from "next/headers";
+import { dark } from "@clerk/themes";
 
-const comfortaa = Comfortaa({ subsets: ["latin"] });
 const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500"] });
 
 export const metadata: Metadata = {
@@ -19,7 +19,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        baseTheme: dark,
+        elements: {
+          userButtonPopoverCard: "border-1 border-gray-600/50",
+        },
+      }}
+    >
       <html lang="en">
         <body
           className={`bg-test-primary min-h-screen  ${poppins.className} text-test-white`}
