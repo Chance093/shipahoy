@@ -30,14 +30,16 @@ export default function Modal({ title, onClose, onOk, children }: ModalProps) {
     }
 
     const modal: JSX.Element | null = showModal === 'true' ? (
-        <dialog ref={ modalRef } className="backdrop:bg-gray-800/50">
-            <div>
-                <div>
-                    <h2>{ title }</h2>
-                    <button onClick={ closeModal }>✕</button>
-                </div>
-                <div>
-                    { children }
+        <dialog ref={ modalRef } className="bg-transparent backdrop:bg-gray-800/50 border-none outline-none">
+            <div className="w-72 aspect-square flex justify-center items-center bg-gradient-to-b from-white/20 rounded-lg">
+                <div className="w-[286px] aspect-square flex flex-col bg-[#1a1a1b] rounded-lg before-thing">
+                    <div className="subheading flex justify-between">
+                        <h2 className="mt-4 ml-4">{ title }</h2>
+                        <button onClick={ closeModal } className="mt-4 mr-4 border-none outline-none">✕</button>
+                    </div>
+                    <div className="paragraph mt-4 ml-4">
+                        { children }
+                    </div>
                 </div>
             </div>
         </dialog>
