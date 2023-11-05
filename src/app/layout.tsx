@@ -1,12 +1,12 @@
 import "~/styles/globals.css";
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Sora } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { TRPCReactProvider } from "~/trpc/react";
 import { headers } from "next/headers";
 import { dark } from "@clerk/themes";
 
-const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500"] });
+const sora = Sora({ subsets: ["latin"], weight: ["400", "500"] });
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -29,7 +29,7 @@ export default function RootLayout({
     >
       <html lang="en">
         <body
-          className={`bg-test-primary min-h-screen  ${poppins.className} text-test-white`}
+          className={`bg-test-primary min-h-screen  ${sora.className} text-test-white`}
         >
           <TRPCReactProvider headers={headers()}>{children}</TRPCReactProvider>
         </body>

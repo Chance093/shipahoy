@@ -31,6 +31,7 @@ const links = [
 export default function Sidebar() {
   const pathname = usePathname();
   const { user } = useUser();
+
   return (
     <>
       <nav className="text-test-gray mx-4 flex flex-col gap-1 border-b border-gray-600/50  py-8 text-lg">

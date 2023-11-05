@@ -27,6 +27,13 @@ const config: Config = {
         "test-light-purple": "#c8c2fc",
         "test-white": "#f6f6f6",
         "test-gray": "#a5a5ac",
+        "test-gradient-start": "#242424",
+        "test-gradient-end": "#1a1a1b",
+      },
+      backgroundImage: {
+        "radial-gradient": "radial-gradient(circle at top, #242424 , #1a1a1b)",
+        "linear-gradient":
+          "linear-gradient(0deg, rgba(26,26,26,1) 0%, rgba(40,40,40,1) 100%);",
       },
     },
   },
