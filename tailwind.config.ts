@@ -26,6 +26,7 @@ const config: Config = {
         "test-purple": "#5542f6",
         "test-light-purple": "#c8c2fc",
         "test-white": "#f6f6f6",
+        "test-gray": "#a5a5ac",
       },
     },
   },
