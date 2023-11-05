@@ -8,8 +8,8 @@ export default async function Dashboard() {
   shippingHistory.map((item) => (labelCount += item.labelCount));
 
   return (
-    <main className="ml-72 mt-16 flex flex-col gap-6 px-5 py-7">
-      <h1 className="heading pl-2">Welcome Back!</h1>
+    <main className="ml-72 flex flex-col gap-6 px-5 py-7">
+      <h1 className="pl-2 text-4xl">Welcome Back!</h1>
       <section className="flex gap-12">
         <section className="card flex h-32 flex-1 flex-col justify-between p-5">
           <p className="font-bold">Labels Created</p>
