@@ -131,3 +131,5 @@ function helper() {
   const totalPrice = calculateTotalPrice(listOfLabelWeights, pricing);
   totalPrice;
 }
+
+helper();
