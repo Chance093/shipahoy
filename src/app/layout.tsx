@@ -29,7 +29,7 @@ export default function RootLayout({
     >
       <html lang="en">
         <body
-          className={`bg-test-primary min-h-screen  ${sora.className} text-test-white`}
+          className={`bg-test-primary selection:bg-test-purple min-h-screen ${sora.className} text-test-white`}
         >
           <TRPCReactProvider headers={headers()}>{children}</TRPCReactProvider>
         </body>

@@ -20,10 +20,8 @@ export default async function Dashboard() {
           <p className="text-4xl">$ {balance ? balance.amount : "0.00"}</p>
         </section>
       </section>
-      <section className="bg-radial-gradient flex flex-col gap-2 rounded-lg">
-        <h2 className=" pl-2">Shipping History</h2>
-        <ShippingHistoryTable />
-      </section>
+
+      <ShippingHistoryTable />
     </main>
   );
 }
