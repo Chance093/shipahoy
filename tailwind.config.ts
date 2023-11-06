@@ -20,7 +20,7 @@ const config: Config = {
         heading: '#f3eeff',
         hyperlink: '#9333ea',
         paragraph: '#c3b4fc',
-        warning: '#f87171',
+        warning: '#ef4444',
       },
     },
   },

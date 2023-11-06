@@ -2,8 +2,11 @@
 'use client';
 import { useState } from 'react';
 import TestLabelsApiReq from './ApiReq';
+import Modal from '~/app/components/Modal';
 import useValidation from '~/utils/handleValidation';
+import { redirect } from 'next/navigation';
 import { render } from 'react-dom';
+import { set } from 'date-fns';
 export default function HandleCsv() {
     const [fileName, setFileName] = useState<string>('No file selected.');
     const [payload, setPayload] = useState<object[]>([]);
@@ -95,6 +98,7 @@ export default function HandleCsv() {
     // @subroutine {Procedure && Helper} Void -> from file upload, extract the file and read it as text for now
     // @argument {React.ChangeEvent<HTMLInputElement>} event: the change event triggered from a file upload
     function csvHandlingHelper(event: React.ChangeEvent<HTMLInputElement>): void {
+        setShowErrorModal(false);
         setPayload([]);
         newCheckpoint('csvHandlingHelper() → Checkpoints enabled.');
         const [file, reader]: [File | null, FileReader] = getFileAndInitNewReader(event);
@@ -108,9 +112,10 @@ export default function HandleCsv() {
             const [validationCheckpoints, errorFlags]: [string[], string[]] = useValidation(preppedCsvContents);
             for (const checkpoint of validationCheckpoints) newCheckpoint(checkpoint);
             if (errorFlags.length) {
-                console.log(checkpoints.join('\n\n'));
                 setRenderableErrorFlags(errorFlags);
-                return userInstructionModal('Your CSV is invalid.', 'Please fix the errors and try again.');
+                newCheckpoint('csvHandlingHelper() → Error flags detected, modal will be shown.');
+                setShowErrorModal(true);
+                return;
             }  
             const transformedCsvContents: Map<string, string[]> = transformCsvContents(preppedCsvContents);
             const payloadSize: number = getPayloadSize(transformedCsvContents);
@@ -139,12 +144,11 @@ export default function HandleCsv() {
                 </div>
                 {/* <TestLabelsApiReq payload={ payload }/> */}
             </section>
-            { renderableErrorFlags.length > 0 && (
-            <section className='std-padding'>
-                <div className='card p-4'>
+            <Modal showModal={showErrorModal} title='Your CSV is invalid.' onClose={() => {}}>
+                <div className='flex flex-col'>
                     { renderableErrorFlags.map((errorFlag, index) => <div key={index} className='text-warning'>{errorFlag}</div>) }
                 </div>
-            </section> )}
+            </Modal>
         </>
     )
 }
