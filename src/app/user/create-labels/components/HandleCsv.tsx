@@ -95,6 +95,14 @@ export default function HandleCsv() {
         return payload;
     }
 
+    function getPricing(userPricing: string): void {
+        switch (userPricing) {
+            case 'internal': 
+            case 'external':
+            default:
+        }
+    }
+
     // @subroutine {Procedure && Helper} Void -> from file upload, extract the file and read it as text for now
     // @argument {React.ChangeEvent<HTMLInputElement>} event: the change event triggered from a file upload
     function csvHandlingHelper(event: React.ChangeEvent<HTMLInputElement>): void {
@@ -111,18 +119,23 @@ export default function HandleCsv() {
             const preppedCsvContents = prepCsvContents(fileContents as string) as [string[], string[][]];
             const [validationCheckpoints, errorFlags]: [string[], string[]] = useValidation(preppedCsvContents);
             for (const checkpoint of validationCheckpoints) newCheckpoint(checkpoint);
+
             if (errorFlags.length) {
                 setRenderableErrorFlags(errorFlags);
                 newCheckpoint('csvHandlingHelper() → Error flags detected, modal will be shown.');
                 setShowErrorModal(true);
                 return;
             }  
+
             const transformedCsvContents: Map<string, string[]> = transformCsvContents(preppedCsvContents);
             const payloadSize: number = getPayloadSize(transformedCsvContents);
             const payload: object[] = createPayload(transformedCsvContents, payloadSize);
-            setRenderableErrorFlags(errorFlags);
             setPayload(payload)
-            console.log(checkpoints.join('\n\n'));
+
+            const userPricing: string = 'internal';
+            const pricing = getPricing(userPricing);
+
+            // console.log(checkpoints.join('\n\n'));
         }
     }
 
