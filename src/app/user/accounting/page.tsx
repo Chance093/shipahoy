@@ -12,10 +12,7 @@ export default async function accounting() {
           <p className="text-4xl">$ {balance ? balance.amount : "0.00"}</p>
         </section>
       </section>
-      <section className="flex flex-col gap-6">
-        <h2 className="subheading pl-2">Invoices</h2>
-        <InvoiceTable />
-      </section>
+      <InvoiceTable />
     </main>
   );
 }
