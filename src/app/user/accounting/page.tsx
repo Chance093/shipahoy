@@ -10,8 +10,8 @@ export default async function accounting() {
       <section className="bg-linear-gradient h-48 w-80 rounded-2xl">
         <div className="bg-radial-gradient flex h-[calc(100%-3px)] w-[calc(100%-3px)] translate-x-[1.5px] translate-y-[1.5px] flex-col justify-between rounded-2xl p-5">
           <div className="flex items-center gap-4">
-            <div className="bg-test-gray/10 flex h-10 w-10 items-center justify-center rounded-full">
-              <BanknotesIcon className="text-test-purple w-6" />
+            <div className="bg-custom-gray/10 flex h-10 w-10 items-center justify-center rounded-full">
+              <BanknotesIcon className="text-purple w-6" />
             </div>
             <p className="text-xl">Balance</p>
           </div>

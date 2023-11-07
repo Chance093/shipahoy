@@ -10,7 +10,7 @@ export default async function InvoiceTable() {
         <h2 className="p-2 text-2xl">Invoices</h2>
 
         <table className="w-full text-left">
-          <thead className="text-test-gray ">
+          <thead className="text-custom-gray ">
             <tr className="border-b border-gray-600/50">
               <th className="p-4 pb-6 font-normal">Date</th>
               <th className="p-4 pb-6 font-normal">Amount</th>
