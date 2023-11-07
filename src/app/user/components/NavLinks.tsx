@@ -42,7 +42,7 @@ export default function Sidebar() {
               href={link.href}
               key={link.name}
               className={clsx(
-                "hover:bg-test-purple hover:text-test-white group flex cursor-pointer items-center gap-4 rounded-lg p-3",
+                "hover:bg-test-purple hover:text-test-white group flex cursor-pointer items-center gap-4 rounded-xl p-3",
                 {
                   "bg-test-purple text-test-white": pathname === link.href,
                 },
