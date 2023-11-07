@@ -1,4 +1,7 @@
 'use strict';
+
+import { json } from "stream/consumers";
+
 const res = {
 	"type": "success",
 	"message": "Bulk order created successfully",
@@ -165,3 +168,72 @@ for (const order of orders) {
 	} = order;
 	console.log(fromName, fromStreet, fromStreet2, fromCity, fromZip, fromPhone, toName, toStreet, toStreet2, toCity, toState, toZip, toPhone, weight, price, tracking);
 }
+
+const config = {
+	method: "post",
+	maxBodyLength: Infinity,
+	url: "https://api.weshipsmart.com/api/v2/order/create-bulk-order",
+	headers: {
+		"x-api-key": "838f1031-44d9-4231-94dd-1e8f9e7b5148",
+	},
+};
+
+const data = {
+	labelType: "priority",
+	data: [
+		{
+			FromCountry: "US",
+			FromName: "chance",
+			FromCompany: "",
+			FromPhone: "7024687626",
+			FromStreet1: "1011 avocadodrive",
+			FromStreet2: "",
+			FromCity: "las vegas",
+			FromZip: "89148",
+			FromState: "CA",
+			ToCountry: "US",
+			ToName: "DINH SAM LU",
+			ToCompany: "",
+			ToPhone: "14820971635",
+			ToStreet1: "3165 W TYLER AVE",
+			ToStreet2: "",
+			ToCity: "ANAHEIM",
+			ToZip: "92801",
+			ToState: "CA",
+			Length: "71",
+			Height: "81",
+			Width: "12",
+			Weight: "8",
+		},
+	],
+}
+
+const kajhsdf = { "labelType": "priority",
+"data": [
+		{
+			"FromCountry": "US",
+			"FromName": "chance",
+			"FromCompany": "",
+			"FromPhone": "7024687626",
+			"FromStreet1": "1011 avocadodrive",
+			"FromStreet2": "",
+			"FromCity": "las vegas",
+			"FromZip": "89148",
+			"FromState": "CA",
+			"ToCountry": "US",
+			"ToName": "DINH SAM LU",
+			"ToCompany": "",
+			"ToPhone": "14820971635",
+			"ToStreet1": "3165 W TYLER AVE",
+			"ToStreet2": "",
+			"ToCity": "ANAHEIM",
+			"ToZip": "92801",
+			"ToState": "CA",
+			"Length": "71",
+			"Height": "81",
+			"Width": "12",
+			"Weight": "8"
+		}
+	] 
+}
+

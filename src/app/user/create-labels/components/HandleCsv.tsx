@@ -1,12 +1,9 @@
 'use strict';
 'use client';
 import { useState } from 'react';
-import TestLabelsApiReq from './ApiReq';
+import ApiReq from './ApiReq';
 import Modal from '~/app/components/Modal';
 import useValidation from '~/utils/handleValidation';
-import { redirect } from 'next/navigation';
-import { render } from 'react-dom';
-import { set } from 'date-fns';
 export default function HandleCsv() {
     const [fileName, setFileName] = useState<string>('No file selected.');
     const [payload, setPayload] = useState<object[]>([]);
@@ -84,14 +81,21 @@ export default function HandleCsv() {
     // @argument {Map<string, string[]>} transformedCsvContents: the CSVs contents transformed from (x, y) to (y, x) 
     function createPayload(transformedCsvContents: Map<string, string[]>, payloadSize: number): object[] {
         const payload: object[] = [];
+        const date: string = new Date().toLocaleDateString();
+        const numbers: string[] = ['Weight', 'Height', 'Length', 'Width'];
         for (let x = 0; x < payloadSize; ++x) {
-            const payloadObject: { [key: string]: string} = {};
+            const payloadObject: { [key: string]: string | number} = {};
             for (const [columnHeader, rowsInColumn] of transformedCsvContents) {
+                if (numbers.includes(columnHeader)) {
+                    payloadObject[columnHeader] = +rowsInColumn[x]!;
+                    continue;
+                }
                 payloadObject[columnHeader] = rowsInColumn[x] as string;
             }
+            payloadObject['Date'] = date;
             payload.push(payloadObject);
         }
-        newCheckpoint('createPayload() → Payload created:');
+        newCheckpoint(`createPayload() → Payload created: ${JSON.stringify(payload)}`);
         return payload;
     }
 
@@ -142,7 +146,7 @@ export default function HandleCsv() {
                         </div>
                     </div>
                 </div>
-                {/* <TestLabelsApiReq payload={ payload }/> */}
+                <ApiReq payload={ payload }/>
             </section>
             <Modal showModal={showErrorModal} title='Your CSV is invalid.' onClose={() => {}}>
                 <div className='flex flex-col'>
