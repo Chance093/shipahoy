@@ -34,7 +34,7 @@ export default function Sidebar() {
 
   return (
     <>
-      <nav className="text-test-gray mx-4 flex flex-col gap-1 border-b border-gray-600/50  py-8 text-lg">
+      <nav className="text-custom-gray mx-4 flex flex-col gap-1 border-b border-gray-600/50  py-8 text-lg">
         {links.map((link) => {
           const LinkIcon = link.icon;
           return (
@@ -42,9 +42,9 @@ export default function Sidebar() {
               href={link.href}
               key={link.name}
               className={clsx(
-                "hover:bg-test-purple hover:text-test-white group flex cursor-pointer items-center gap-4 rounded-xl p-3",
+                "hover:bg-purple hover:text-custom-white group flex cursor-pointer items-center gap-4 rounded-xl p-3",
                 {
-                  "bg-test-purple text-test-white": pathname === link.href,
+                  "bg-purple text-custom-white": pathname === link.href,
                 },
               )}
             >
