@@ -1,21 +1,14 @@
-import Link from 'next/link';
+import NavLinks from "./NavLinks";
+import { GlobeAsiaAustraliaIcon } from "@heroicons/react/24/solid";
 
 export default function Sidebar() {
   return (
-    <aside className='h-screen w-72 bg-gradient-start fixed top-0 left-0 border-r border-purple-200/20'>
-      <nav className='m-12 mt-32 text-xl'>
-        <ul className='flex flex-col gap-5'>
-          <li className='cursor-pointer hover:text-purple-800'>
-            <Link href='/user/dashboard'>Dashboard</Link>
-          </li>
-          <li className='cursor-pointer hover:text-purple-800'>
-            <Link href='/user/create-labels'>Create Label</Link>
-          </li>
-          <li className='cursor-pointer hover:text-purple-800'>
-            <Link href='/user/accounting'>Accounting</Link>
-          </li>
-        </ul>
-      </nav>
+    <aside className="fixed left-0 top-0 h-screen w-72 bg-secondary">
+      <h1 className="mx-4 flex items-center gap-2 border-b border-gray-600/50 py-4 text-2xl">
+        <GlobeAsiaAustraliaIcon className="w-12" />
+        Proglo Shipping
+      </h1>
+      <NavLinks />
     </aside>
   );
 }
