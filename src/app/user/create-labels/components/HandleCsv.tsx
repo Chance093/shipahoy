@@ -49,6 +49,7 @@ export default function HandleCsv() {
         newCheckpoint(`userInstructionModal() → ${title}: ${message}`);
         console.log('%s\n%s', title, message);
     }
+
     // @subroutine {Function} Pure: Map<string, string[]> -> return a map such that each key is a column header and each value is an array of values for that column
     // @argument {string[]} columnHeaders: the column headers from the CSV
     // @argument {string[][]} rowsOfValues: the rows of values from the CSV

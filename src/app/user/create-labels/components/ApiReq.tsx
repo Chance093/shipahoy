@@ -42,21 +42,22 @@ export default function ApiReq({ payload }: Payload) {
     const config = {
       method: "post",
       maxBodyLength: Infinity,
-      url: "https://api.weshipsmart.com/api/v2/order/create-bulk-order",
+      // url: "https://api.weshipsmart.com/api/v2/order/create-bulk-order",
       headers: {
         "x-api-key": "838f1031-44d9-4231-94dd-1e8f9e7b5148",
       },
       data: data,
     };
 
-    axios(config)
+    await axios(config)
       .then((response) => {
         console.log(JSON.stringify(response.data));
       })
       .catch((error) => {
-        console.log(`FATAL ERROR: ${error}`);
+        console.log('%cReq failed: %s', 'color: red', error);
       });
-  }
+    }
+
   return (
     <div>
       <button onClick={sendReq} className="btn-primary">
