@@ -31,18 +31,26 @@ interface Payload {
 }
 
 export default function ApiReq({ payload }: Payload) {
-
   const data = {
-    labelType: "priority",
-    data: payload,
+    // labelType: "priority",
+    // data: payload,
   };
 
   async function sendReq() {
+    // const config = {
+    //   method: "post",
+    //   maxBodyLength: Infinity,
+    //   // url: "https://api.weshipsmart.com/api/v2/order/create-bulk-order",
+    //   headers: {
+    //     "x-api-key": "838f1031-44d9-4231-94dd-1e8f9e7b5148",
+    //   },
+    //   data: data,
+    // };
 
     const config = {
-      method: "post",
+      method: "get",
       maxBodyLength: Infinity,
-      // url: "https://api.weshipsmart.com/api/v2/order/create-bulk-order",
+      url: "https://api.weshipsmart.com/api/v2/order/download-bulk-order/ab0140a4-8b4d-4560-9280-43e4cb055a33",
       headers: {
         "x-api-key": "838f1031-44d9-4231-94dd-1e8f9e7b5148",
       },
@@ -51,12 +59,12 @@ export default function ApiReq({ payload }: Payload) {
 
     await axios(config)
       .then((response) => {
-        console.log(JSON.stringify(response.data));
+        console.log(response);
       })
       .catch((error) => {
-        console.log('%cReq failed: %s', 'color: red', error);
+        console.log("%cReq failed: %s", "color: red", error);
       });
-    }
+  }
 
   return (
     <div>
@@ -67,5 +75,3 @@ export default function ApiReq({ payload }: Payload) {
     </div>
   );
 }
-
-
