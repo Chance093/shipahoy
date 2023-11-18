@@ -44,4 +44,3 @@ const { bulkOrder } = response;
 const { csv, pdf, zip } = bulkOrder;
 const { orders } = bulkOrder;
 const parsedOrders = new Map();
-

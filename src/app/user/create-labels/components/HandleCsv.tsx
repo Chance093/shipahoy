@@ -125,8 +125,10 @@ export default function HandleCsv() {
             const transformedCsvContents: Map<string, string[]> = transformCsvContents(preppedCsvContents);
             const payloadSize: number = getPayloadSize(transformedCsvContents);
             const payload: object[] = createPayload(transformedCsvContents, payloadSize);
-            setRenderableErrorFlags(errorFlags);
             setPayload(payload)
+            // [+] QUERY USER'S PRICING MODEL
+            // [+] CALCULATE COST OF LABELS
+            // [+] QUERY USER'S CURRENT BALANCE
             console.log(checkpoints.join('\n\n'));
         }
     }
@@ -143,15 +145,17 @@ export default function HandleCsv() {
                         <div className='flex justify-center items-baseline gap-4 py-4'>
                             <label htmlFor="upload_csv" className='btn-primary'>Choose a CSV</label>
                             <div className='paragraph'>{ fileName }</div>
-                            <input onChange={csvHandlingHelper} id='upload_csv' type="file" accept=".csv" className='hidden'/>
+                            <input onChange={ csvHandlingHelper } id='upload_csv' type="file" accept=".csv" className='hidden'/>
                         </div>
                     </div>
                 </div>
-                <ApiReq payload={ payload }/>
+                {/* [+] IF USER'S BALANCE >= COST OF LABELS, ENABLE API CONTROLS */}
+                <ApiReq payload={ payload }/> {/* [+] RENAME TO API CONTROLS */}
+                {/* [+] IF USER'S BALANCE < COST OF LABELS, THROW ERROR MODAL */}
             </section>
             <Modal showModal={showErrorModal} title='Your CSV is invalid.' onClose={() => {}}>
                 <div className='flex flex-col'>
-                    { renderableErrorFlags.map((errorFlag, index) => <div key={index} className='text-warning'>{errorFlag}</div>) }
+                    { renderableErrorFlags.map((errorFlag, index) => <div key={index} className='text-warning'>{ errorFlag }</div>) }
                 </div>
             </Modal>
         </>
