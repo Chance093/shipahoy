@@ -76,11 +76,11 @@ export default function HandleCsv() {
     string[],
     string[][],
   ]): Map<string, string[]> {
-    const transformedCsvContents: Map<string, string[]> = new Map();
+    const transformedCsvContents = new Map<string, string[]>();
     for (const header of columnHeaders) transformedCsvContents.set(header, []);
     for (const row of rowsOfValues) {
       for (let x = 0; x < row.length; ++x) {
-        const header = columnHeaders[x] as string;
+        const header = columnHeaders[x]!;
         transformedCsvContents.get(header)!.push(row[x]!);
       }
     }
@@ -95,7 +95,7 @@ export default function HandleCsv() {
   function getPayloadSize(
     transformedCsvContents: Map<string, string[]>,
   ): number {
-    let payloadSize: number = 0;
+    let payloadSize = 0;
     for (const [columnHeader, rowsInColumn] of transformedCsvContents) {
       payloadSize = rowsInColumn.length;
       break;
@@ -114,9 +114,9 @@ export default function HandleCsv() {
   ): object[] {
     const payload: object[] = [];
     for (let x = 0; x < payloadSize; ++x) {
-      const payloadObject: { [key: string]: string } = {};
+      const payloadObject: Record<string, string> = {};
       for (const [columnHeader, rowsInColumn] of transformedCsvContents) {
-        payloadObject[columnHeader] = rowsInColumn[x] as string;
+        payloadObject[columnHeader] = rowsInColumn[x]!;
       }
       payload.push(payloadObject);
     }
@@ -172,9 +172,9 @@ export default function HandleCsv() {
 
   return (
     <>
-      <section className="bg-linear-gradient rounded-2xl">
-        <div className="bg-radial-gradient flex h-[calc(100%-3px)] w-[calc(100%-3px)] translate-x-[1.5px] translate-y-[1.5px] flex-col justify-between rounded-2xl p-5">
-          <h2 className="p-2 text-2xl">Upload CSV</h2>
+      <section className="rounded-2xl bg-linear-gradient">
+        <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] translate-x-[1.5px] translate-y-[1.5px] flex-col justify-between rounded-2xl bg-radial-gradient p-5">
+          <h2 className="p-2 text-center text-2xl">Upload CSV</h2>
           <div>
             <p>Service: USPS Priority 0-70lbs</p>
             <p>Label: e-VS</p>
