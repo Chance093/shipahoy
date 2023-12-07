@@ -54,7 +54,7 @@ export default function SingleLabelCreation() {
         </section>
         <section className="rounded-2xl bg-linear-gradient">
           <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] translate-x-[1.5px] translate-y-[1.5px] flex-col justify-between gap-8 rounded-2xl bg-radial-gradient p-5">
-            <h2 className="text-center text-2xl">From Address</h2>
+            <h2 className="text-center text-2xl">Sender Info</h2>
             <div className="flex flex-col gap-2">
               <label htmlFor="sender_name">Name:</label>
               <input
@@ -156,7 +156,7 @@ export default function SingleLabelCreation() {
         </section>
         <section className="rounded-2xl bg-linear-gradient">
           <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] translate-x-[1.5px] translate-y-[1.5px] flex-col justify-between gap-8 rounded-2xl bg-radial-gradient p-5">
-            <h2 className="text-center text-2xl">To Address</h2>
+            <h2 className="text-center text-2xl">Recipient Info</h2>
             <div className="flex flex-col gap-2">
               <label htmlFor="sender_name">Name:</label>
               <input
