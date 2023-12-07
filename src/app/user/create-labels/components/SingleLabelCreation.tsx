@@ -9,43 +9,39 @@ export default function SingleLabelCreation() {
             <p>Service: USPS Priority 0-70lbs</p>
             <p>Label: e-VS</p>
             <section className="flex gap-4">
-              <div className="flex flex-1 gap-2">
-                <div className="flex flex-col gap-8">
-                  <label htmlFor="weight">Weight:</label>
-                  <label htmlFor="length">Length:</label>
-                </div>
-                <div className="flex flex-1 flex-col gap-8">
-                  <input
-                    id="weight"
-                    type="text"
-                    placeholder="lbs"
-                    className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
-                  />
-                  <input
-                    id="length"
-                    type="text"
-                    placeholder="inches"
-                    className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
-                  />
-                </div>
-              </div>
-              <div className="flex flex-1 gap-2">
-                <div className="flex flex-col gap-8">
-                  <label htmlFor="width">Width:</label>
-                  <label htmlFor="height">Height:</label>
-                </div>
-                <div className="flex flex-1 flex-col gap-8">
-                  <input
-                    id="width"
-                    type="text"
-                    placeholder="inches"
-                    className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
-                  />
+              <div className="flex flex-1 flex-col gap-8">
+                <div className="flex flex-1 flex-col gap-2">
+                  <label htmlFor="height">Height (inches):</label>
                   <input
                     id="height"
                     type="text"
-                    placeholder="inches"
-                    className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
+                    className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="weight">Weight (lbs):</label>
+                  <input
+                    id="weight"
+                    type="text"
+                    className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-1 flex-col gap-8">
+                <div className="flex flex-1 flex-col gap-2">
+                  <label htmlFor="length">Length (inches):</label>
+                  <input
+                    id="length"
+                    type="text"
+                    className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="width">Width (inches):</label>
+                  <input
+                    id="width"
+                    type="text"
+                    className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                   />
                 </div>
               </div>
@@ -61,7 +57,7 @@ export default function SingleLabelCreation() {
                 id="sender_name"
                 type="text"
                 placeholder=""
-                className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
+                className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -71,7 +67,7 @@ export default function SingleLabelCreation() {
               <input
                 id="sender_company"
                 type="text"
-                className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
+                className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                 placeholder=""
               />
             </div>
@@ -82,7 +78,7 @@ export default function SingleLabelCreation() {
               <input
                 id="sender_address_line"
                 type="text"
-                className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
+                className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                 placeholder=""
               />
             </div>
@@ -93,7 +89,7 @@ export default function SingleLabelCreation() {
               <input
                 id="sender_address_line_2"
                 type="text"
-                className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
+                className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                 placeholder=""
               />
             </div>
@@ -104,7 +100,7 @@ export default function SingleLabelCreation() {
               <input
                 id="code"
                 type="text"
-                className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
+                className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                 placeholder=""
               />
             </div>
@@ -115,7 +111,7 @@ export default function SingleLabelCreation() {
               <input
                 id="sender_city"
                 type="text"
-                className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
+                className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                 placeholder=""
               />
             </div>
@@ -126,7 +122,7 @@ export default function SingleLabelCreation() {
               <input
                 id="sender_state"
                 type="text"
-                className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
+                className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                 placeholder=""
               />
             </div>
@@ -137,8 +133,9 @@ export default function SingleLabelCreation() {
               <input
                 id="sender_country"
                 type="text"
-                className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
+                className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                 value="United States"
+                readOnly
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -148,7 +145,7 @@ export default function SingleLabelCreation() {
               <input
                 id="sender_phone"
                 type="text"
-                className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
+                className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                 placeholder=""
               />
             </div>
@@ -163,7 +160,7 @@ export default function SingleLabelCreation() {
                 id="sender_name"
                 type="text"
                 placeholder=""
-                className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
+                className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -173,7 +170,7 @@ export default function SingleLabelCreation() {
               <input
                 id="sender_company"
                 type="text"
-                className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
+                className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                 placeholder=""
               />
             </div>
@@ -184,7 +181,7 @@ export default function SingleLabelCreation() {
               <input
                 id="sender_address_line"
                 type="text"
-                className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
+                className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                 placeholder=""
               />
             </div>
@@ -195,7 +192,7 @@ export default function SingleLabelCreation() {
               <input
                 id="sender_address_line_2"
                 type="text"
-                className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
+                className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                 placeholder=""
               />
             </div>
@@ -206,7 +203,7 @@ export default function SingleLabelCreation() {
               <input
                 id="code"
                 type="text"
-                className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
+                className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                 placeholder=""
               />
             </div>
@@ -217,7 +214,7 @@ export default function SingleLabelCreation() {
               <input
                 id="sender_city"
                 type="text"
-                className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
+                className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                 placeholder=""
               />
             </div>
@@ -228,7 +225,7 @@ export default function SingleLabelCreation() {
               <input
                 id="sender_state"
                 type="text"
-                className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
+                className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                 placeholder=""
               />
             </div>
@@ -239,8 +236,9 @@ export default function SingleLabelCreation() {
               <input
                 id="sender_country"
                 type="text"
-                className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
+                className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                 value="United States"
+                readOnly
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -250,7 +248,7 @@ export default function SingleLabelCreation() {
               <input
                 id="sender_phone"
                 type="text"
-                className="rounded-md border-2 border-gray-600/50 bg-black bg-opacity-0 p-2"
+                className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                 placeholder=""
               />
             </div>
