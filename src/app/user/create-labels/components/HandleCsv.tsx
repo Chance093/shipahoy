@@ -1,12 +1,11 @@
-"use strict";
-"use client";
-import { useState } from "react";
-import TestLabelsApiReq from "./ApiReq";
-import Modal from "~/app/components/Modal";
-import useValidation from "~/utils/handleValidation";
-import { redirect } from "next/navigation";
-import { render } from "react-dom";
-import { set } from "date-fns";
+
+'use strict';
+'use client';
+import { useState } from 'react';
+import ApiReq from './ApiReq';
+import Modal from '~/app/components/Modal';
+import useValidation from '~/utils/handleValidation';
+
 export default function HandleCsv() {
   const [fileName, setFileName] = useState<string>("No file selected.");
   const [payload, setPayload] = useState<object[]>([]);
@@ -62,27 +61,30 @@ export default function HandleCsv() {
     );
   }
 
-  // @subroutine {Procedure} Void -> log the instructions for now, the modal needs to be implemented
-  // @argument {string} title: the title describing what the modal is for
-  // @argument {string} message: a message letting the user know what to do
-  function userInstructionModal(title: string, message: string) {
-    newCheckpoint(`userInstructionModal() → ${title}: ${message}`);
-    console.log("%s\n%s", title, message);
-  }
-  // @subroutine {Function} Pure: Map<string, string[]> -> return a map such that each key is a column header and each value is an array of values for that column
-  // @argument {string[]} columnHeaders: the column headers from the CSV
-  // @argument {string[][]} rowsOfValues: the rows of values from the CSV
-  function transformCsvContents([columnHeaders, rowsOfValues]: [
-    string[],
-    string[][],
-  ]): Map<string, string[]> {
-    const transformedCsvContents = new Map<string, string[]>();
-    for (const header of columnHeaders) transformedCsvContents.set(header, []);
-    for (const row of rowsOfValues) {
-      for (let x = 0; x < row.length; ++x) {
-        const header = columnHeaders[x]!;
-        transformedCsvContents.get(header)!.push(row[x]!);
-      }
+
+    // @subroutine {Procedure} Void -> log the instructions for now, the modal needs to be implemented
+    // @argument {string} title: the title describing what the modal is for
+    // @argument {string} message: a message letting the user know what to do
+    function userInstructionModal(title: string, message: string) {
+        newCheckpoint(`userInstructionModal() → ${title}: ${message}`);
+        console.log('%s\n%s', title, message);
+    }
+
+    // @subroutine {Function} Pure: Map<string, string[]> -> return a map such that each key is a column header and each value is an array of values for that column
+    // @argument {string[]} columnHeaders: the column headers from the CSV
+    // @argument {string[][]} rowsOfValues: the rows of values from the CSV
+    function transformCsvContents([columnHeaders, rowsOfValues]: [string[], string[][]]): Map<string, string[]> {
+        const transformedCsvContents: Map<string, string[]> = new Map();
+        for (const header of columnHeaders) transformedCsvContents.set(header, []);
+        for (const row of rowsOfValues) {
+            for (let x = 0; x < row.length; ++x) {
+                const header = columnHeaders[x] as string;
+                transformedCsvContents.get(header)!.push(row[x]!);
+            }
+        }
+        newCheckpoint('transformCsvContents() → CSV contents transformed from (x, y) to (y, x).');
+        return transformedCsvContents;
+
     }
     newCheckpoint(
       "transformCsvContents() → CSV contents transformed from (x, y) to (y, x).",
@@ -106,71 +108,67 @@ export default function HandleCsv() {
     return payloadSize;
   }
 
-  // @subroutine {Function} Pure: Map<string, string[]> -> return an array of objects, each object is a payload for a label
-  // @argument {Map<string, string[]>} transformedCsvContents: the CSVs contents transformed from (x, y) to (y, x)
-  function createPayload(
-    transformedCsvContents: Map<string, string[]>,
-    payloadSize: number,
-  ): object[] {
-    const payload: object[] = [];
-    for (let x = 0; x < payloadSize; ++x) {
-      const payloadObject: Record<string, string> = {};
-      for (const [columnHeader, rowsInColumn] of transformedCsvContents) {
-        payloadObject[columnHeader] = rowsInColumn[x]!;
-      }
-      payload.push(payloadObject);
+
+    // @subroutine {Function} Pure: Map<string, string[]> -> return an array of objects, each object is a payload for a label
+    // @argument {Map<string, string[]>} transformedCsvContents: the CSVs contents transformed from (x, y) to (y, x) 
+    function createPayload(transformedCsvContents: Map<string, string[]>, payloadSize: number): object[] {
+        const payload: object[] = [];
+        const date: string = new Date().toLocaleDateString();
+        const numbers: string[] = ['Weight', 'Height', 'Length', 'Width'];
+        for (let x = 0; x < payloadSize; ++x) {
+            const payloadObject: { [key: string]: string | number} = {};
+            for (const [columnHeader, rowsInColumn] of transformedCsvContents) {
+                if (numbers.includes(columnHeader)) {
+                    payloadObject[columnHeader] = +rowsInColumn[x]!;
+                    continue;
+                }
+                payloadObject[columnHeader] = rowsInColumn[x] as string;
+            }
+            payloadObject['Date'] = date;
+            payload.push(payloadObject);
+        }
+        newCheckpoint(`createPayload() → Payload created: ${JSON.stringify(payload)}`);
+        return payload;
+
     }
     newCheckpoint("createPayload() → Payload created:");
     return payload;
   }
 
-  // @subroutine {Procedure && Helper} Void -> from file upload, extract the file and read it as text for now
-  // @argument {React.ChangeEvent<HTMLInputElement>} event: the change event triggered from a file upload
-  function csvHandlingHelper(event: React.ChangeEvent<HTMLInputElement>): void {
-    setShowErrorModal(false);
-    setPayload([]);
-    newCheckpoint("csvHandlingHelper() → Checkpoints enabled.");
-    const [file, reader]: [File | null, FileReader] =
-      getFileAndInitNewReader(event);
-    const fileName: string = file?.name ?? "No file selected.";
-    setFileName(fileName);
-    if (file)
-      reader.readAsText(file),
-        newCheckpoint(
-          "csvHandlingHelper() → ProgressEvent<FileReader> triggered.",
-        );
-    reader.onload = (readerEvent: ProgressEvent<FileReader>) => {
-      newCheckpoint("csvHandlingHelper() → ProgressEvent<FileReader> loaded.");
-      const fileContents = getFileContents(readerEvent);
-      const preppedCsvContents = prepCsvContents(fileContents as string) as [
-        string[],
-        string[][],
-      ];
-      const [validationCheckpoints, errorFlags]: [string[], string[]] =
-        useValidation(preppedCsvContents);
-      for (const checkpoint of validationCheckpoints) newCheckpoint(checkpoint);
-      if (errorFlags.length) {
-        setRenderableErrorFlags(errorFlags);
-        newCheckpoint(
-          "csvHandlingHelper() → Error flags detected, modal will be shown.",
-        );
-        setShowErrorModal(true);
-        return;
-      }
-      const transformedCsvContents: Map<string, string[]> =
-        transformCsvContents(preppedCsvContents);
-      const payloadSize: number = getPayloadSize(transformedCsvContents);
-      const payload: object[] = createPayload(
-        transformedCsvContents,
-        payloadSize,
-      );
-      setRenderableErrorFlags(errorFlags);
-      setPayload(payload);
-      console.log(checkpoints.join("\n\n"));
-    };
-  }
+    // @subroutine {Procedure && Helper} Void -> from file upload, extract the file and read it as text for now
+    // @argument {React.ChangeEvent<HTMLInputElement>} event: the change event triggered from a file upload
+    function csvHandlingHelper(event: React.ChangeEvent<HTMLInputElement>): void {
+        setShowErrorModal(false);
+        setPayload([]);
+        newCheckpoint('csvHandlingHelper() → Checkpoints enabled.');
+        const [file, reader]: [File | null, FileReader] = getFileAndInitNewReader(event);
+        const fileName: string = file?.name ?? 'No file selected.';
+        setFileName(fileName);     
+        if (file) reader.readAsText(file), newCheckpoint('csvHandlingHelper() → ProgressEvent<FileReader> triggered.');
+        reader.onload = (readerEvent: ProgressEvent<FileReader>) => {
+            newCheckpoint('csvHandlingHelper() → ProgressEvent<FileReader> loaded.');
+            const fileContents = getFileContents(readerEvent);
+            const preppedCsvContents = prepCsvContents(fileContents as string) as [string[], string[][]];
+            const [validationCheckpoints, errorFlags]: [string[], string[]] = useValidation(preppedCsvContents);
+            for (const checkpoint of validationCheckpoints) newCheckpoint(checkpoint);
+            if (errorFlags.length) {
+                setRenderableErrorFlags(errorFlags);
+                newCheckpoint('csvHandlingHelper() → Error flags detected, modal will be shown.');
+                setShowErrorModal(true);
+                return;
+            }  
+            const transformedCsvContents: Map<string, string[]> = transformCsvContents(preppedCsvContents);
+            const payloadSize: number = getPayloadSize(transformedCsvContents);
+            const payload: object[] = createPayload(transformedCsvContents, payloadSize);
+            setPayload(payload)
+            // [+] QUERY USER'S PRICING MODEL
+            // [+] CALCULATE COST OF LABELS
+            // [+] QUERY USER'S CURRENT BALANCE
+            console.log(checkpoints.join('\n\n'));
+        }
+    }
 
-  return (
+    return (
     <>
       <section className="rounded-2xl bg-linear-gradient">
         <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] translate-x-[1.5px] translate-y-[1.5px] flex-col gap-8 rounded-2xl bg-radial-gradient p-5">
