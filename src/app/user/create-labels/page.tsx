@@ -21,10 +21,10 @@ export default function placeholder() {
       <h1 className="pl-2 text-4xl">Create Labels</h1>
 
       <HandleCsv />
-      <section className="my-8 flex items-center gap-8">
-        <div className="flex-1 border-b border-[#b4a3d8]"></div>
-        <div className="h-2 w-2 rounded-full bg-[#b4a3d8]"></div>
-        <div className="flex-1 border-b border-[#b4a3d8]"></div>
+      <section className="my-8 flex items-center justify-center gap-12">
+        <div className="h-2 w-2 rounded-full bg-white/50"></div>
+        <div className="h-2 w-2 rounded-full bg-white/50"></div>
+        <div className="h-2 w-2 rounded-full bg-white/50"></div>
       </section>
       <SingleLabelCreation />
     </main>
