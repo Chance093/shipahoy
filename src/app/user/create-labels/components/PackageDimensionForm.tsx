@@ -20,7 +20,7 @@ export default function PackageDimensionForm() {
             id="label"
             className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
           >
-            <option value="usps priority 0-70lbs">e-VS</option>
+            <option value="e-VS">e-VS</option>
           </select>
         </div>
         <section className="flex gap-4">

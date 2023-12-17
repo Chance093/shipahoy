@@ -1,4 +1,11 @@
-export default function FromAddressForm() {
+import { type FormData } from "~/hooks/useFormValidation";
+
+type HandleChangeFunction = (fields: Partial<FormData>) => void;
+
+export default function FromAddressForm(
+  formData: FormData,
+  handleChange: HandleChangeFunction,
+) {
   return (
     <section className="rounded-2xl bg-linear-gradient">
       <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] translate-x-[1.5px] translate-y-[1.5px] flex-col justify-between gap-8 rounded-2xl bg-radial-gradient p-5">
@@ -9,6 +16,8 @@ export default function FromAddressForm() {
             id="sender_name"
             type="text"
             placeholder=""
+            value={formData.fromName}
+            onChange={(e) => handleChange({ fromName: e.target.value })}
             className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
           />
         </div>
