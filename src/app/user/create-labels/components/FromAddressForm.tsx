@@ -1,6 +1,19 @@
+"use client";
 import { type FormData } from "~/hooks/useFormValidation";
 
 type HandleChangeFunction = (fields: Partial<FormData>) => void;
+
+const formInputs = [
+  { id: 31, label: "Name", property: "fromName" },
+  { id: 32, label: "Company Name", property: "fromCompanyName" },
+  { id: 33, label: "Address", property: "fromAddress" },
+  { id: 34, label: "Address 2", property: "fromAddress2" },
+  { id: 35, label: "Zip Code", property: "fromZipCode" },
+  { id: 36, label: "City", property: "fromCity" },
+  { id: 37, label: "State", property: "fromState" },
+  { id: 38, label: "Country", property: "fromCountry" },
+  { id: 39, label: "Phone Number", property: "fromPhoneNumber" },
+];
 
 export default function FromAddressForm(
   formData: FormData,
@@ -10,106 +23,19 @@ export default function FromAddressForm(
     <section className="rounded-2xl bg-linear-gradient">
       <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] translate-x-[1.5px] translate-y-[1.5px] flex-col justify-between gap-8 rounded-2xl bg-radial-gradient p-5">
         <h2 className="text-center text-2xl">From</h2>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="sender_name">Name:</label>
-          <input
-            id="sender_name"
-            type="text"
-            placeholder=""
-            value={formData.fromName}
-            onChange={(e) => handleChange({ fromName: e.target.value })}
-            className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="sender_company" className="field-label">
-            Company Name:
-          </label>
-          <input
-            id="sender_company"
-            type="text"
-            className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
-            placeholder=""
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="sender_address_line" className="field-label">
-            Address:
-          </label>
-          <input
-            id="sender_address_line"
-            type="text"
-            className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
-            placeholder=""
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="sender_address_line_2" className="field-label">
-            Address 2:
-          </label>
-          <input
-            id="sender_address_line_2"
-            type="text"
-            className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
-            placeholder=""
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="sender_zip code" className="field-label">
-            Zip Code:
-          </label>
-          <input
-            id="code"
-            type="text"
-            className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
-            placeholder=""
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="sender_city" className="field-label">
-            City:
-          </label>
-          <input
-            id="sender_city"
-            type="text"
-            className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
-            placeholder=""
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="sender_state" className="field-label">
-            State:
-          </label>
-          <input
-            id="sender_state"
-            type="text"
-            className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
-            placeholder=""
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="sender_country" className="field-label">
-            Country:
-          </label>
-          <input
-            id="sender_country"
-            type="text"
-            className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
-            value="United States"
-            readOnly
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="sender_phone" className="field-label">
-            Phone Number:
-          </label>
-          <input
-            id="sender_phone"
-            type="text"
-            className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
-            placeholder=""
-          />
-        </div>
+        <h2>{formData.fromName}</h2>
+        {formInputs.map((input) => (
+          <div className="flex flex-col gap-2" key={input.id}>
+            <label htmlFor={input.property}>{input.label}</label>
+            <input
+              type="text"
+              id={input.property}
+              onChange={(e) => handleChange({ fromName: e.target.value })}
+              value={formData.fromName}
+              className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
+            />
+          </div>
+        ))}
       </div>
     </section>
   );

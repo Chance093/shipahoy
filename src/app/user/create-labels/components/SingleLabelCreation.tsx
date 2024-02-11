@@ -1,18 +1,177 @@
-import FromAddressForm from "./FromAddressForm";
-import ToAddressForm from "./ToAddressForm";
-import PackageDimensionForm from "./PackageDimensionForm";
-import { useFormValidation } from "~/hooks/useFormValidation";
+"use client";
+import { useState } from "react";
 
 export default function SingleLabelCreation() {
-  const [formData, handleChange] = useFormValidation();
+  const [formData, setFormData] = useState({
+    fromName: "",
+    fromCompanyName: "",
+    fromAddress: "",
+    fromAddress2: "",
+    fromZipCode: "",
+    fromCity: "",
+    fromState: "",
+    fromCountry: "United States",
+    fromPhoneNumber: "",
+    toName: "",
+    toCompanyName: "",
+    toAddress: "",
+    toAddress2: "",
+    toZipCode: "",
+    toCity: "",
+    toState: "",
+    toCountry: "United States",
+    toPhoneNumber: "",
+    service: "usps priority 0-70lbs",
+    label: "e-VS",
+    height: "24",
+    weight: "23",
+    length: "1",
+    width: "2",
+  });
+
+  const formInputs = [
+    { id: 31, label: "Name", property: "fromName", required: true },
+    { id: 32, label: "Company Name", property: "fromCompanyName", required: true },
+    { id: 33, label: "Address", property: "fromAddress", required: true },
+    { id: 34, label: "Address 2", property: "fromAddress2", required: true },
+    { id: 35, label: "Zip Code", property: "fromZipCode", required: true },
+    { id: 36, label: "City", property: "fromCity", required: true },
+    { id: 37, label: "State", property: "fromState", required: true },
+    { id: 38, label: "Country", property: "fromCountry", required: true },
+    { id: 39, label: "Phone Number", property: "fromPhoneNumber", required: true },
+    { id: 41, label: "Name", property: "toName", required: true },
+    { id: 42, label: "Company Name", property: "toCompanyName", required: true },
+    { id: 43, label: "Address", property: "toAddress", required: true },
+    { id: 44, label: "Address 2", property: "toAddress2", required: true },
+    { id: 45, label: "Zip Code", property: "toZipCode", required: true },
+    { id: 46, label: "City", property: "toCity", required: true },
+    { id: 47, label: "State", property: "toState", required: true },
+    { id: 48, label: "Country", property: "toCountry", required: true },
+    { id: 49, label: "Phone Number", property: "toPhoneNumber", required: true },
+    { id: 51, label: "Height (inches)", property: "height", required: true },
+    { id: 52, label: "Weight (lbs)", property: "weight", required: true },
+    { id: 53, label: "Length (inches)", property: "length", required: true },
+    { id: 54, label: "Width (inches)", property: "width", required: true },
+  ];
+
+  const handleChange = (fields: Partial<typeof formData>) => {
+    setFormData((prev) => {
+      return { ...prev, ...fields };
+    });
+  };
 
   return (
     <>
       <h1 className="pl-2 text-4xl">Create Single Label</h1>
       <form className="grid grid-cols-2 grid-rows-[1fr_auto] gap-6">
-        <FromAddressForm formData={formData} handleChange={handleChange} />
-        <ToAddressForm />
-        <PackageDimensionForm />
+        <section className="rounded-2xl bg-linear-gradient">
+          <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] translate-x-[1.5px] translate-y-[1.5px] flex-col justify-between gap-8 rounded-2xl bg-radial-gradient p-5">
+            <h2 className="text-center text-2xl">From</h2>
+            {formInputs.map((input, idx) => {
+              if (idx > 8) return;
+              return (
+                <div className="flex flex-col gap-2" key={input.id}>
+                  <label htmlFor={input.property}>{input.label}</label>
+                  <input
+                    type="text"
+                    id={input.property}
+                    onChange={(e) => handleChange({ [input.property]: e.target.value })}
+                    value={formData[input.property as keyof typeof formData]}
+                    className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
+                    required={input.required}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </section>
+        <section className="rounded-2xl bg-linear-gradient">
+          <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] translate-x-[1.5px] translate-y-[1.5px] flex-col justify-between gap-8 rounded-2xl bg-radial-gradient p-5">
+            <h2 className="text-center text-2xl">To</h2>
+            {formInputs.map((input, idx) => {
+              if (idx <= 8 || idx >= 18) return;
+              return (
+                <div className="flex flex-col gap-2" key={input.id}>
+                  <label htmlFor={input.property}>{input.label}</label>
+                  <input
+                    type="text"
+                    id={input.property}
+                    onChange={(e) => handleChange({ [input.property]: e.target.value })}
+                    value={formData[input.property as keyof typeof formData]}
+                    className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
+                    required={input.required}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </section>
+        <section className="col-start-1 col-end-3 rounded-2xl bg-linear-gradient">
+          <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] translate-x-[1.5px] translate-y-[1.5px] flex-col justify-between gap-8 rounded-2xl bg-radial-gradient p-5">
+            <h2 className="text-center text-2xl">Package Dimensions</h2>
+            <div className="flex flex-1 flex-col gap-2">
+              <label htmlFor="service">Service:</label>
+              <select name="service" id="service" className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none">
+                <option value="usps priority 0-70lbs">USPS Priority 0-70lbs</option>
+              </select>
+            </div>
+            <div className="flex flex-1 flex-col gap-2">
+              <label htmlFor="label">Label:</label>
+              <select name="label" id="label" className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none">
+                <option value="e-VS">e-VS</option>
+              </select>
+            </div>
+            <section className="flex gap-4">
+              <div className="flex flex-1 flex-col gap-8">
+                <div className="flex flex-1 flex-col gap-2">
+                  <label htmlFor="height">Height (inches):</label>
+                  <input
+                    id="height"
+                    type="text"
+                    className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
+                    value={formData.height}
+                    onChange={(e) => handleChange({ height: e.target.value })}
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="weight">Weight (lbs):</label>
+                  <input
+                    id="weight"
+                    type="text"
+                    className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
+                    value={formData.weight}
+                    onChange={(e) => handleChange({ weight: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="flex flex-1 flex-col gap-8">
+                <div className="flex flex-1 flex-col gap-2">
+                  <label htmlFor="length">Length (inches):</label>
+                  <input
+                    id="length"
+                    type="text"
+                    className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
+                    value={formData.length}
+                    onChange={(e) => handleChange({ length: e.target.value })}
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="width">Width (inches):</label>
+                  <input
+                    id="width"
+                    type="text"
+                    className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
+                    value={formData.width}
+                    onChange={(e) => handleChange({ width: e.target.value })}
+                  />
+                </div>
+              </div>
+            </section>
+            <button disabled={true} className="w-40 cursor-pointer self-end rounded-md bg-purple p-4 text-center opacity-50">
+              Purchase $0
+            </button>
+          </div>
+        </section>
       </form>
     </>
   );

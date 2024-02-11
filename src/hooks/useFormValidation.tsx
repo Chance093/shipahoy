@@ -29,7 +29,7 @@ export type FormData = {
 };
 
 export const initialState = {
-  fromName: "",
+  fromName: "Chance",
   fromCompanyName: "",
   fromAddress: "",
   fromAddress2: "",
@@ -56,7 +56,32 @@ export const initialState = {
 };
 
 export const useFormValidation = () => {
-  const [formData, setFormData] = useState(initialState);
+  const [formData, setFormData] = useState({
+    fromName: "",
+    fromCompanyName: "",
+    fromAddress: "",
+    fromAddress2: "",
+    fromZipCode: "",
+    fromCity: "",
+    fromState: "",
+    fromCountry: "United States",
+    fromPhoneNumber: "",
+    toName: "",
+    toCompanyName: "",
+    toAddress: "",
+    toAddress2: "",
+    toZipCode: "",
+    toCity: "",
+    toState: "",
+    toCountry: "United States",
+    toPhoneNumber: "",
+    service: "usps priority 0-70lbs",
+    label: "e-VS",
+    height: "",
+    weight: "",
+    length: "",
+    width: "",
+  });
 
   const handleChange = (fields: Partial<FormData>) => {
     setFormData((prev) => {
@@ -64,5 +89,5 @@ export const useFormValidation = () => {
     });
   };
 
-  return [formData, handleChange];
+  return { formData, handleChange };
 };
