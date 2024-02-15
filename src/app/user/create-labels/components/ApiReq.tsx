@@ -20,16 +20,14 @@ export default function ApiReq({ payload }: Payload) {
       },
       body: JSON.stringify(data),
     };
-    fetch(url, config)
+    const response = fetch(url, config)
       .then((response) => {
         if (!response.ok) return Promise.reject(response);
-      })
-      .then((response) => {
-        const data = response.json(); // TODO: properly store the response data
-        data.data;
+        return response.json();
       })
       .catch((error) => {
         console.log(`%cReq failed: ${error}`, "color: red");
+        return new Error(`Req failed: ${error}`);
       });
   }
   async function sendReq() {
