@@ -4,7 +4,7 @@
 // @argument {string[][]} rowsOfValues: the rows of values from the CSV
 function useValidation([columnHeaders, rowsOfValues]: [string[], string[][]]): [string[], string[]] {
     type ErrorFlagDetails = Array<string | number | Map<string, number[]> | undefined>;
-    const EXPECTED_COLUMN_HEADERS: string[] = ['FromCountry', 'FromName', 'FromCompany', 'FromPhone', 'FromStreet1', 'FromStreet2', 'FromCity', 'FromZip', 'FromState', 'ToCountry', 'ToName', 'ToCompany', 'ToPhone', 'ToStreet1', 'ToStreet2', 'ToCity', 'ToZip', 'ToState', 'Length', 'Height', 'Width', 'Weight'];
+    const EXPECTED_COLUMN_HEADERS: string[] = ['FromCountry', 'FromName', 'FromCompany', 'FromPhone', 'FromStreet', 'FromStreet2', 'FromCity', 'FromZip', 'FromState', 'ToCountry', 'ToName', 'ToCompany', 'ToPhone', 'ToStreet', 'ToStreet2', 'ToCity', 'ToZip', 'ToState', 'Length', 'Height', 'Width', 'Weight'];
     
     const errorFlags: string[] = [];
 

@@ -7,6 +7,7 @@ import useValidation from "~/utils/handleValidation";
 import { redirect } from "next/navigation";
 import { render } from "react-dom";
 import { set } from "date-fns";
+
 export default function HandleCsv() {
   const [fileName, setFileName] = useState<string>("No file selected.");
   const [payload, setPayload] = useState<object[]>([]);
@@ -76,11 +77,13 @@ export default function HandleCsv() {
     string[],
     string[][],
   ]): Map<string, string[]> {
+
     const transformedCsvContents: Map<string, string[]> = new Map();
     for (const header of columnHeaders) transformedCsvContents.set(header, []);
     for (const row of rowsOfValues) {
       for (let x = 0; x < row.length; ++x) {
         const header = columnHeaders[x] as string;
+
         transformedCsvContents.get(header)!.push(row[x]!);
       }
     }
@@ -95,7 +98,9 @@ export default function HandleCsv() {
   function getPayloadSize(
     transformedCsvContents: Map<string, string[]>,
   ): number {
-    let payloadSize: number = 0;
+
+    let payloadSize = 0;
+
     for (const [columnHeader, rowsInColumn] of transformedCsvContents) {
       payloadSize = rowsInColumn.length;
       break;
@@ -113,6 +118,7 @@ export default function HandleCsv() {
     payloadSize: number,
   ): object[] {
     const payload: object[] = [];
+
     for (let x = 0; x < payloadSize; ++x) {
       const payloadObject: { [key: string]: string } = {};
       for (const [columnHeader, rowsInColumn] of transformedCsvContents) {

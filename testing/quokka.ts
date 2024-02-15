@@ -1,4 +1,5 @@
 'use strict';
+
 interface Pricing {
  upperRelationalConstant: number;
  price: number | null;
@@ -133,3 +134,4 @@ function helper() {
 }
 
 helper();
+

@@ -1,4 +1,5 @@
 "use strict";
+
 interface Payload {
   payload: object[];
 }
