@@ -4,6 +4,10 @@ import { useState } from "react";
 import ApiReq from "./ApiReq";
 import Modal from "~/app/components/Modal";
 import useValidation from "~/utils/handleValidation";
+import { redirect } from "next/navigation";
+import { render } from "react-dom";
+import { set } from "date-fns";
+
 export default function HandleCsv() {
   const [fileName, setFileName] = useState<string>("No file selected.");
   const [payload, setPayload] = useState<object[]>([]);
@@ -12,9 +16,11 @@ export default function HandleCsv() {
     [],
   );
   const checkpoints: string[] = [];
+
   function newCheckpoint(checkpoint: string): void {
     checkpoints.push(checkpoint);
   }
+
   // @subroutine {Function} Pure: [File | null, FileReader] -> extract & return the file from the upload (change) event and a new file reader
   // @argument {React.ChangeEvent<HTMLInputElement>} event: the change event triggered from a file upload
   function getFileAndInitNewReader(
@@ -27,6 +33,7 @@ export default function HandleCsv() {
     );
     return [file, reader];
   }
+
   // @subroutine {Function} Pure: ProgressEvent<FileReader> -> extract & return the file contents from the file reader load event
   // @argument {ProgressEvent<FileReader>} event: the progress event triggered from a file reader load
   function getFileContents(
@@ -37,6 +44,7 @@ export default function HandleCsv() {
     newCheckpoint("getFileContents() → Raw file contents stored.");
     return fileContents;
   }
+
   // @subroutine {Function} Pure: string -> return the column headers and rows of values from the CSV
   // @argument {string} fileContents: the contents of the CSV
   function prepCsvContents(
@@ -54,6 +62,7 @@ export default function HandleCsv() {
       "prepCsvContents() → Column headers and rows of values are not extracted from CSV.",
     );
   }
+
   // @subroutine {Procedure} Void -> log the instructions for now, the modal needs to be implemented
   // @argument {string} title: the title describing what the modal is for
   // @argument {string} message: a message letting the user know what to do
@@ -68,11 +77,13 @@ export default function HandleCsv() {
     string[],
     string[][],
   ]): Map<string, string[]> {
-    const transformedCsvContents = new Map<string, string[]>();
+
+    const transformedCsvContents: Map<string, string[]> = new Map();
     for (const header of columnHeaders) transformedCsvContents.set(header, []);
     for (const row of rowsOfValues) {
       for (let x = 0; x < row.length; ++x) {
-        const header = columnHeaders[x]!;
+        const header = columnHeaders[x] as string;
+
         transformedCsvContents.get(header)!.push(row[x]!);
       }
     }
@@ -81,12 +92,15 @@ export default function HandleCsv() {
     );
     return transformedCsvContents;
   }
+
   // @subroutine {Function} Pure: Map<string, string[]> -> return the size of the payload, which is the number of rows in a column
   // @argument {Map<string, string[]>} transformedCsvContents: the CSVs contents transformed from (x, y) to (y, x)
   function getPayloadSize(
     transformedCsvContents: Map<string, string[]>,
   ): number {
+
     let payloadSize = 0;
+
     for (const [columnHeader, rowsInColumn] of transformedCsvContents) {
       payloadSize = rowsInColumn.length;
       break;
@@ -96,6 +110,7 @@ export default function HandleCsv() {
     );
     return payloadSize;
   }
+
   // @subroutine {Function} Pure: Map<string, string[]> -> return an array of objects, each object is a payload for a label
   // @argument {Map<string, string[]>} transformedCsvContents: the CSVs contents transformed from (x, y) to (y, x)
   function createPayload(
@@ -103,25 +118,26 @@ export default function HandleCsv() {
     payloadSize: number,
   ): object[] {
     const payload: object[] = [];
-    const date: string = new Date().toLocaleDateString();
-    const numbers: string[] = ["Weight", "Height", "Length", "Width"];
+
     for (let x = 0; x < payloadSize; ++x) {
-      const payloadObject: Record<string, string | number> = {};
+      const payloadObject: { [key: string]: string } = {};
       for (const [columnHeader, rowsInColumn] of transformedCsvContents) {
-        if (numbers.includes(columnHeader)) {
-          payloadObject[columnHeader] = +rowsInColumn[x]!;
-          continue;
-        }
-        payloadObject[columnHeader] = rowsInColumn[x]!;
+        payloadObject[columnHeader] = rowsInColumn[x] as string;
       }
-      payloadObject.Date = date;
       payload.push(payloadObject);
     }
-    newCheckpoint(
-      `createPayload() → Payload created: ${JSON.stringify(payload)}`,
-    );
+    newCheckpoint("createPayload() → Payload created:");
     return payload;
   }
+
+  function getPricing(userPricing: string): void {
+    switch (userPricing) {
+      case "internal":
+      case "external":
+      default:
+    }
+  }
+
   // @subroutine {Procedure && Helper} Void -> from file upload, extract the file and read it as text for now
   // @argument {React.ChangeEvent<HTMLInputElement>} event: the change event triggered from a file upload
   function csvHandlingHelper(event: React.ChangeEvent<HTMLInputElement>): void {
@@ -147,6 +163,7 @@ export default function HandleCsv() {
       const [validationCheckpoints, errorFlags]: [string[], string[]] =
         useValidation(preppedCsvContents);
       for (const checkpoint of validationCheckpoints) newCheckpoint(checkpoint);
+
       if (errorFlags.length) {
         setRenderableErrorFlags(errorFlags);
         newCheckpoint(
@@ -155,6 +172,7 @@ export default function HandleCsv() {
         setShowErrorModal(true);
         return;
       }
+
       const transformedCsvContents: Map<string, string[]> =
         transformCsvContents(preppedCsvContents);
       const payloadSize: number = getPayloadSize(transformedCsvContents);
@@ -163,64 +181,47 @@ export default function HandleCsv() {
         payloadSize,
       );
       setPayload(payload);
-      // [+] QUERY USER'S PRICING MODEL
-      // [+] CALCULATE COST OF LABELS
-      // [+] QUERY USER'S CURRENT BALANCE
+
+      const userPricing: string = "internal";
+      const pricing = getPricing(userPricing);
+
       console.log(checkpoints.join("\n\n"));
+      console.log(payload);
     };
   }
 
   return (
     <>
-      <section className="rounded-2xl bg-linear-gradient">
-        <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] translate-x-[1.5px] translate-y-[1.5px] flex-col gap-8 rounded-2xl bg-radial-gradient p-5">
-          <h2 className="text-center text-2xl">Upload CSV</h2>
-          <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="service">Service:</label>
-            <select
-              name="service"
-              id="service"
-              className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
-            >
-              <option value="usps priority 0-70lbs">
-                USPS Priority 0-70lbs
-              </option>
-            </select>
-          </div>
-          <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="label">Label:</label>
-            <select
-              name="label"
-              id="label"
-              className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
-            >
-              <option value="usps priority 0-70lbs">e-VS</option>
-            </select>
-          </div>
-
-          <div className="flex justify-between">
-            <label
-              htmlFor="upload_csv"
-              className="w-40 cursor-pointer items-start rounded-md bg-[#b4a3d8] p-4 text-center text-black"
-            >
-              Choose a CSV
-            </label>
-            <input
-              onChange={csvHandlingHelper}
-              id="upload_csv"
-              type="file"
-              accept=".csv"
-              className="hidden"
-            />
-            <button
-              disabled={true}
-              className="w-40 cursor-pointer items-start rounded-md bg-purple p-4 text-center opacity-50"
-            >
-              Purchase $0
-            </button>
+      <section className="std-padding">
+        <div className="card flex flex-col">
+          <div className="card-heading subheading">Create a label group</div>
+          <div className="m-4 flex flex-col">
+            <div className="paragraph flex items-end justify-between py-4">
+              <span className="field-label">Service:</span> USPS Priority
+              0-70lbs
+            </div>
+            <div className="paragraph flex items-end justify-between py-4">
+              <span className="field-label">Label:</span> e-VS
+            </div>
+            <div className="field-label flex items-end justify-between py-4">
+              Upload a valid CSV to create a label group.
+            </div>
+            <div className="flex items-baseline justify-center gap-4 py-4">
+              <label htmlFor="upload_csv" className="btn-primary">
+                Choose a CSV
+              </label>
+              <div className="paragraph">{fileName}</div>
+              <input
+                onChange={csvHandlingHelper}
+                id="upload_csv"
+                type="file"
+                accept=".csv"
+                className="hidden"
+              />
+            </div>
           </div>
         </div>
-        {/* <TestLabelsApiReq payload={ payload }/> */}
+        <ApiReq payload={payload} />
       </section>
       <Modal
         showModal={showErrorModal}

@@ -1,46 +1,137 @@
 'use strict';
 
-const response = {
-	"type": "success",
-	"message": "Bulk order created successfully",
-	"bulkOrder": {
-		"_id": "654dd08a6ddd8099c17b409f",
-		"user": "6511c995eac45b5e35c1d6a7",
-		"orders": [
-			{
-				"_id": "654dd08a6ddd8099c17b409d",
-				"uuid": "fa563501-b3cc-4c6b-9973-1189883e43a2",
-				"user": "6511c995eac45b5e35c1d6a7",
-				"isApi": false,
-				"labelType": {
-					"_id": "65118b89f10c0c341a3d59c4",
-					"name": "USPS Priority (0-70lb)",
-					"uid": "priority"
-				},
-				"price": 4.75,
-				"status": "paid",
-				"pdf": "./labels/64ecefcc3dd8e9c254f4ef58/92055901735907417916800475.pdf",
-				"tracking": "92055901735907417916800475",
-				"tracking_details": [],
-				"createdAt": "2023-11-10T06:41:14.709Z",
-				"updatedAt": "2023-11-10T06:41:14.709Z",
-				"__v": 0
-			}
-		],
-		"labelType": "65118b89f10c0c341a3d59c4",
-		"total": 4.75,
-		"status": "pending",
-		"uuid": "ab0140a4-8b4d-4560-9280-43e4cb055a33",
-		"csv": "./labels/64ecefcc3dd8e9c254f4ef58/ab0140a4-8b4d-4560-9280-43e4cb055a33.csv",
-		"pdf": "./labels/64ecefcc3dd8e9c254f4ef58/ab0140a4-8b4d-4560-9280-43e4cb055a33.pdf",
-		"zip": "./labels/9c13956b-30dc-46fa-9c04-1e456efba393.zip",
-		"createdAt": "2023-11-10T06:41:14.716Z",
-		"updatedAt": "2023-11-10T06:41:14.716Z",
-		"__v": 0
-	}
+interface Pricing {
+ upperRelationalConstant: number;
+ price: number | null;
 }
 
-const { bulkOrder } = response;
-const { csv, pdf, zip } = bulkOrder;
-const { orders } = bulkOrder;
-const parsedOrders = new Map();
+function getPricing(userPricing: string): Pricing[] {
+  switch (userPricing) {
+    case 'internal':
+      return [
+        { upperRelationalConstant: 1, price: null },
+        { upperRelationalConstant: 8, price: 5.5 },
+        { upperRelationalConstant: 15, price: 11 },
+        { upperRelationalConstant: 25, price: 11.5 },
+        { upperRelationalConstant: 35, price: 12 },
+        { upperRelationalConstant: 45, price: 12.5 },
+        { upperRelationalConstant: 55, price: 12.5 },
+        { upperRelationalConstant: 65, price: null },
+        { upperRelationalConstant: 70, price: 12.5 }
+      ];
+    case 'external':
+      return [
+        { upperRelationalConstant: 1, price: 6 },
+        { upperRelationalConstant: 8, price: 7 },
+        { upperRelationalConstant: 15, price: 12  },
+        { upperRelationalConstant: 25, price: 14  },
+        { upperRelationalConstant: 35, price: 16  },
+        { upperRelationalConstant: 45, price: 18  },
+        { upperRelationalConstant: 55, price: 20  },
+        { upperRelationalConstant: 65, price: 22  },
+        { upperRelationalConstant: 70, price: 24  }
+      ];
+    default:
+      return [
+        { upperRelationalConstant: 1, price: 6 },
+        { upperRelationalConstant: 8, price: 7 },
+        { upperRelationalConstant: 15, price: 12  },
+        { upperRelationalConstant: 25, price: 14  },
+        { upperRelationalConstant: 35, price: 16  },
+        { upperRelationalConstant: 45, price: 18  },
+        { upperRelationalConstant: 55, price: 20  },
+        { upperRelationalConstant: 65, price: 22  },
+        { upperRelationalConstant: 70, price: 24  }
+      ];
+  }
+}
+
+function getlistOfLabelWeights(payload: any): number[] {
+  const listOfLabelWeights: number[] = [];
+  for (const label of payload) listOfLabelWeights.push(label.weight);
+  return listOfLabelWeights;
+}
+
+function calculateTotalPrice(listOfLabelWeights: number[], pricing: Pricing[]): number {
+  let totalPrice = 0;
+
+  for (const weight of listOfLabelWeights) {
+    const weightGroup = pricing.find((group) => weight <= group.upperRelationalConstant);
+
+    if (weightGroup && weightGroup.price) {
+      totalPrice += weightGroup.price;
+    }
+  }
+
+  return totalPrice;
+}
+
+function helper() {
+  const payload = [
+    {
+      weight: .5,
+    },
+    {
+      weight: 7,
+    },
+    {
+      weight: 37,
+    },
+    {
+      weight: 43,
+    },
+    {
+      weight: 22,
+    },
+    {
+      weight: 8,
+    },
+    {
+      weight: 19,
+    },
+    {
+      weight: 55,
+    },
+    {
+      weight: 62,
+    },
+    {
+      weight: 64,
+    },
+    {
+      weight: 68,
+    },
+    {
+      weight: 52,
+    },
+    {
+      weight: .8,
+    },
+    {
+      weight: 2,
+    },
+    {
+      weight: 31,
+    },
+    {
+      weight: 12,
+    },
+    {
+      weight: 10,
+    },
+    {
+      weight: 48,
+    },
+    {
+      weight: 23,
+    },
+  ];
+  const listOfLabelWeights: number[] = getlistOfLabelWeights(payload);
+  const clientCategory = 'internal';
+  const pricing: Pricing[] = getPricing(clientCategory);
+  const totalPrice = calculateTotalPrice(listOfLabelWeights, pricing);
+  totalPrice;
+}
+
+helper();
+
