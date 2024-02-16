@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { type FormEvent, useState } from "react";
+import { api } from "~/trpc/react";
 
 export default function SingleLabelCreation() {
   const [formData, setFormData] = useState({
@@ -23,11 +24,12 @@ export default function SingleLabelCreation() {
     toPhoneNumber: "",
     service: "usps priority 0-70lbs",
     label: "e-VS",
-    height: "24",
-    weight: "23",
-    length: "1",
-    width: "2",
+    height: "",
+    weight: "",
+    length: "",
+    width: "",
   });
+  const [price, setPrice] = useState("0");
 
   const formInputs = [
     { id: 31, label: "Name", property: "fromName", required: true },
@@ -60,10 +62,104 @@ export default function SingleLabelCreation() {
     });
   };
 
+  const updateWeight = (value: string) => {
+    setFormData((prev) => {
+      return { ...prev, weight: value };
+    });
+    switch (true) {
+      case 0 < parseInt(value) && parseInt(value) <= 7.99:
+        setPrice("5.5");
+        break;
+      case 8 <= parseInt(value) && parseInt(value) <= 14.99:
+        setPrice("11.0");
+        break;
+      case 15 <= parseInt(value) && parseInt(value) <= 24.99:
+        setPrice("11.5");
+        break;
+      case 25 <= parseInt(value) && parseInt(value) <= 34.99:
+        setPrice("12.0");
+        break;
+      case 35 <= parseInt(value) && parseInt(value) <= 44.99:
+        setPrice("12.5");
+        break;
+      case 45 <= parseInt(value) && parseInt(value) <= 54.99:
+        setPrice("12.5");
+        break;
+      case 55 <= parseInt(value) && parseInt(value) <= 70.0:
+        setPrice("12.5");
+        break;
+      default:
+        setPrice("0");
+    }
+  };
+
+  const createLabelGroup = api.label.createLabel.useMutation({
+    onSuccess: () => {
+      setPrice("0");
+      setFormData({
+        fromName: "",
+        fromCompanyName: "",
+        fromAddress: "",
+        fromAddress2: "",
+        fromZipCode: "",
+        fromCity: "",
+        fromState: "",
+        fromCountry: "United States",
+        fromPhoneNumber: "",
+        toName: "",
+        toCompanyName: "",
+        toAddress: "",
+        toAddress2: "",
+        toZipCode: "",
+        toCity: "",
+        toState: "",
+        toCountry: "United States",
+        toPhoneNumber: "",
+        service: "usps priority 0-70lbs",
+        label: "e-VS",
+        height: "",
+        weight: "",
+        length: "",
+        width: "",
+      });
+    },
+  });
+
+  const onFormSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    console.log("Form submit");
+    createLabelGroup.mutate({
+      fromName: formData.fromName,
+      fromCompanyName: formData.fromCompanyName,
+      fromAddress: formData.fromAddress,
+      fromAddress2: formData.fromAddress2,
+      fromZipCode: formData.fromZipCode,
+      fromCity: formData.fromCity,
+      fromState: formData.fromState,
+      fromCountry: formData.fromCountry,
+      fromPhoneNumber: formData.fromPhoneNumber,
+      toName: formData.toName,
+      toCompanyName: formData.toCompanyName,
+      toAddress: formData.toAddress,
+      toAddress2: formData.toAddress2,
+      toZipCode: formData.toZipCode,
+      toCity: formData.toCity,
+      toState: formData.toState,
+      toCountry: formData.toCountry,
+      toPhoneNumber: formData.toPhoneNumber,
+      height: parseInt(formData.height),
+      weight: parseInt(formData.weight),
+      length: parseInt(formData.length),
+      width: parseInt(formData.width),
+      price: price,
+      pdf: "alksdjflasjkdf",
+    });
+  };
+
   return (
     <>
       <h1 className="pl-2 text-4xl">Create Single Label</h1>
-      <form className="grid grid-cols-2 grid-rows-[1fr_auto] gap-6">
+      <form onSubmit={(e) => onFormSubmit(e)} className="grid grid-cols-2 grid-rows-[1fr_auto] gap-6">
         <section className="rounded-2xl bg-linear-gradient">
           <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] translate-x-[1.5px] translate-y-[1.5px] flex-col justify-between gap-8 rounded-2xl bg-radial-gradient p-5">
             <h2 className="text-center text-2xl">From</h2>
@@ -127,7 +223,7 @@ export default function SingleLabelCreation() {
                   <label htmlFor="height">Height (inches):</label>
                   <input
                     id="height"
-                    type="text"
+                    type="number"
                     className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                     value={formData.height}
                     onChange={(e) => handleChange({ height: e.target.value })}
@@ -137,10 +233,10 @@ export default function SingleLabelCreation() {
                   <label htmlFor="weight">Weight (lbs):</label>
                   <input
                     id="weight"
-                    type="text"
+                    type="number"
                     className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                     value={formData.weight}
-                    onChange={(e) => handleChange({ weight: e.target.value })}
+                    onChange={(e) => updateWeight(e.target.value)}
                   />
                 </div>
               </div>
@@ -149,7 +245,7 @@ export default function SingleLabelCreation() {
                   <label htmlFor="length">Length (inches):</label>
                   <input
                     id="length"
-                    type="text"
+                    type="number"
                     className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                     value={formData.length}
                     onChange={(e) => handleChange({ length: e.target.value })}
@@ -159,7 +255,7 @@ export default function SingleLabelCreation() {
                   <label htmlFor="width">Width (inches):</label>
                   <input
                     id="width"
-                    type="text"
+                    type="number"
                     className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                     value={formData.width}
                     onChange={(e) => handleChange({ width: e.target.value })}
@@ -167,8 +263,12 @@ export default function SingleLabelCreation() {
                 </div>
               </div>
             </section>
-            <button disabled={true} className="w-40 cursor-pointer self-end rounded-md bg-purple p-4 text-center opacity-50">
-              Purchase $0
+            <button
+              type="submit"
+              disabled={price === "0" ? true : false}
+              className="w-40 cursor-pointer self-end rounded-md bg-purple p-4 text-center opacity-50"
+            >
+              Purchase ${price}
             </button>
           </div>
         </section>

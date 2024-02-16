@@ -166,12 +166,9 @@ export const uspsServiceRelations = relations(uspsService, ({ many }) => ({
   label: many(label),
 }));
 
-export const uspsExternalServiceRelations = relations(
-  uspsExternalService,
-  ({ many }) => ({
-    label: many(label),
-  }),
-);
+export const uspsExternalServiceRelations = relations(uspsExternalService, ({ many }) => ({
+  label: many(label),
+}));
 
 // Label Group
 
@@ -190,7 +187,7 @@ export const labelGroup = mysqlTable(
     labelCount: smallint("label_count").notNull(),
     // totalPrice: decimal('total_price', { precision: 6, scale: 2 }).notNull(),
     totalPrice: varchar("total_price", { length: 200 }).notNull(),
-    pdf: customBlob("pdf").notNull(),
+    pdf: varchar("pdf", { length: 250 }).notNull(),
     createdAt: timestamp("created_at").defaultNow(),
   },
   (table) => ({ userIdx: index("user_idx").on(table.userId) }),
@@ -201,12 +198,9 @@ export const shippingService = mysqlTable("shipping_service", {
   service: varchar("service", { length: 50 }).notNull(),
 });
 
-export const shippingServiceRelations = relations(
-  shippingService,
-  ({ many }) => ({
-    labelGroup: many(labelGroup),
-  }),
-);
+export const shippingServiceRelations = relations(shippingService, ({ many }) => ({
+  labelGroup: many(labelGroup),
+}));
 
 export const labelGroupRelations = relations(labelGroup, ({ one, many }) => ({
   shippingService: one(shippingService, {

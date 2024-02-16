@@ -29,18 +29,16 @@ export const labelGroupRouter = createTRPCRouter({
         shippingServiceId: z.number(),
         labelCount: z.number(),
         totalPrice: z.string(),
-        pdf: z.instanceof(File),
+        pdf: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const newLabelGroup = await ctx.db.insert(labelGroup).values({
+      const lbgroup = await ctx.db.insert(labelGroup).values({
         userId: ctx.auth.userId,
         shippingServiceId: input.shippingServiceId,
         labelCount: input.labelCount,
         totalPrice: input.totalPrice,
         pdf: input.pdf,
       });
-
-      return newLabelGroup.insertId;
     }),
 });
