@@ -1,18 +1,4 @@
-import {
-  mysqlTable,
-  serial,
-  varchar,
-  decimal,
-  timestamp,
-  uniqueIndex,
-  char,
-  index,
-  int,
-  smallint,
-  customType,
-  boolean,
-  double,
-} from "drizzle-orm/mysql-core";
+import { mysqlTable, serial, varchar, decimal, timestamp, uniqueIndex, char, index, int, smallint, boolean, double } from "drizzle-orm/mysql-core";
 
 import { relations } from "drizzle-orm";
 
@@ -96,7 +82,7 @@ export const label = mysqlTable("label", {
   uspsServiceId: int("usps_service_id"),
   uspsExternalServiceId: int("usps_external_service_id"),
   price: decimal("price", { precision: 4, scale: 2 }).notNull(),
-  tracking: varchar("tracking", { length: 24 }),
+  tracking: varchar("tracking", { length: 40 }),
 });
 
 export const labelAddress = mysqlTable("label_address", {
@@ -171,12 +157,6 @@ export const uspsExternalServiceRelations = relations(uspsExternalService, ({ ma
 }));
 
 // Label Group
-
-const customBlob = customType<{ data: Blob }>({
-  dataType() {
-    return `blob`;
-  },
-});
 
 export const labelGroup = mysqlTable(
   "label_group",
