@@ -2,6 +2,7 @@
 import { type FormEvent, useState } from "react";
 import { api } from "~/trpc/react";
 import { dataResponse } from "~/utils/data";
+import { zipCodeRegex, phoneNumberRegex } from "~/utils/regex";
 
 export default function SingleLabelCreation() {
   const [formData, setFormData] = useState({
@@ -37,20 +38,20 @@ export default function SingleLabelCreation() {
     { id: 32, label: "Company Name", property: "fromCompanyName", required: true },
     { id: 33, label: "Address", property: "fromAddress", required: true },
     { id: 34, label: "Address 2", property: "fromAddress2", required: false },
-    { id: 35, label: "Zip Code", property: "fromZipCode", required: true },
+    { id: 35, label: "Zip Code", property: "fromZipCode", required: true, regEx: zipCodeRegex.toString().slice(1, -1) },
     { id: 36, label: "City", property: "fromCity", required: true },
     { id: 37, label: "State", property: "fromState", required: true },
     { id: 38, label: "Country", property: "fromCountry", required: true },
-    { id: 39, label: "Phone Number", property: "fromPhoneNumber", required: true },
+    { id: 39, label: "Phone Number", property: "fromPhoneNumber", required: true, regEx: phoneNumberRegex.toString().slice(1, -1) },
     { id: 41, label: "Name", property: "toName", required: true },
     { id: 42, label: "Company Name", property: "toCompanyName", required: true },
     { id: 43, label: "Address", property: "toAddress", required: true },
     { id: 44, label: "Address 2", property: "toAddress2", required: false },
-    { id: 45, label: "Zip Code", property: "toZipCode", required: true },
+    { id: 45, label: "Zip Code", property: "toZipCode", required: true, regEx: zipCodeRegex.toString().slice(1, -1) },
     { id: 46, label: "City", property: "toCity", required: true },
     { id: 47, label: "State", property: "toState", required: true },
     { id: 48, label: "Country", property: "toCountry", required: true },
-    { id: 49, label: "Phone Number", property: "toPhoneNumber", required: true },
+    { id: 49, label: "Phone Number", property: "toPhoneNumber", required: true, regEx: phoneNumberRegex.toString().slice(1, -1) },
     { id: 51, label: "Height (inches)", property: "height", required: true },
     { id: 52, label: "Weight (lbs)", property: "weight", required: true },
     { id: 53, label: "Length (inches)", property: "length", required: true },
@@ -181,6 +182,7 @@ export default function SingleLabelCreation() {
                     value={formData[input.property as keyof typeof formData]}
                     className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                     required={input.required}
+                    pattern={input.regEx}
                   />
                 </div>
               );
@@ -202,6 +204,7 @@ export default function SingleLabelCreation() {
                     value={formData[input.property as keyof typeof formData]}
                     className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                     required={input.required}
+                    pattern={input.regEx}
                   />
                 </div>
               );
