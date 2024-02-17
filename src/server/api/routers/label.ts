@@ -12,7 +12,7 @@ export const labelRouter = createTRPCRouter({
         fromAddress2: z.string(),
         fromZipCode: z.string(),
         fromCity: z.string(),
-        fromState: z.string(),
+        fromState: z.string().length(2),
         fromCountry: z.string(),
         fromPhoneNumber: z.string(),
         toName: z.string(),
@@ -21,7 +21,7 @@ export const labelRouter = createTRPCRouter({
         toAddress2: z.string(),
         toZipCode: z.string(),
         toCity: z.string(),
-        toState: z.string(),
+        toState: z.string().length(2),
         toCountry: z.string(),
         toPhoneNumber: z.string(),
         height: z.number(),
@@ -30,13 +30,16 @@ export const labelRouter = createTRPCRouter({
         width: z.number(),
         price: z.string(),
         pdf: z.string(),
+        tracking: z.string(),
+        labelCount: z.number(),
+        uspsServiceId: z.number(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const newLabelGroup = await ctx.db.insert(labelGroup).values({
         userId: ctx.auth.userId,
         shippingServiceId: 1,
-        labelCount: 1,
+        labelCount: input.labelCount,
         totalPrice: input.price,
         pdf: input.pdf,
       });
@@ -45,7 +48,7 @@ export const labelRouter = createTRPCRouter({
         labelGroupId: parseInt(labelGroupId),
         uspsServiceId: 1,
         price: input.price,
-        tracking: "dalksjfdlasjdf",
+        tracking: input.tracking,
       });
       const labelId = newLabel.insertId;
       await ctx.db.insert(parcel).values({

@@ -1,6 +1,7 @@
 "use client";
 import { type FormEvent, useState } from "react";
 import { api } from "~/trpc/react";
+import { dataResponse } from "~/utils/data";
 
 export default function SingleLabelCreation() {
   const [formData, setFormData] = useState({
@@ -29,13 +30,13 @@ export default function SingleLabelCreation() {
     length: "",
     width: "",
   });
-  const [price, setPrice] = useState("0");
+  const [price, setPrice] = useState("0.00");
 
   const formInputs = [
     { id: 31, label: "Name", property: "fromName", required: true },
     { id: 32, label: "Company Name", property: "fromCompanyName", required: true },
     { id: 33, label: "Address", property: "fromAddress", required: true },
-    { id: 34, label: "Address 2", property: "fromAddress2", required: true },
+    { id: 34, label: "Address 2", property: "fromAddress2", required: false },
     { id: 35, label: "Zip Code", property: "fromZipCode", required: true },
     { id: 36, label: "City", property: "fromCity", required: true },
     { id: 37, label: "State", property: "fromState", required: true },
@@ -44,7 +45,7 @@ export default function SingleLabelCreation() {
     { id: 41, label: "Name", property: "toName", required: true },
     { id: 42, label: "Company Name", property: "toCompanyName", required: true },
     { id: 43, label: "Address", property: "toAddress", required: true },
-    { id: 44, label: "Address 2", property: "toAddress2", required: true },
+    { id: 44, label: "Address 2", property: "toAddress2", required: false },
     { id: 45, label: "Zip Code", property: "toZipCode", required: true },
     { id: 46, label: "City", property: "toCity", required: true },
     { id: 47, label: "State", property: "toState", required: true },
@@ -68,28 +69,28 @@ export default function SingleLabelCreation() {
     });
     switch (true) {
       case 0 < parseInt(value) && parseInt(value) <= 7.99:
-        setPrice("5.5");
+        setPrice("5.50");
         break;
       case 8 <= parseInt(value) && parseInt(value) <= 14.99:
-        setPrice("11.0");
+        setPrice("11.00");
         break;
       case 15 <= parseInt(value) && parseInt(value) <= 24.99:
-        setPrice("11.5");
+        setPrice("11.50");
         break;
       case 25 <= parseInt(value) && parseInt(value) <= 34.99:
-        setPrice("12.0");
+        setPrice("12.00");
         break;
       case 35 <= parseInt(value) && parseInt(value) <= 44.99:
-        setPrice("12.5");
+        setPrice("12.50");
         break;
       case 45 <= parseInt(value) && parseInt(value) <= 54.99:
-        setPrice("12.5");
+        setPrice("12.50");
         break;
       case 55 <= parseInt(value) && parseInt(value) <= 70.0:
-        setPrice("12.5");
+        setPrice("12.50");
         break;
       default:
-        setPrice("0");
+        setPrice("0.00");
     }
   };
 
@@ -127,7 +128,9 @@ export default function SingleLabelCreation() {
 
   const onFormSubmit = (e: FormEvent) => {
     e.preventDefault();
-    console.log("Form submit");
+    const tracking = dataResponse.bulkOrder.orders[0]?.tracking;
+    const pdf = dataResponse.bulkOrder.orders[0]?.pdf;
+    if (!pdf || !tracking) return;
     createLabelGroup.mutate({
       fromName: formData.fromName,
       fromCompanyName: formData.fromCompanyName,
@@ -152,7 +155,10 @@ export default function SingleLabelCreation() {
       length: parseInt(formData.length),
       width: parseInt(formData.width),
       price: price,
-      pdf: "alksdjflasjkdf",
+      pdf: pdf,
+      tracking: tracking,
+      labelCount: 1,
+      uspsServiceId: 1,
     });
   };
 
@@ -266,7 +272,7 @@ export default function SingleLabelCreation() {
             <button
               type="submit"
               disabled={price === "0" ? true : false}
-              className="w-40 cursor-pointer self-end rounded-md bg-purple p-4 text-center opacity-50"
+              className="w-48 cursor-pointer self-end rounded-md bg-purple p-4 text-center opacity-50"
             >
               Purchase ${price}
             </button>
