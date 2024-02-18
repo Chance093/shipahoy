@@ -180,8 +180,17 @@ export default function SingleLabelCreation() {
     },
   });
 
+  const updateBalance = api.balance.update.useMutation();
+
+  const balance = api.balance.getAmount.useQuery();
+
   const onFormSubmit = (e: FormEvent) => {
     e.preventDefault();
+    if (!balance.data?.amount) return;
+    if (parseInt(balance.data?.amount) < parseInt(price)) {
+      console.log("Insufficient funds. Please add more to your balance");
+      return;
+    }
     const tracking = dataResponse.bulkOrder.orders[0]?.tracking;
     const pdf = dataResponse.bulkOrder.orders[0]?.pdf;
     if (!pdf || !tracking) return;
@@ -214,6 +223,8 @@ export default function SingleLabelCreation() {
       labelCount: 1,
       uspsServiceId: 1,
     });
+    const newBalance = parseFloat(balance.data.amount) - parseFloat(price);
+    updateBalance.mutate({ amount: newBalance.toString() });
   };
 
   return (
