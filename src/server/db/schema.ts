@@ -94,7 +94,7 @@ export const labelAddress = mysqlTable("label_address", {
   streetOne: varchar("street_one", { length: 100 }).notNull(),
   streetTwo: varchar("street_two", { length: 100 }).notNull(),
   city: varchar("city", { length: 100 }).notNull(),
-  state: char("state", { length: 2 }).notNull(),
+  state: char("state", { length: 20 }).notNull(),
   zipCode: varchar("zip_code", { length: 10 }).notNull(),
   country: varchar("country", { length: 56 }).notNull(),
   phoneNumber: varchar("phone_number", { length: 15 }).notNull(),
