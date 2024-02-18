@@ -1,18 +1,4 @@
-import {
-  mysqlTable,
-  serial,
-  varchar,
-  decimal,
-  timestamp,
-  uniqueIndex,
-  char,
-  index,
-  int,
-  smallint,
-  customType,
-  boolean,
-  double,
-} from "drizzle-orm/mysql-core";
+import { mysqlTable, serial, varchar, decimal, timestamp, uniqueIndex, char, index, int, smallint, boolean, double } from "drizzle-orm/mysql-core";
 
 import { relations } from "drizzle-orm";
 
@@ -96,7 +82,7 @@ export const label = mysqlTable("label", {
   uspsServiceId: int("usps_service_id"),
   uspsExternalServiceId: int("usps_external_service_id"),
   price: decimal("price", { precision: 4, scale: 2 }).notNull(),
-  tracking: varchar("tracking", { length: 24 }),
+  tracking: varchar("tracking", { length: 40 }),
 });
 
 export const labelAddress = mysqlTable("label_address", {
@@ -108,7 +94,7 @@ export const labelAddress = mysqlTable("label_address", {
   streetOne: varchar("street_one", { length: 100 }).notNull(),
   streetTwo: varchar("street_two", { length: 100 }).notNull(),
   city: varchar("city", { length: 100 }).notNull(),
-  state: char("state", { length: 2 }).notNull(),
+  state: char("state", { length: 20 }).notNull(),
   zipCode: varchar("zip_code", { length: 10 }).notNull(),
   country: varchar("country", { length: 56 }).notNull(),
   phoneNumber: varchar("phone_number", { length: 15 }).notNull(),
@@ -166,20 +152,11 @@ export const uspsServiceRelations = relations(uspsService, ({ many }) => ({
   label: many(label),
 }));
 
-export const uspsExternalServiceRelations = relations(
-  uspsExternalService,
-  ({ many }) => ({
-    label: many(label),
-  }),
-);
+export const uspsExternalServiceRelations = relations(uspsExternalService, ({ many }) => ({
+  label: many(label),
+}));
 
 // Label Group
-
-const customBlob = customType<{ data: Blob }>({
-  dataType() {
-    return `blob`;
-  },
-});
 
 export const labelGroup = mysqlTable(
   "label_group",
@@ -190,7 +167,7 @@ export const labelGroup = mysqlTable(
     labelCount: smallint("label_count").notNull(),
     // totalPrice: decimal('total_price', { precision: 6, scale: 2 }).notNull(),
     totalPrice: varchar("total_price", { length: 200 }).notNull(),
-    pdf: customBlob("pdf").notNull(),
+    pdf: varchar("pdf", { length: 250 }).notNull(),
     createdAt: timestamp("created_at").defaultNow(),
   },
   (table) => ({ userIdx: index("user_idx").on(table.userId) }),
@@ -201,12 +178,9 @@ export const shippingService = mysqlTable("shipping_service", {
   service: varchar("service", { length: 50 }).notNull(),
 });
 
-export const shippingServiceRelations = relations(
-  shippingService,
-  ({ many }) => ({
-    labelGroup: many(labelGroup),
-  }),
-);
+export const shippingServiceRelations = relations(shippingService, ({ many }) => ({
+  labelGroup: many(labelGroup),
+}));
 
 export const labelGroupRelations = relations(labelGroup, ({ one, many }) => ({
   shippingService: one(shippingService, {
