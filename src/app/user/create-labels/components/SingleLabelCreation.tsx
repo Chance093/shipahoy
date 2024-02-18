@@ -183,6 +183,7 @@ export default function SingleLabelCreation() {
                     className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                     required={input.required}
                     pattern={input.regEx}
+                    autoComplete="off"
                   />
                 </div>
               );
@@ -205,6 +206,7 @@ export default function SingleLabelCreation() {
                     className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                     required={input.required}
                     pattern={input.regEx}
+                    autoComplete="off"
                   />
                 </div>
               );
@@ -236,6 +238,7 @@ export default function SingleLabelCreation() {
                     className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                     value={formData.height}
                     onChange={(e) => handleChange({ height: e.target.value })}
+                    autoComplete="off"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
@@ -246,6 +249,7 @@ export default function SingleLabelCreation() {
                     className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                     value={formData.weight}
                     onChange={(e) => updateWeight(e.target.value)}
+                    autoComplete="off"
                   />
                 </div>
               </div>
@@ -258,6 +262,7 @@ export default function SingleLabelCreation() {
                     className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                     value={formData.length}
                     onChange={(e) => handleChange({ length: e.target.value })}
+                    autoComplete="off"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
@@ -268,6 +273,7 @@ export default function SingleLabelCreation() {
                     className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                     value={formData.width}
                     onChange={(e) => handleChange({ width: e.target.value })}
+                    autoComplete="off"
                   />
                 </div>
               </div>
