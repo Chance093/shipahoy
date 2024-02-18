@@ -1,12 +1,10 @@
 "use strict";
 "use client";
 import { useState } from "react";
-import ApiReq from "./ApiReq";
+import ApiReq from "./CreateOrder";
 import Modal from "~/app/components/Modal";
 import useValidation from "~/utils/handleValidation";
-import { redirect } from "next/navigation";
-import { render } from "react-dom";
-import { set } from "date-fns";
+import { createLabels } from "~/utils/createLabels";
 
 export default function HandleCsv() {
   const [fileName, setFileName] = useState<string>("No file selected.");
@@ -77,7 +75,6 @@ export default function HandleCsv() {
     string[],
     string[][],
   ]): Map<string, string[]> {
-
     const transformedCsvContents: Map<string, string[]> = new Map();
     for (const header of columnHeaders) transformedCsvContents.set(header, []);
     for (const row of rowsOfValues) {
@@ -98,7 +95,6 @@ export default function HandleCsv() {
   function getPayloadSize(
     transformedCsvContents: Map<string, string[]>,
   ): number {
-
     let payloadSize = 0;
 
     for (const [columnHeader, rowsInColumn] of transformedCsvContents) {
