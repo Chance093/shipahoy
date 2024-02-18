@@ -33,6 +33,59 @@ export default function SingleLabelCreation() {
   });
   const [price, setPrice] = useState("0.00");
 
+  const statesList = [
+    "Alabama",
+    "Alaska",
+    "Arizona",
+    "Arkansas",
+    "California",
+    "Colorado",
+    "Connecticut",
+    "Delaware",
+    "Florida",
+    "Georgia",
+    "Hawaii",
+    "Idaho",
+    "Illinois",
+    "Indiana",
+    "Iowa",
+    "Kansas",
+    "Kentucky",
+    "Louisiana",
+    "Maine",
+    "Maryland",
+    "Massachusetts",
+    "Michigan",
+    "Minnesota",
+    "Mississippi",
+    "Missouri",
+    "Montana",
+    "Nebraska",
+    "Nevada",
+    "New Hampshire",
+    "New Jersey",
+    "New Mexico",
+    "New York",
+    "North Carolina",
+    "North Dakota",
+    "Ohio",
+    "Oklahoma",
+    "Oregon",
+    "Pennsylvania",
+    "Rhode Island",
+    "South Carolina",
+    "South Dakota",
+    "Tennessee",
+    "Texas",
+    "Utah",
+    "Vermont",
+    "Virginia",
+    "Washington",
+    "West Virginia",
+    "Wisconsin",
+    "Wyoming",
+  ];
+
   const formInputs = [
     { id: 31, label: "Name", property: "fromName", required: true },
     { id: 32, label: "Company Name", property: "fromCompanyName", required: true },
@@ -40,8 +93,8 @@ export default function SingleLabelCreation() {
     { id: 34, label: "Address 2", property: "fromAddress2", required: false },
     { id: 35, label: "Zip Code", property: "fromZipCode", required: true, regEx: zipCodeRegex.toString().slice(1, -1) },
     { id: 36, label: "City", property: "fromCity", required: true },
-    { id: 37, label: "State", property: "fromState", required: true },
-    { id: 38, label: "Country", property: "fromCountry", required: true },
+    { id: 37, label: "State", property: "fromState", required: true, selectInput: true },
+    { id: 38, label: "Country", property: "fromCountry", required: true, readOnly: true },
     { id: 39, label: "Phone Number", property: "fromPhoneNumber", required: true, regEx: phoneNumberRegex.toString().slice(1, -1) },
     { id: 41, label: "Name", property: "toName", required: true },
     { id: 42, label: "Company Name", property: "toCompanyName", required: true },
@@ -49,8 +102,8 @@ export default function SingleLabelCreation() {
     { id: 44, label: "Address 2", property: "toAddress2", required: false },
     { id: 45, label: "Zip Code", property: "toZipCode", required: true, regEx: zipCodeRegex.toString().slice(1, -1) },
     { id: 46, label: "City", property: "toCity", required: true },
-    { id: 47, label: "State", property: "toState", required: true },
-    { id: 48, label: "Country", property: "toCountry", required: true },
+    { id: 47, label: "State", property: "toState", required: true, selectInput: true },
+    { id: 48, label: "Country", property: "toCountry", required: true, readOnly: true },
     { id: 49, label: "Phone Number", property: "toPhoneNumber", required: true, regEx: phoneNumberRegex.toString().slice(1, -1) },
     { id: 51, label: "Height (inches)", property: "height", required: true },
     { id: 52, label: "Weight (lbs)", property: "weight", required: true },
@@ -172,21 +225,43 @@ export default function SingleLabelCreation() {
             <h2 className="text-center text-2xl">From</h2>
             {formInputs.map((input, idx) => {
               if (idx > 8) return;
-              return (
-                <div className="flex flex-col gap-2" key={input.id}>
-                  <label htmlFor={input.property}>{input.label}</label>
-                  <input
-                    type="text"
-                    id={input.property}
-                    onChange={(e) => handleChange({ [input.property]: e.target.value })}
-                    value={formData[input.property as keyof typeof formData]}
-                    className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
-                    required={input.required}
-                    pattern={input.regEx}
-                    autoComplete="off"
-                  />
-                </div>
-              );
+              if (input.selectInput)
+                return (
+                  <div className="flex flex-col gap-2" key={input.id}>
+                    <label htmlFor={input.property}>{input.label}</label>
+                    <select
+                      id={input.property}
+                      onChange={(e) => handleChange({ [input.property]: e.target.value })}
+                      className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
+                      required={input.required}
+                    >
+                      {statesList.map((state, idx) => {
+                        return (
+                          <option value={state} key={idx} className="border-gray-600/50 bg-[#1a1a1b]">
+                            {state}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+                );
+              else
+                return (
+                  <div className="flex flex-col gap-2" key={input.id}>
+                    <label htmlFor={input.property}>{input.label}</label>
+                    <input
+                      type="text"
+                      id={input.property}
+                      onChange={(e) => handleChange({ [input.property]: e.target.value })}
+                      value={formData[input.property as keyof typeof formData]}
+                      className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
+                      required={input.required}
+                      pattern={input.regEx}
+                      autoComplete="off"
+                      readOnly={input.readOnly}
+                    />
+                  </div>
+                );
             })}
           </div>
         </section>
@@ -195,21 +270,43 @@ export default function SingleLabelCreation() {
             <h2 className="text-center text-2xl">To</h2>
             {formInputs.map((input, idx) => {
               if (idx <= 8 || idx >= 18) return;
-              return (
-                <div className="flex flex-col gap-2" key={input.id}>
-                  <label htmlFor={input.property}>{input.label}</label>
-                  <input
-                    type="text"
-                    id={input.property}
-                    onChange={(e) => handleChange({ [input.property]: e.target.value })}
-                    value={formData[input.property as keyof typeof formData]}
-                    className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
-                    required={input.required}
-                    pattern={input.regEx}
-                    autoComplete="off"
-                  />
-                </div>
-              );
+              if (input.selectInput)
+                return (
+                  <div className="flex flex-col gap-2" key={input.id}>
+                    <label htmlFor={input.property}>{input.label}</label>
+                    <select
+                      id={input.property}
+                      onChange={(e) => handleChange({ [input.property]: e.target.value })}
+                      className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
+                      required={input.required}
+                    >
+                      {statesList.map((state, idx) => {
+                        return (
+                          <option value={state} key={idx} className="border-gray-600/50 bg-[#1a1a1b]">
+                            {state}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+                );
+              else
+                return (
+                  <div className="flex flex-col gap-2" key={input.id}>
+                    <label htmlFor={input.property}>{input.label}</label>
+                    <input
+                      type="text"
+                      id={input.property}
+                      onChange={(e) => handleChange({ [input.property]: e.target.value })}
+                      value={formData[input.property as keyof typeof formData]}
+                      className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
+                      required={input.required}
+                      pattern={input.regEx}
+                      autoComplete="off"
+                      readOnly={input.readOnly}
+                    />
+                  </div>
+                );
             })}
           </div>
         </section>
