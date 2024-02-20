@@ -45,46 +45,49 @@ export const labelRouter = createTRPCRouter({
         pdf: input.pdf,
       });
       const labelGroupId = newLabelGroup.insertId;
-      const newLabel = await ctx.db.insert(label).values({
-        labelGroupId: parseInt(labelGroupId),
-        uspsServiceId: 1,
-        price: input.price,
-        tracking: input.tracking,
-      });
-      const labelId = newLabel.insertId;
-      await ctx.db.insert(parcel).values({
-        labelId: parseInt(labelId),
-        weight: input.weight,
-        length: input.length,
-        width: input.width,
-        height: input.height,
-      });
-      await ctx.db.insert(labelAddress).values({
-        labelId: parseInt(labelId),
-        isSender: true,
-        name: input.fromName,
-        company: input.fromCompanyName,
-        streetOne: input.fromAddress,
-        streetTwo: input.fromAddress2,
-        city: input.fromCity,
-        state: input.fromState,
-        zipCode: input.fromZipCode,
-        country: input.fromCountry,
-        phoneNumber: input.fromPhoneNumber,
-      });
-      await ctx.db.insert(labelAddress).values({
-        labelId: parseInt(labelId),
-        isSender: false,
-        name: input.toName,
-        company: input.toCompanyName,
-        streetOne: input.toAddress,
-        streetTwo: input.toAddress2,
-        city: input.toCity,
-        state: input.toState,
-        zipCode: input.toZipCode,
-        country: input.toCountry,
-        phoneNumber: input.toPhoneNumber,
-      });
+
+      for (let i = 0; i < input.labelCount; i++) {
+        const newLabel = await ctx.db.insert(label).values({
+          labelGroupId: parseInt(labelGroupId),
+          uspsServiceId: 1,
+          price: input.price,
+          tracking: input.tracking,
+        });
+        const labelId = newLabel.insertId;
+        await ctx.db.insert(parcel).values({
+          labelId: parseInt(labelId),
+          weight: input.weight,
+          length: input.length,
+          width: input.width,
+          height: input.height,
+        });
+        await ctx.db.insert(labelAddress).values({
+          labelId: parseInt(labelId),
+          isSender: true,
+          name: input.fromName,
+          company: input.fromCompanyName,
+          streetOne: input.fromAddress,
+          streetTwo: input.fromAddress2,
+          city: input.fromCity,
+          state: input.fromState,
+          zipCode: input.fromZipCode,
+          country: input.fromCountry,
+          phoneNumber: input.fromPhoneNumber,
+        });
+        await ctx.db.insert(labelAddress).values({
+          labelId: parseInt(labelId),
+          isSender: false,
+          name: input.toName,
+          company: input.toCompanyName,
+          streetOne: input.toAddress,
+          streetTwo: input.toAddress2,
+          city: input.toCity,
+          state: input.toState,
+          zipCode: input.toZipCode,
+          country: input.toCountry,
+          phoneNumber: input.toPhoneNumber,
+        });
+      }
     }),
 
   addParcel: protectedProcedure
