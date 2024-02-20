@@ -32,6 +32,7 @@ export default function SingleLabelCreation() {
     width: "",
   });
   const [price, setPrice] = useState("0.00");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const statesList = [
     { name: "", abbreviation: "" },
@@ -91,21 +92,21 @@ export default function SingleLabelCreation() {
     { id: 31, label: "Name", property: "fromName", required: true },
     { id: 32, label: "Company Name", property: "fromCompanyName", required: true },
     { id: 33, label: "Address", property: "fromAddress", required: true },
-    { id: 34, label: "Address 2", property: "fromAddress2", required: false },
+    { id: 34, label: "Address 2 (Optional)", property: "fromAddress2", required: false },
     { id: 35, label: "Zip Code", property: "fromZipCode", required: true, regEx: zipCodeRegex.toString().slice(1, -1) },
     { id: 36, label: "City", property: "fromCity", required: true },
     { id: 37, label: "State", property: "fromState", required: true, selectInput: true },
     { id: 38, label: "Country", property: "fromCountry", required: true, readOnly: true },
-    { id: 39, label: "Phone Number", property: "fromPhoneNumber", required: true, regEx: phoneNumberRegex.toString().slice(1, -1) },
+    { id: 39, label: "Phone Number (Optional)", property: "fromPhoneNumber", required: false, regEx: phoneNumberRegex.toString().slice(1, -1) },
     { id: 41, label: "Name", property: "toName", required: true },
     { id: 42, label: "Company Name", property: "toCompanyName", required: true },
     { id: 43, label: "Address", property: "toAddress", required: true },
-    { id: 44, label: "Address 2", property: "toAddress2", required: false },
+    { id: 44, label: "Address 2 (Optional)", property: "toAddress2", required: false },
     { id: 45, label: "Zip Code", property: "toZipCode", required: true, regEx: zipCodeRegex.toString().slice(1, -1) },
     { id: 46, label: "City", property: "toCity", required: true },
     { id: 47, label: "State", property: "toState", required: true, selectInput: true },
     { id: 48, label: "Country", property: "toCountry", required: true, readOnly: true },
-    { id: 49, label: "Phone Number", property: "toPhoneNumber", required: true, regEx: phoneNumberRegex.toString().slice(1, -1) },
+    { id: 49, label: "Phone Number (Optional)", property: "toPhoneNumber", required: false, regEx: phoneNumberRegex.toString().slice(1, -1) },
     { id: 51, label: "Height (inches)", property: "height", required: true },
     { id: 52, label: "Weight (lbs)", property: "weight", required: true },
     { id: 53, label: "Length (inches)", property: "length", required: true },
@@ -188,8 +189,13 @@ export default function SingleLabelCreation() {
   const onFormSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!balance.data?.amount) return;
-    if (parseInt(balance.data?.amount) < parseInt(price)) {
-      console.log("Insufficient funds. Please add more to your balance");
+    if (parseFloat(price) === 0) return;
+    if (formData.fromAddress === formData.toAddress) {
+      setErrorMessage("Sender Address cannot be the same as Recipient Address.");
+      return;
+    }
+    if (parseFloat(balance.data?.amount) < parseFloat(price)) {
+      setErrorMessage("Insufficient funds. Please add more to your balance.");
       return;
     }
     const tracking = dataResponse.bulkOrder.orders[0]?.tracking;
@@ -204,7 +210,7 @@ export default function SingleLabelCreation() {
       fromCity: formData.fromCity,
       fromState: formData.fromState,
       fromCountry: formData.fromCountry,
-      fromPhoneNumber: formData.fromPhoneNumber,
+      fromPhoneNumber: formData.fromPhoneNumber ? formData.fromPhoneNumber : undefined,
       toName: formData.toName,
       toCompanyName: formData.toCompanyName,
       toAddress: formData.toAddress,
@@ -213,7 +219,7 @@ export default function SingleLabelCreation() {
       toCity: formData.toCity,
       toState: formData.toState,
       toCountry: formData.toCountry,
-      toPhoneNumber: formData.toPhoneNumber,
+      toPhoneNumber: formData.toPhoneNumber ? formData.toPhoneNumber : undefined,
       height: parseInt(formData.height),
       weight: parseInt(formData.weight),
       length: parseInt(formData.length),
@@ -226,6 +232,7 @@ export default function SingleLabelCreation() {
     });
     const newBalance = parseFloat(balance.data.amount) - parseFloat(price);
     updateBalance.mutate({ amount: newBalance.toString() });
+    setErrorMessage("");
   };
 
   return (
@@ -348,6 +355,7 @@ export default function SingleLabelCreation() {
                     value={formData.height}
                     onChange={(e) => handleChange({ height: e.target.value })}
                     autoComplete="off"
+                    min="1"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
@@ -359,6 +367,7 @@ export default function SingleLabelCreation() {
                     value={formData.weight}
                     onChange={(e) => updateWeight(e.target.value)}
                     autoComplete="off"
+                    min="0"
                   />
                 </div>
               </div>
@@ -372,6 +381,7 @@ export default function SingleLabelCreation() {
                     value={formData.length}
                     onChange={(e) => handleChange({ length: e.target.value })}
                     autoComplete="off"
+                    min="1"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
@@ -383,17 +393,21 @@ export default function SingleLabelCreation() {
                     value={formData.width}
                     onChange={(e) => handleChange({ width: e.target.value })}
                     autoComplete="off"
+                    min="1"
                   />
                 </div>
               </div>
             </section>
-            <button
-              type="submit"
-              disabled={price === "0" ? true : false}
-              className="w-48 cursor-pointer self-end rounded-md bg-purple p-4 text-center opacity-50"
-            >
-              Purchase ${price}
-            </button>
+            <section className="flex items-center justify-between">
+              <p className="pl-4 text-xl text-red-400">{errorMessage}</p>
+              <button
+                type="submit"
+                disabled={price === "0.00" ? true : false}
+                className="w-48 cursor-pointer rounded-md bg-purple p-4 text-center disabled:opacity-50"
+              >
+                Purchase ${price}
+              </button>
+            </section>
           </div>
         </section>
       </form>
