@@ -32,6 +32,7 @@ export default function SingleLabelCreation() {
     width: "",
   });
   const [price, setPrice] = useState("0.00");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const statesList = [
     { name: "", abbreviation: "" },
@@ -188,8 +189,13 @@ export default function SingleLabelCreation() {
   const onFormSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!balance.data?.amount) return;
-    if (parseInt(balance.data?.amount) < parseInt(price)) {
-      console.log("Insufficient funds. Please add more to your balance");
+    if (parseFloat(price) === 0) return;
+    if (formData.fromAddress === formData.toAddress) {
+      setErrorMessage("Sender Address cannot be the same as Recipient Address.");
+      return;
+    }
+    if (parseFloat(balance.data?.amount) < parseFloat(price)) {
+      setErrorMessage("Insufficient funds. Please add more to your balance.");
       return;
     }
     const tracking = dataResponse.bulkOrder.orders[0]?.tracking;
@@ -226,6 +232,7 @@ export default function SingleLabelCreation() {
     });
     const newBalance = parseFloat(balance.data.amount) - parseFloat(price);
     updateBalance.mutate({ amount: newBalance.toString() });
+    setErrorMessage("");
   };
 
   return (
@@ -360,7 +367,7 @@ export default function SingleLabelCreation() {
                     value={formData.weight}
                     onChange={(e) => updateWeight(e.target.value)}
                     autoComplete="off"
-                    min="0.1"
+                    min="0"
                   />
                 </div>
               </div>
@@ -391,13 +398,16 @@ export default function SingleLabelCreation() {
                 </div>
               </div>
             </section>
-            <button
-              type="submit"
-              disabled={price === "0" ? true : false}
-              className="w-48 cursor-pointer self-end rounded-md bg-purple p-4 text-center opacity-50"
-            >
-              Purchase ${price}
-            </button>
+            <section className="flex items-center justify-between">
+              <p className="pl-4 text-xl text-red-400">{errorMessage}</p>
+              <button
+                type="submit"
+                disabled={price === "0" ? true : false}
+                className="w-48 cursor-pointer rounded-md bg-purple p-4 text-center opacity-50"
+              >
+                Purchase ${price}
+              </button>
+            </section>
           </div>
         </section>
       </form>
