@@ -152,7 +152,7 @@ export default function SingleLabelCreation() {
 
   const createLabelGroup = api.label.createLabel.useMutation({
     onSuccess: () => {
-      setPrice("0");
+      setPrice("0.00");
       setFormData({
         fromName: "",
         fromCompanyName: "",
