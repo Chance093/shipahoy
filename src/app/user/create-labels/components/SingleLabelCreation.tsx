@@ -402,8 +402,8 @@ export default function SingleLabelCreation() {
               <p className="pl-4 text-xl text-red-400">{errorMessage}</p>
               <button
                 type="submit"
-                disabled={price === "0" ? true : false}
-                className="w-48 cursor-pointer rounded-md bg-purple p-4 text-center opacity-50"
+                disabled={price === "0.00" ? true : false}
+                className="w-48 cursor-pointer rounded-md bg-purple p-4 text-center disabled:opacity-50"
               >
                 Purchase ${price}
               </button>
