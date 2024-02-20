@@ -348,6 +348,7 @@ export default function SingleLabelCreation() {
                     value={formData.height}
                     onChange={(e) => handleChange({ height: e.target.value })}
                     autoComplete="off"
+                    min="1"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
@@ -359,6 +360,7 @@ export default function SingleLabelCreation() {
                     value={formData.weight}
                     onChange={(e) => updateWeight(e.target.value)}
                     autoComplete="off"
+                    min="0.1"
                   />
                 </div>
               </div>
@@ -372,6 +374,7 @@ export default function SingleLabelCreation() {
                     value={formData.length}
                     onChange={(e) => handleChange({ length: e.target.value })}
                     autoComplete="off"
+                    min="1"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
@@ -383,6 +386,7 @@ export default function SingleLabelCreation() {
                     value={formData.width}
                     onChange={(e) => handleChange({ width: e.target.value })}
                     autoComplete="off"
+                    min="1"
                   />
                 </div>
               </div>
