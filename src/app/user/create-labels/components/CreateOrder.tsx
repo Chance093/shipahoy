@@ -1,6 +1,53 @@
 "use strict";
 import axios from "axios";
 
+interface ResponseData {
+  type: string;
+  message: string;
+  bulkOrder: BulkOrder;
+}
+
+interface BulkOrder {
+  _id: string;
+  user: string;
+  orders: Order[];
+  labelType: string;
+  total: number;
+  status: string;
+  uuid: string;
+  csv: string;
+  pdf: string;
+  zip: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  csvLink: string;
+  pdfLink: string;
+  zipLink: string;
+}
+
+interface Order {
+  _id: string;
+  uuid: string;
+  user: string;
+  isApi: boolean;
+  labelType: LabelType;
+  price: number;
+  status: string;
+  pdf: string;
+  tracking: string;
+  tracking_details: unknown[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+interface LabelType {
+  _id: string;
+  name: string;
+  uid: string;
+}
+
 const response = {
   type: "success",
   message: "Bulk order created successfully",
@@ -38,25 +85,20 @@ const response = {
     createdAt: "2024-02-16T02:04:17.921Z",
     updatedAt: "2024-02-16T02:04:18.491Z",
     __v: 0,
-    csvLink:
-      "https://api.weshipsmart.com/./labels/6511c995eac45b5e35c1d6a7/3fadc629-229d-48f9-afee-1cd5b9866296.csv",
-    pdfLink:
-      "https://api.weshipsmart.com/./labels/6511c995eac45b5e35c1d6a7/3fadc629-229d-48f9-afee-1cd5b9866296.pdf",
-    zipLink:
-      "https://api.weshipsmart.com/./labels/6511c995eac45b5e35c1d6a7/3fadc629-229d-48f9-afee-1cd5b9866296.zip",
+    csvLink: "https://api.weshipsmart.com/./labels/6511c995eac45b5e35c1d6a7/3fadc629-229d-48f9-afee-1cd5b9866296.csv",
+    pdfLink: "https://api.weshipsmart.com/./labels/6511c995eac45b5e35c1d6a7/3fadc629-229d-48f9-afee-1cd5b9866296.pdf",
+    zipLink: "https://api.weshipsmart.com/./labels/6511c995eac45b5e35c1d6a7/3fadc629-229d-48f9-afee-1cd5b9866296.zip",
   },
 };
 
-export default function ApiReq({ payload }: Payload) {
+type Payload = Record<string, string>[];
+export default function ApiReq(payload: Payload) {
   const key = "838f1031-44d9-4231-94dd-1e8f9e7b5148";
-
-  async function storeData(
-    links: { [key: string]: string },
-    tracking: string[],
-  ): Promise<void> {
-    console.log(`Links: ${JSON.stringify(links)}`);
-    console.log(`Tracking: ${JSON.stringify(tracking)}`);
-  }
+  // type Links = Record<string, string>;
+  // async function storeData(links: Links, tracking: string[]): Promise<void> {
+  //   console.log(`Links: ${JSON.stringify(links)}`); //! function for storing data from the API response
+  //   console.log(`Tracking: ${JSON.stringify(tracking)}`);
+  // }
 
   async function createLabels() {
     const url = "https://api.weshipsmart.com/api/v2/order/create-bulk-order";
@@ -74,27 +116,26 @@ export default function ApiReq({ payload }: Payload) {
     };
     try {
       const response = await axios.post(url, data, config);
-      const bulkOrder = response.data.bulkOrder;
-      if (!bulkOrder)
-        return new Error("Response data does not contain bulkOrder");
+      const responseData = response.data as ResponseData;
+      const bulkOrder: BulkOrder = responseData.bulkOrder;
+      if (!bulkOrder) return new Error("Response data does not contain bulkOrder");
       const orders = bulkOrder.orders;
       if (!orders) return new Error("Bulk order does not contain orders");
       const tracking = [];
-      for (let x = 0; x < orders.length; ++x) {
-        const order = orders[x];
+      for (const order of orders) {
         if (!order) return new Error("Bulk order does not contain order");
         const trackingNumber = order.tracking;
         tracking.push(trackingNumber);
       }
-      const links = {
-        pdf: bulkOrder.pdfLink,
-        csv: bulkOrder.csvLink,
-        zip: bulkOrder.zipLink,
-      };
-      storeData(links, tracking);
+      // const links = {
+      //   pdf: bulkOrder.pdfLink,
+      //   csv: bulkOrder.csvLink,
+      //   zip: bulkOrder.zipLink,
+      // };
+      // storeData(links, tracking); //! function for storing data from the API response
     } catch (error) {
-      console.error(`%cReq failed: ${error}`, "color: red");
-      return new Error(`Req failed: ${error}`);
+      console.error(`%cReq failed: ${JSON.stringify(error)}`, "color: red");
+      return new Error(`Req failed: ${JSON.stringify(error)}`);
     }
   }
 
@@ -130,16 +171,13 @@ export default function ApiReq({ payload }: Payload) {
       downloadFile(url, `${bulkOrderID}.${type}`);
       console.log(`Status: ${response.status}`);
     } catch (error) {
-      console.log(`%cReq failed: ${error}`, "color: red");
+      console.log(`%cReq failed: ${JSON.stringify(error)}`, "color: red");
     }
   }
 
   return (
     <div>
-      <button
-        onClick={() => getFile("pdf", "link here")}
-        className="btn-primary"
-      >
+      <button onClick={() => getFile("pdf", "link here")} className="btn-primary">
         Test request
       </button>
       {/* { payload.map((label, index) => <div key={index} className='paragraph'>{JSON.stringify(label)}</div>) } */}
