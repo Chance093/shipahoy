@@ -117,8 +117,8 @@ export default function HandleCsv() {
       const payload: object[] = createPayload(transformedCsvContents, payloadSize);
       setPayload(payload);
 
-      // console.log(checkpoints.join("\n\n")); //* uncomment when debugging
-      // console.log(payload); //* uncomment when debugging
+      console.log(checkpoints.join("\n\n")); //* uncomment when debugging
+      console.log(payload); //* uncomment when debugging
     };
   }
 
