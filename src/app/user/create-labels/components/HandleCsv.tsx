@@ -1,10 +1,8 @@
 "use strict";
 "use client";
 import { useState } from "react";
-import ApiReq from "./CreateOrder";
 import Modal from "~/app/components/Modal";
-import useValidation from "~/utils/handleValidation";
-import { createLabels } from "~/utils/createLabels";
+import handleValidation from "~/utils/handleValidation";
 
 export default function HandleCsv() {
   const [fileName, setFileName] = useState<string>("No file selected.");
@@ -44,21 +42,11 @@ export default function HandleCsv() {
     newCheckpoint("prepCsvContents() → Column headers and rows of values are not extracted from CSV.");
   }
 
-  // @subroutine {Procedure} Void -> log the instructions for now, the modal needs to be implemented
-  // @argument {string} title: the title describing what the modal is for
-  // @argument {string} message: a message letting the user know what to do
-  function userInstructionModal(title: string, message: string) {
-    newCheckpoint(`userInstructionModal() → ${title}: ${message}`);
-    console.log("%s\n%s", title, message);
-  }
   // @subroutine {Function} Pure: Map<string, string[]> -> return a map such that each key is a column header and each value is an array of values for that column
   // @argument {string[]} columnHeaders: the column headers from the CSV
   // @argument {string[][]} rowsOfValues: the rows of values from the CSV
-  function transformCsvContents([columnHeaders, rowsOfValues]: [
-    string[],
-    string[][],
-  ]): Map<string, string[]> {
-    const transformedCsvContents: Map<string, string[]> = new Map();
+  function transformCsvContents([columnHeaders, rowsOfValues]: [string[], string[][]]): Map<string, string[]> {
+    const transformedCsvContents = new Map<string, string[]>();
     for (const header of columnHeaders) transformedCsvContents.set(header, []);
     for (const row of rowsOfValues) {
       for (let x = 0; x < row.length; ++x) {
@@ -73,9 +61,7 @@ export default function HandleCsv() {
 
   // @subroutine {Function} Pure: Map<string, string[]> -> return the size of the payload, which is the number of rows in a column
   // @argument {Map<string, string[]>} transformedCsvContents: the CSVs contents transformed from (x, y) to (y, x)
-  function getPayloadSize(
-    transformedCsvContents: Map<string, string[]>,
-  ): number {
+  function getPayloadSize(transformedCsvContents: Map<string, string[]>): number {
     let payloadSize = 0;
 
     for (const [columnHeader, rowsInColumn] of transformedCsvContents) {
@@ -102,14 +88,6 @@ export default function HandleCsv() {
     return payload;
   }
 
-  function getPricing(userPricing: string): void {
-    switch (userPricing) {
-      case "internal":
-      case "external":
-      default:
-    }
-  }
-
   // @subroutine {Procedure && Helper} Void -> from file upload, extract the file and read it as text for now
   // @argument {React.ChangeEvent<HTMLInputElement>} event: the change event triggered from a file upload
   function csvHandlingHelper(event: React.ChangeEvent<HTMLInputElement>): void {
@@ -124,7 +102,7 @@ export default function HandleCsv() {
       newCheckpoint("csvHandlingHelper() → ProgressEvent<FileReader> loaded.");
       const fileContents = getFileContents(readerEvent);
       const preppedCsvContents = prepCsvContents(fileContents as string) as [string[], string[][]];
-      const [validationCheckpoints, errorFlags]: [string[], string[]] = useValidation(preppedCsvContents);
+      const [validationCheckpoints, errorFlags]: [string[], string[]] = handleValidation(preppedCsvContents);
       for (const checkpoint of validationCheckpoints) newCheckpoint(checkpoint);
 
       if (errorFlags.length) {
@@ -139,11 +117,8 @@ export default function HandleCsv() {
       const payload: object[] = createPayload(transformedCsvContents, payloadSize);
       setPayload(payload);
 
-      const userPricing = "internal";
-      const pricing = getPricing(userPricing);
-
-      console.log(checkpoints.join("\n\n"));
-      console.log(payload);
+      console.log(checkpoints.join("\n\n")); //* uncomment when debugging
+      console.log(payload); //* uncomment when debugging
     };
   }
 
@@ -177,7 +152,13 @@ export default function HandleCsv() {
         </div>
         {/* <TestLabelsApiReq payload={ payload }/> */}
       </section>
-      <Modal showModal={showErrorModal} title="Your CSV is invalid." onClose={() => {}}>
+      <Modal
+        showModal={showErrorModal}
+        title="Your CSV is invalid."
+        onClose={() => {
+          return 0;
+        }}
+      >
         <div className="flex flex-col">
           {renderableErrorFlags.map((errorFlag, index) => (
             <div key={index} className="text-warning">
