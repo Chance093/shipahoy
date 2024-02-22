@@ -176,7 +176,7 @@ export default function SingleLabelCreation() {
 
   const storeData = (tracking: string[], links: Links, payload: (typeof initialState)[], price: string) => {
     if (!links || !tracking) return;
-    createLabelGroup.mutate({ orders: payload, links: links, price: price, tracking: tracking });
+    createLabelGroup.mutate({ orders: payload, links: links, tracking: tracking, labelPrices: [price] });
   };
 
   const onFormSubmit = (e: FormEvent) => {

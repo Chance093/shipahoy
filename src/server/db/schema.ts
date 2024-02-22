@@ -81,7 +81,7 @@ export const label = mysqlTable("label", {
   labelGroupId: int("label_group_id").notNull(),
   uspsServiceId: int("usps_service_id"),
   uspsExternalServiceId: int("usps_external_service_id"),
-  price: decimal("price", { precision: 4, scale: 2 }).notNull(),
+  price: decimal("price", { precision: 4, scale: 2 }),
   tracking: varchar("tracking", { length: 40 }),
 });
 
