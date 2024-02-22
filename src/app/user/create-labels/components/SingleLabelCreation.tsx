@@ -2,12 +2,13 @@
 import { type FormEvent, useState } from "react";
 import { api } from "~/trpc/react";
 import { zipCodeRegex, phoneNumberRegex } from "~/utils/regex";
+import { createLabels } from "~/utils/createLabels";
 
 export default function SingleLabelCreation() {
   type Links = {
-    pdfLink: string;
-    csvLink: string;
-    zipLink: string;
+    pdf: string;
+    csv: string;
+    zip: string;
   };
   const initialState = {
     FromCountry: "United States",
@@ -164,22 +165,12 @@ export default function SingleLabelCreation() {
 
   const balance = api.balance.getAmount.useQuery();
 
-  const getAPIResponse = () => {
-    const tracking = ["tracking 1", "tracking 2", "tracking 3"];
-    const links = {
-      pdfLink: "pdfLink",
-      csvLink: "csvLink",
-      zipLink: "zipLink",
-    };
-    return { tracking, links };
-  };
-
   const storeData = (tracking: string[], links: Links, payload: (typeof initialState)[], price: string) => {
     if (!links || !tracking) return;
     createLabelGroup.mutate({ orders: payload, links: links, tracking: tracking, labelPrices: [price] });
   };
 
-  const onFormSubmit = (e: FormEvent) => {
+  const onFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!balance.data?.amount) return;
     if (parseFloat(price) === 0) return;
@@ -191,8 +182,12 @@ export default function SingleLabelCreation() {
       setErrorMessage("Insufficient funds. Please add more to your balance.");
       return;
     }
-    const { tracking, links } = getAPIResponse();
-    if (!tracking || !links) return;
+    const apiResponse = await createLabels([formData]);
+    if (apiResponse instanceof Error) {
+      setErrorMessage(`${JSON.stringify(apiResponse)}`);
+      return;
+    }
+    const { tracking, links } = apiResponse;
     storeData(tracking, links, [formData], price);
     const newBalance = parseFloat(balance.data.amount) - parseFloat(price);
     updateBalance.mutate({ amount: newBalance.toString() });

@@ -52,9 +52,9 @@ export const labelRouter = createTRPCRouter({
           })
           .array(),
         links: z.object({
-          pdfLink: z.string().trim(),
-          csvLink: z.string().trim(),
-          zipLink: z.string().trim(),
+          pdf: z.string().trim(),
+          csv: z.string().trim(),
+          zip: z.string().trim(),
         }),
         tracking: z.string().trim().array(),
         labelPrices: z.string().trim().array(),
@@ -68,9 +68,9 @@ export const labelRouter = createTRPCRouter({
         shippingServiceId: 1,
         labelCount: orderCount,
         totalPrice: totalPrice,
-        pdfLink: input.links.pdfLink,
-        csvLink: input.links.csvLink,
-        zipLink: input.links.zipLink,
+        pdfLink: input.links.pdf,
+        csvLink: input.links.csv,
+        zipLink: input.links.zip,
       });
       const labelGroupId = newLabelGroup.insertId;
 

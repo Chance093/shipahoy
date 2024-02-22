@@ -73,8 +73,12 @@ interface LabelType {
   uid: string;
 }
 
-type Links = Record<string, string>;
-type ParsedResponse = [Links, string[]];
+type Links = {
+  pdf: string;
+  csv: string;
+  zip: string;
+};
+type ParsedResponse = { links: Links; tracking: string[] };
 
 const key = "838f1031-44d9-4231-94dd-1e8f9e7b5148";
 async function createLabels(payload: Payload[]): Promise<Error | ParsedResponse> {
@@ -109,7 +113,7 @@ async function createLabels(payload: Payload[]): Promise<Error | ParsedResponse>
       csv: bulkOrder.csvLink,
       zip: bulkOrder.zipLink,
     };
-    const parsedResponse: ParsedResponse = [links, tracking];
+    const parsedResponse: ParsedResponse = { links, tracking };
     return parsedResponse;
   } catch (error) {
     console.error(`%cReq failed: ${JSON.stringify(error)}`, "color: red");
@@ -117,4 +121,4 @@ async function createLabels(payload: Payload[]): Promise<Error | ParsedResponse>
   }
 }
 
-export { createLabels };
+export { createLabels, type ParsedResponse };
