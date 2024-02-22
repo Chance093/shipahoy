@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { parcel, labelAddress, label, labelGroup } from "~/server/db/schema";
-import { phoneNumberRegex, zipCodeRegex } from "~/utils/regex";
+import { zipCodeRegex } from "~/utils/regex";
 
 export const labelRouter = createTRPCRouter({
   createLabel: protectedProcedure
@@ -24,7 +24,10 @@ export const labelRouter = createTRPCRouter({
             ToCountry: z.string().trim(),
             ToName: z.string().trim(),
             ToCompany: z.string().trim(),
-            ToPhone: z.string().trim().regex(phoneNumberRegex, { message: "Must enter valid phone number" }).optional(),
+            ToPhone: z
+              .string()
+              .trim()
+              .transform((val) => (val === "" ? undefined : val)),
             ToStreet: z.string().trim(),
             ToStreet2: z.string().trim(),
             ToCity: z.string().trim(),

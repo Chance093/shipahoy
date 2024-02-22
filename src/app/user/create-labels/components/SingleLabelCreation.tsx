@@ -1,10 +1,14 @@
 "use client";
 import { type FormEvent, useState } from "react";
 import { api } from "~/trpc/react";
-import { dataResponse } from "~/utils/data";
 import { zipCodeRegex, phoneNumberRegex } from "~/utils/regex";
 
 export default function SingleLabelCreation() {
+  type Links = {
+    pdfLink: string;
+    csvLink: string;
+    zipLink: string;
+  };
   const initialState = {
     FromCountry: "United States",
     FromName: "",
@@ -160,6 +164,21 @@ export default function SingleLabelCreation() {
 
   const balance = api.balance.getAmount.useQuery();
 
+  const getAPIResponse = () => {
+    const tracking = ["tracking 1", "tracking 2", "tracking 3"];
+    const links = {
+      pdfLink: "pdfLink",
+      csvLink: "csvLink",
+      zipLink: "zipLink",
+    };
+    return { tracking, links };
+  };
+
+  const storeData = (tracking: string[], links: Links, payload: (typeof initialState)[], price: string) => {
+    if (!links || !tracking) return;
+    createLabelGroup.mutate({ orders: payload, links: links, price: price, tracking: tracking });
+  };
+
   const onFormSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!balance.data?.amount) return;
@@ -172,38 +191,9 @@ export default function SingleLabelCreation() {
       setErrorMessage("Insufficient funds. Please add more to your balance.");
       return;
     }
-    const tracking = dataResponse.bulkOrder.orders[0]?.tracking;
-    const pdf = dataResponse.bulkOrder.orders[0]?.pdf;
-    if (!pdf || !tracking) return;
-    createLabelGroup.mutate({
-      fromName: formData.FromName,
-      fromCompanyName: formData.FromCompany,
-      fromAddress: formData.FromStreet,
-      fromAddress2: formData.FromStreet2,
-      fromZipCode: formData.FromZip,
-      fromCity: formData.FromCity,
-      fromState: formData.FromState,
-      fromCountry: formData.FromCountry,
-      fromPhoneNumber: formData.FromPhone ? formData.FromPhone : undefined,
-      toName: formData.ToName,
-      toCompanyName: formData.ToCompany,
-      toAddress: formData.ToStreet,
-      toAddress2: formData.ToStreet2,
-      toZipCode: formData.ToZip,
-      toCity: formData.ToCity,
-      toState: formData.ToState,
-      toCountry: formData.ToCountry,
-      toPhoneNumber: formData.ToPhone ? formData.ToPhone : undefined,
-      height: parseInt(formData.Height),
-      weight: parseInt(formData.Weight),
-      length: parseInt(formData.Length),
-      width: parseInt(formData.Width),
-      price: price,
-      pdf: pdf,
-      tracking: tracking,
-      labelCount: 1,
-      uspsServiceId: 1,
-    });
+    const { tracking, links } = getAPIResponse();
+    if (!tracking || !links) return;
+    storeData(tracking, links, [formData], price);
     const newBalance = parseFloat(balance.data.amount) - parseFloat(price);
     updateBalance.mutate({ amount: newBalance.toString() });
     setErrorMessage("");
