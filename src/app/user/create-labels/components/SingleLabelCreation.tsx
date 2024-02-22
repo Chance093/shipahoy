@@ -1,36 +1,39 @@
 "use client";
 import { type FormEvent, useState } from "react";
 import { api } from "~/trpc/react";
-import { dataResponse } from "~/utils/data";
 import { zipCodeRegex, phoneNumberRegex } from "~/utils/regex";
 
 export default function SingleLabelCreation() {
-  const [formData, setFormData] = useState({
-    fromName: "",
-    fromCompanyName: "",
-    fromAddress: "",
-    fromAddress2: "",
-    fromZipCode: "",
-    fromCity: "",
-    fromState: "",
-    fromCountry: "United States",
-    fromPhoneNumber: "",
-    toName: "",
-    toCompanyName: "",
-    toAddress: "",
-    toAddress2: "",
-    toZipCode: "",
-    toCity: "",
-    toState: "",
-    toCountry: "United States",
-    toPhoneNumber: "",
-    service: "usps priority 0-70lbs",
-    label: "e-VS",
-    height: "",
-    weight: "",
-    length: "",
-    width: "",
-  });
+  type Links = {
+    pdfLink: string;
+    csvLink: string;
+    zipLink: string;
+  };
+  const initialState = {
+    FromCountry: "United States",
+    FromName: "",
+    FromCompany: "",
+    FromPhone: "",
+    FromStreet: "",
+    FromStreet2: "",
+    FromCity: "",
+    FromZip: "",
+    FromState: "",
+    ToCountry: "United States",
+    ToName: "",
+    ToCompany: "",
+    ToPhone: "",
+    ToStreet: "",
+    ToStreet2: "",
+    ToCity: "",
+    ToZip: "",
+    ToState: "",
+    Length: "",
+    Height: "",
+    Width: "",
+    Weight: "",
+  };
+  const [formData, setFormData] = useState(initialState);
   const [price, setPrice] = useState("0.00");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -89,28 +92,28 @@ export default function SingleLabelCreation() {
   ];
 
   const formInputs = [
-    { id: 31, label: "Name", property: "fromName", required: true },
-    { id: 32, label: "Company Name", property: "fromCompanyName", required: true },
-    { id: 33, label: "Address", property: "fromAddress", required: true },
-    { id: 34, label: "Address 2 (Optional)", property: "fromAddress2", required: false },
-    { id: 35, label: "Zip Code", property: "fromZipCode", required: true, regEx: zipCodeRegex.toString().slice(1, -1) },
-    { id: 36, label: "City", property: "fromCity", required: true },
-    { id: 37, label: "State", property: "fromState", required: true, selectInput: true },
-    { id: 38, label: "Country", property: "fromCountry", required: true, readOnly: true },
-    { id: 39, label: "Phone Number (Optional)", property: "fromPhoneNumber", required: false, regEx: phoneNumberRegex.toString().slice(1, -1) },
-    { id: 41, label: "Name", property: "toName", required: true },
-    { id: 42, label: "Company Name", property: "toCompanyName", required: true },
-    { id: 43, label: "Address", property: "toAddress", required: true },
-    { id: 44, label: "Address 2 (Optional)", property: "toAddress2", required: false },
-    { id: 45, label: "Zip Code", property: "toZipCode", required: true, regEx: zipCodeRegex.toString().slice(1, -1) },
-    { id: 46, label: "City", property: "toCity", required: true },
-    { id: 47, label: "State", property: "toState", required: true, selectInput: true },
-    { id: 48, label: "Country", property: "toCountry", required: true, readOnly: true },
-    { id: 49, label: "Phone Number (Optional)", property: "toPhoneNumber", required: false, regEx: phoneNumberRegex.toString().slice(1, -1) },
-    { id: 51, label: "Height (inches)", property: "height", required: true },
-    { id: 52, label: "Weight (lbs)", property: "weight", required: true },
-    { id: 53, label: "Length (inches)", property: "length", required: true },
-    { id: 54, label: "Width (inches)", property: "width", required: true },
+    { id: 31, label: "Name", property: "FromName", required: true },
+    { id: 32, label: "Company Name", property: "FromCompany", required: true },
+    { id: 33, label: "Address", property: "FromStreet", required: true },
+    { id: 34, label: "Address 2 (Optional)", property: "FromStreet2", required: false },
+    { id: 35, label: "Zip Code", property: "FromZip", required: true, regEx: zipCodeRegex.toString().slice(1, -1) },
+    { id: 36, label: "City", property: "FromCity", required: true },
+    { id: 37, label: "State", property: "FromState", required: true, selectInput: true },
+    { id: 38, label: "Country", property: "FromCountry", required: true, readOnly: true },
+    { id: 39, label: "Phone Number (Optional)", property: "FromPhone", required: false, regEx: phoneNumberRegex.toString().slice(1, -1) },
+    { id: 41, label: "Name", property: "ToName", required: true },
+    { id: 42, label: "Company Name", property: "ToCompany", required: true },
+    { id: 43, label: "Address", property: "ToStreet", required: true },
+    { id: 44, label: "Address 2 (Optional)", property: "ToStreet2", required: false },
+    { id: 45, label: "Zip Code", property: "ToZip", required: true, regEx: zipCodeRegex.toString().slice(1, -1) },
+    { id: 46, label: "City", property: "ToCity", required: true },
+    { id: 47, label: "State", property: "ToState", required: true, selectInput: true },
+    { id: 48, label: "Country", property: "ToCountry", required: true, readOnly: true },
+    { id: 49, label: "Phone Number (Optional)", property: "ToPhone", required: false, regEx: phoneNumberRegex.toString().slice(1, -1) },
+    { id: 51, label: "Height (inches)", property: "Height", required: true },
+    { id: 52, label: "Weight (lbs)", property: "Weight", required: true },
+    { id: 53, label: "Length (inches)", property: "Length", required: true },
+    { id: 54, label: "Width (inches)", property: "Width", required: true },
   ];
 
   const handleChange = (fields: Partial<typeof formData>) => {
@@ -121,7 +124,7 @@ export default function SingleLabelCreation() {
 
   const updateWeight = (value: string) => {
     setFormData((prev) => {
-      return { ...prev, weight: value };
+      return { ...prev, Weight: value };
     });
     switch (true) {
       case 0 < parseInt(value) && parseInt(value) <= 7.99:
@@ -153,32 +156,7 @@ export default function SingleLabelCreation() {
   const createLabelGroup = api.label.createLabel.useMutation({
     onSuccess: () => {
       setPrice("0.00");
-      setFormData({
-        fromName: "",
-        fromCompanyName: "",
-        fromAddress: "",
-        fromAddress2: "",
-        fromZipCode: "",
-        fromCity: "",
-        fromState: "",
-        fromCountry: "United States",
-        fromPhoneNumber: "",
-        toName: "",
-        toCompanyName: "",
-        toAddress: "",
-        toAddress2: "",
-        toZipCode: "",
-        toCity: "",
-        toState: "",
-        toCountry: "United States",
-        toPhoneNumber: "",
-        service: "usps priority 0-70lbs",
-        label: "e-VS",
-        height: "",
-        weight: "",
-        length: "",
-        width: "",
-      });
+      setFormData(initialState);
     },
   });
 
@@ -186,11 +164,26 @@ export default function SingleLabelCreation() {
 
   const balance = api.balance.getAmount.useQuery();
 
+  const getAPIResponse = () => {
+    const tracking = ["tracking 1", "tracking 2", "tracking 3"];
+    const links = {
+      pdfLink: "pdfLink",
+      csvLink: "csvLink",
+      zipLink: "zipLink",
+    };
+    return { tracking, links };
+  };
+
+  const storeData = (tracking: string[], links: Links, payload: (typeof initialState)[], price: string) => {
+    if (!links || !tracking) return;
+    createLabelGroup.mutate({ orders: payload, links: links, price: price, tracking: tracking });
+  };
+
   const onFormSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!balance.data?.amount) return;
     if (parseFloat(price) === 0) return;
-    if (formData.fromAddress === formData.toAddress) {
+    if (formData.FromStreet === formData.ToStreet) {
       setErrorMessage("Sender Address cannot be the same as Recipient Address.");
       return;
     }
@@ -198,38 +191,9 @@ export default function SingleLabelCreation() {
       setErrorMessage("Insufficient funds. Please add more to your balance.");
       return;
     }
-    const tracking = dataResponse.bulkOrder.orders[0]?.tracking;
-    const pdf = dataResponse.bulkOrder.orders[0]?.pdf;
-    if (!pdf || !tracking) return;
-    createLabelGroup.mutate({
-      fromName: formData.fromName,
-      fromCompanyName: formData.fromCompanyName,
-      fromAddress: formData.fromAddress,
-      fromAddress2: formData.fromAddress2,
-      fromZipCode: formData.fromZipCode,
-      fromCity: formData.fromCity,
-      fromState: formData.fromState,
-      fromCountry: formData.fromCountry,
-      fromPhoneNumber: formData.fromPhoneNumber ? formData.fromPhoneNumber : undefined,
-      toName: formData.toName,
-      toCompanyName: formData.toCompanyName,
-      toAddress: formData.toAddress,
-      toAddress2: formData.toAddress2,
-      toZipCode: formData.toZipCode,
-      toCity: formData.toCity,
-      toState: formData.toState,
-      toCountry: formData.toCountry,
-      toPhoneNumber: formData.toPhoneNumber ? formData.toPhoneNumber : undefined,
-      height: parseInt(formData.height),
-      weight: parseInt(formData.weight),
-      length: parseInt(formData.length),
-      width: parseInt(formData.width),
-      price: price,
-      pdf: pdf,
-      tracking: tracking,
-      labelCount: 1,
-      uspsServiceId: 1,
-    });
+    const { tracking, links } = getAPIResponse();
+    if (!tracking || !links) return;
+    storeData(tracking, links, [formData], price);
     const newBalance = parseFloat(balance.data.amount) - parseFloat(price);
     updateBalance.mutate({ amount: newBalance.toString() });
     setErrorMessage("");
@@ -352,8 +316,8 @@ export default function SingleLabelCreation() {
                     id="height"
                     type="number"
                     className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
-                    value={formData.height}
-                    onChange={(e) => handleChange({ height: e.target.value })}
+                    value={formData.Height}
+                    onChange={(e) => handleChange({ Height: e.target.value })}
                     autoComplete="off"
                     min="1"
                   />
@@ -364,7 +328,7 @@ export default function SingleLabelCreation() {
                     id="weight"
                     type="number"
                     className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
-                    value={formData.weight}
+                    value={formData.Weight}
                     onChange={(e) => updateWeight(e.target.value)}
                     autoComplete="off"
                     min="0"
@@ -378,8 +342,8 @@ export default function SingleLabelCreation() {
                     id="length"
                     type="number"
                     className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
-                    value={formData.length}
-                    onChange={(e) => handleChange({ length: e.target.value })}
+                    value={formData.Length}
+                    onChange={(e) => handleChange({ Length: e.target.value })}
                     autoComplete="off"
                     min="1"
                   />
@@ -390,8 +354,8 @@ export default function SingleLabelCreation() {
                     id="width"
                     type="number"
                     className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
-                    value={formData.width}
-                    onChange={(e) => handleChange({ width: e.target.value })}
+                    value={formData.Width}
+                    onChange={(e) => handleChange({ Width: e.target.value })}
                     autoComplete="off"
                     min="1"
                   />
