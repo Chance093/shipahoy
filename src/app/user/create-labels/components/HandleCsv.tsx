@@ -10,6 +10,7 @@ export default function HandleCsv() {
   const [payload, setPayload] = useState<Record<string, string>[]>([]);
   const [showErrorModal, setShowErrorModal] = useState<boolean>(false);
   const [renderableErrorFlags, setRenderableErrorFlags] = useState<string[]>([]);
+  const [totalPrice, setTotalPrice] = useState("0.00");
   const checkpoints: string[] = [];
   const { createLabels, storeData } = useCreateLabels();
 
@@ -90,6 +91,40 @@ export default function HandleCsv() {
     return payload;
   }
 
+  function calculateTotalPrice(data: string[]) {
+    const weights = data.map((z) => +z);
+    const prices: number[] = [];
+    weights.map((weight) => {
+      switch (true) {
+        case 0 < weight && weight <= 7.99:
+          prices.push(5.5);
+          break;
+        case 8 <= weight && weight <= 14.99:
+          prices.push(11);
+          break;
+        case 15 <= weight && weight <= 24.99:
+          prices.push(11.5);
+          break;
+        case 25 <= weight && weight <= 34.99:
+          prices.push(12);
+          break;
+        case 35 <= weight && weight <= 44.99:
+          prices.push(12.5);
+          break;
+        case 45 <= weight && weight <= 54.99:
+          prices.push(12.5);
+          break;
+        case 55 <= weight && weight <= 70.0:
+          prices.push(12.5);
+          break;
+        default:
+          prices.push(0);
+      }
+    });
+    const totalPrice = prices.reduce((a, b) => a + b);
+    return totalPrice.toFixed(2);
+  }
+
   // @subroutine {Procedure && Helper} Void -> from file upload, extract the file and read it as text for now
   // @argument {React.ChangeEvent<HTMLInputElement>} event: the change event triggered from a file upload
   function csvHandlingHelper(event: React.ChangeEvent<HTMLInputElement>): void {
@@ -117,7 +152,11 @@ export default function HandleCsv() {
       const transformedCsvContents: Map<string, string[]> = transformCsvContents(preppedCsvContents);
       const payloadSize: number = getPayloadSize(transformedCsvContents);
       const payload = createPayload(transformedCsvContents, payloadSize);
+      const weights = payload.map((order) => order.Weight ?? "0");
+      console.log(weights);
+      const price = calculateTotalPrice(weights);
       setPayload(payload);
+      setTotalPrice(price);
 
       console.log(checkpoints.join("\n\n")); //* uncomment when debugging
       console.log(payload); //* uncomment when debugging
@@ -159,8 +198,11 @@ export default function HandleCsv() {
               {fileName.length > 13 ? fileName.substring(0, 13) + " . . ." : fileName}
             </label>
             <input onChange={csvHandlingHelper} id="upload_csv" type="file" accept=".csv" className="hidden" />
-            <button disabled={true} className="w-40 cursor-pointer items-start rounded-md bg-purple p-4 text-center opacity-50">
-              Purchase $0
+            <button
+              disabled={totalPrice === "0.00" ? true : false}
+              className="w-40 cursor-pointer items-start rounded-md bg-purple p-4 text-center disabled:opacity-50"
+            >
+              Purchase ${totalPrice}
             </button>
           </div>
         </div>
