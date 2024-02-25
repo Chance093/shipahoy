@@ -2,6 +2,7 @@
 "use client";
 import { useState, type FormEvent } from "react";
 import Modal from "~/app/components/Modal";
+import { api } from "~/trpc/react";
 import useCreateLabels, { type InitialState } from "~/utils/createLabels";
 import handleValidation from "~/utils/handleValidation";
 
@@ -13,6 +14,8 @@ export default function HandleCsv() {
   const [totalPrice, setTotalPrice] = useState("0.00");
   const checkpoints: string[] = [];
   const { createLabels, storeData } = useCreateLabels();
+  const balance = api.balance.getAmount.useQuery();
+  const updateBalance = api.balance.update.useMutation();
 
   function newCheckpoint(checkpoint: string): void {
     checkpoints.push(checkpoint);
@@ -165,6 +168,12 @@ export default function HandleCsv() {
 
   async function submitOrder(e: FormEvent) {
     e.preventDefault();
+    if (!balance.data?.amount) return;
+    if (parseFloat(totalPrice) === 0) return;
+    if (parseFloat(balance.data?.amount) < parseFloat(totalPrice)) {
+      setRenderableErrorFlags((prev) => [...prev, "Insufficient funds. Please add more to your balance."]);
+      return;
+    }
     const apiResponse = await createLabels(payload);
     if (apiResponse instanceof Error) {
       setRenderableErrorFlags((prev) => [...prev, `${JSON.stringify(apiResponse)}`]);
@@ -172,7 +181,11 @@ export default function HandleCsv() {
     }
     const { tracking, links, labelPrices } = apiResponse;
     storeData(tracking, links, payload as InitialState[], labelPrices);
+    setTotalPrice("0.00");
     setPayload([]);
+    const newBalance = parseFloat(balance.data.amount) - parseFloat(totalPrice);
+    updateBalance.mutate({ amount: newBalance.toString() });
+    setRenderableErrorFlags([]);
   }
 
   return (
