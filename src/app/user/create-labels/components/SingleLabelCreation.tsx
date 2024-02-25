@@ -2,14 +2,9 @@
 import { type FormEvent, useState } from "react";
 import { api } from "~/trpc/react";
 import { zipCodeRegex, phoneNumberRegex } from "~/utils/regex";
-import { createLabels } from "~/utils/createLabels";
+import useCreateLabels from "~/utils/createLabels";
 
 export default function SingleLabelCreation() {
-  type Links = {
-    pdf: string;
-    csv: string;
-    zip: string;
-  };
   const initialState = {
     FromCountry: "United States",
     FromName: "",
@@ -116,6 +111,7 @@ export default function SingleLabelCreation() {
     { id: 53, label: "Length (inches)", property: "Length", required: true },
     { id: 54, label: "Width (inches)", property: "Width", required: true },
   ];
+  const { createLabels, storeData } = useCreateLabels();
 
   const handleChange = (fields: Partial<typeof formData>) => {
     setFormData((prev) => {
@@ -154,21 +150,9 @@ export default function SingleLabelCreation() {
     }
   };
 
-  const createLabelGroup = api.label.createLabel.useMutation({
-    onSuccess: () => {
-      setPrice("0.00");
-      setFormData(initialState);
-    },
-  });
-
   const updateBalance = api.balance.update.useMutation();
 
   const balance = api.balance.getAmount.useQuery();
-
-  const storeData = (tracking: string[], links: Links, payload: (typeof initialState)[], price: string) => {
-    if (!links || !tracking) return;
-    createLabelGroup.mutate({ orders: payload, links: links, tracking: tracking, labelPrices: [price] });
-  };
 
   const onFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -188,7 +172,9 @@ export default function SingleLabelCreation() {
       return;
     }
     const { tracking, links } = apiResponse;
-    storeData(tracking, links, [formData], price);
+    storeData(tracking, links, [formData], [price]);
+    setPrice("0.00");
+    setFormData(initialState);
     const newBalance = parseFloat(balance.data.amount) - parseFloat(price);
     updateBalance.mutate({ amount: newBalance.toString() });
     setErrorMessage("");
