@@ -51,25 +51,26 @@ export const labelRouter = createTRPCRouter({
               .transform((val) => parseFloat(val)),
           })
           .array(),
-        price: z.string().trim(),
         links: z.object({
-          pdfLink: z.string().trim(),
-          csvLink: z.string().trim(),
-          zipLink: z.string().trim(),
+          pdf: z.string().trim(),
+          csv: z.string().trim(),
+          zip: z.string().trim(),
         }),
         tracking: z.string().trim().array(),
+        labelPrices: z.string().trim().array(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const orderCount = input.orders.length;
+      const totalPrice = input.labelPrices.reduce((a, b) => (+a + +b).toString());
       const newLabelGroup = await ctx.db.insert(labelGroup).values({
         userId: ctx.auth.userId,
         shippingServiceId: 1,
         labelCount: orderCount,
-        totalPrice: input.price,
-        pdfLink: input.links.pdfLink,
-        csvLink: input.links.csvLink,
-        zipLink: input.links.zipLink,
+        totalPrice: totalPrice,
+        pdfLink: input.links.pdf,
+        csvLink: input.links.csv,
+        zipLink: input.links.zip,
       });
       const labelGroupId = newLabelGroup.insertId;
 
@@ -77,7 +78,7 @@ export const labelRouter = createTRPCRouter({
         const newLabel = await ctx.db.insert(label).values({
           labelGroupId: parseInt(labelGroupId),
           uspsServiceId: 1,
-          price: input.price,
+          price: input.labelPrices[idx],
           tracking: input.tracking[idx],
         });
         const labelId = newLabel.insertId;

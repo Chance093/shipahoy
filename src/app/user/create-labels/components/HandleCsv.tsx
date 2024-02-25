@@ -1,15 +1,21 @@
 "use strict";
 "use client";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import Modal from "~/app/components/Modal";
+import { api } from "~/trpc/react";
+import useCreateLabels, { type InitialState } from "~/utils/createLabels";
 import handleValidation from "~/utils/handleValidation";
 
 export default function HandleCsv() {
-  const [fileName, setFileName] = useState<string>("No file selected.");
-  const [payload, setPayload] = useState<object[]>([]);
+  const [fileName, setFileName] = useState<string>("Choose a CSV");
+  const [payload, setPayload] = useState<Record<string, string>[]>([]);
   const [showErrorModal, setShowErrorModal] = useState<boolean>(false);
   const [renderableErrorFlags, setRenderableErrorFlags] = useState<string[]>([]);
+  const [totalPrice, setTotalPrice] = useState("0.00");
   const checkpoints: string[] = [];
+  const { createLabels, storeData } = useCreateLabels();
+  const balance = api.balance.getAmount.useQuery();
+  const updateBalance = api.balance.update.useMutation();
 
   function newCheckpoint(checkpoint: string): void {
     checkpoints.push(checkpoint);
@@ -64,7 +70,7 @@ export default function HandleCsv() {
   function getPayloadSize(transformedCsvContents: Map<string, string[]>): number {
     let payloadSize = 0;
 
-    for (const [columnHeader, rowsInColumn] of transformedCsvContents) {
+    for (const rowsInColumn of transformedCsvContents.values()) {
       payloadSize = rowsInColumn.length;
       break;
     }
@@ -74,8 +80,8 @@ export default function HandleCsv() {
 
   // @subroutine {Function} Pure: Map<string, string[]> -> return an array of objects, each object is a payload for a label
   // @argument {Map<string, string[]>} transformedCsvContents: the CSVs contents transformed from (x, y) to (y, x)
-  function createPayload(transformedCsvContents: Map<string, string[]>, payloadSize: number): object[] {
-    const payload: object[] = [];
+  function createPayload(transformedCsvContents: Map<string, string[]>, payloadSize: number) {
+    const payload: Record<string, string>[] = [];
 
     for (let x = 0; x < payloadSize; ++x) {
       const payloadObject: Record<string, string> = {};
@@ -86,6 +92,40 @@ export default function HandleCsv() {
     }
     newCheckpoint("createPayload() → Payload created:");
     return payload;
+  }
+
+  function calculateTotalPrice(data: string[]) {
+    const weights = data.map((z) => +z);
+    const prices: number[] = [];
+    weights.map((weight) => {
+      switch (true) {
+        case 0 < weight && weight <= 7.99:
+          prices.push(5.5);
+          break;
+        case 8 <= weight && weight <= 14.99:
+          prices.push(11);
+          break;
+        case 15 <= weight && weight <= 24.99:
+          prices.push(11.5);
+          break;
+        case 25 <= weight && weight <= 34.99:
+          prices.push(12);
+          break;
+        case 35 <= weight && weight <= 44.99:
+          prices.push(12.5);
+          break;
+        case 45 <= weight && weight <= 54.99:
+          prices.push(12.5);
+          break;
+        case 55 <= weight && weight <= 70.0:
+          prices.push(12.5);
+          break;
+        default:
+          prices.push(0);
+      }
+    });
+    const totalPrice = prices.reduce((a, b) => a + b);
+    return totalPrice.toFixed(2);
   }
 
   // @subroutine {Procedure && Helper} Void -> from file upload, extract the file and read it as text for now
@@ -114,17 +154,43 @@ export default function HandleCsv() {
 
       const transformedCsvContents: Map<string, string[]> = transformCsvContents(preppedCsvContents);
       const payloadSize: number = getPayloadSize(transformedCsvContents);
-      const payload: object[] = createPayload(transformedCsvContents, payloadSize);
+      const payload = createPayload(transformedCsvContents, payloadSize);
+      const weights = payload.map((order) => order.Weight ?? "0");
+      console.log(weights);
+      const price = calculateTotalPrice(weights);
       setPayload(payload);
+      setTotalPrice(price);
 
       console.log(checkpoints.join("\n\n")); //* uncomment when debugging
       console.log(payload); //* uncomment when debugging
     };
   }
 
+  async function submitOrder(e: FormEvent) {
+    e.preventDefault();
+    if (!balance.data?.amount) return;
+    if (parseFloat(totalPrice) === 0) return;
+    if (parseFloat(balance.data?.amount) < parseFloat(totalPrice)) {
+      setRenderableErrorFlags((prev) => [...prev, "Insufficient funds. Please add more to your balance."]);
+      return;
+    }
+    const apiResponse = await createLabels(payload);
+    if (apiResponse instanceof Error) {
+      setRenderableErrorFlags((prev) => [...prev, `${JSON.stringify(apiResponse)}`]);
+      return;
+    }
+    const { tracking, links, labelPrices } = apiResponse;
+    storeData(tracking, links, payload as InitialState[], labelPrices);
+    setTotalPrice("0.00");
+    setPayload([]);
+    const newBalance = parseFloat(balance.data.amount) - parseFloat(totalPrice);
+    updateBalance.mutate({ amount: newBalance.toString() });
+    setRenderableErrorFlags([]);
+  }
+
   return (
     <>
-      <section className="rounded-2xl bg-linear-gradient">
+      <form onSubmit={submitOrder} className="rounded-2xl bg-linear-gradient">
         <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] translate-x-[1.5px] translate-y-[1.5px] flex-col gap-8 rounded-2xl bg-radial-gradient p-5">
           <h2 className="text-center text-2xl">Upload CSV</h2>
           <div className="flex flex-1 flex-col gap-2">
@@ -141,17 +207,19 @@ export default function HandleCsv() {
           </div>
 
           <div className="flex justify-between">
-            <label htmlFor="upload_csv" className="w-40 cursor-pointer items-start rounded-md bg-[#b4a3d8] p-4 text-center text-black">
-              Choose a CSV
+            <label htmlFor="upload_csv" className="w-44 cursor-pointer items-start rounded-md bg-[#b4a3d8] p-4 text-center text-black">
+              {fileName.length > 13 ? fileName.substring(0, 13) + " . . ." : fileName}
             </label>
             <input onChange={csvHandlingHelper} id="upload_csv" type="file" accept=".csv" className="hidden" />
-            <button disabled={true} className="w-40 cursor-pointer items-start rounded-md bg-purple p-4 text-center opacity-50">
-              Purchase $0
+            <button
+              disabled={totalPrice === "0.00" ? true : false}
+              className="w-40 cursor-pointer items-start rounded-md bg-purple p-4 text-center disabled:opacity-50"
+            >
+              Purchase ${totalPrice}
             </button>
           </div>
         </div>
-        {/* <TestLabelsApiReq payload={ payload }/> */}
-      </section>
+      </form>
       <Modal
         showModal={showErrorModal}
         title="Your CSV is invalid."
