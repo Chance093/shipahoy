@@ -11,6 +11,9 @@ export const labelGroupRouter = createTRPCRouter({
         id: true,
         totalPrice: true,
         labelCount: true,
+        pdfLink: true,
+        csvLink: true,
+        zipLink: true,
         createdAt: true,
       },
       with: {

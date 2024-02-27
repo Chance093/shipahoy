@@ -38,13 +38,13 @@ export default async function ShippingHistoryTable() {
                 <td className="p-4 py-6">{group.shippingService.service}</td>
                 <td className="p-4 py-6">${group.totalPrice}</td>
                 <td className="py-6">
-                  <DownloadButton fileLink={"asdfasdf"} />
+                  <DownloadButton fileLink={group.pdfLink} />
                 </td>
                 <td className="py-6">
-                  <DownloadButton fileLink={"asdfasdf"} />
+                  <DownloadButton fileLink={group.csvLink} />
                 </td>
                 <td className="py-6">
-                  <DownloadButton fileLink={"asdfasdf"} />
+                  <DownloadButton fileLink={group.zipLink} />
                 </td>
               </tr>
             ))}
