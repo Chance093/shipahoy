@@ -17,13 +17,13 @@ export default async function ShippingHistoryTable() {
               <th className="p-4 pb-6 font-normal">Labels</th>
               <th className="p-4 pb-6 font-normal">Type</th>
               <th className="p-4 pb-6 font-normal">Price</th>
-              <th className="pb-6 font-normal">
+              <th className="pb-2 font-normal">
                 <div className="w-12 text-center">PDF</div>
               </th>
-              <th className="pb-6 font-normal">
+              <th className="pb-2 font-normal">
                 <div className="w-12 text-center">CSV</div>
               </th>
-              <th className="pb-6 font-normal">
+              <th className="pb-2 font-normal">
                 <div className="w-12 text-center">ZIP</div>
               </th>
             </tr>
