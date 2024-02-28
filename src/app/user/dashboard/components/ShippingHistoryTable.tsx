@@ -5,8 +5,8 @@ export default async function ShippingHistoryTable() {
   const shippingHistory = await api.labelGroup.getShippingHistory.query();
 
   return (
-    <section className="rounded-2xl bg-linear-gradient">
-      <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] translate-x-[1.5px] translate-y-[1.5px] flex-col gap-2 rounded-2xl bg-radial-gradient p-5">
+    <section className="flex flex-1 flex-col rounded-2xl bg-linear-gradient">
+      <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] flex-1 translate-x-[1.5px] translate-y-[1.5px] flex-col gap-2 rounded-2xl bg-radial-gradient p-5">
         <h2 className="p-2 text-2xl">Shipping History</h2>
 
         <table className="w-full text-left">
@@ -30,7 +30,7 @@ export default async function ShippingHistoryTable() {
           </thead>
           <tbody>
             {shippingHistory?.map((group, idx) => (
-              <tr key={group.id} className={idx === shippingHistory.length - 1 ? "" : "border-b border-gray-600/50"}>
+              <tr key={group.id} className="border-b border-gray-600/50">
                 <td className="p-4 py-6">{group.id}</td>
                 <td className="p-4 py-6">{group.createdAt ? format(group.createdAt, "MM-dd-yyyy") : ""}</td>
                 <td className="p-4 py-6">{group.labelCount}</td>

@@ -9,7 +9,7 @@ export default async function Dashboard() {
   shippingHistory.map((item) => (labelCount += item.labelCount));
 
   return (
-    <main className="ml-72 flex flex-col gap-8 px-10 py-10">
+    <main className="ml-72 flex min-h-screen flex-col gap-8 px-10 py-10">
       <h1 className="pl-2 text-4xl">Dashboard</h1>
       <section className="flex gap-8">
         <section className="h-48 w-80 rounded-2xl bg-linear-gradient">
