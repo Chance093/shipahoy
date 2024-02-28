@@ -31,7 +31,7 @@ export default async function ShippingHistoryTable() {
           <tbody>
             {shippingHistory?.map((group, idx) => (
               <tr key={group.id} className="border-b border-gray-600/50">
-                <td className="p-4 py-6">{group.id}</td>
+                <td className="p-4 py-6">{idx + 1}</td>
                 <td className="p-4 py-6">{group.createdAt ? format(group.createdAt, "MM-dd-yyyy") : ""}</td>
                 <td className="p-4 py-6">{group.labelCount}</td>
                 <td className="p-4 py-6">{group.shippingService.service}</td>
