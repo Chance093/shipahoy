@@ -5,6 +5,7 @@ import Modal from "~/app/components/Modal";
 import { api } from "~/trpc/react";
 import useCreateLabels, { type InitialState } from "~/utils/createLabels";
 import handleValidation from "~/utils/handleValidation";
+import { useRouter } from "next/navigation";
 
 export default function HandleCsv() {
   const [fileName, setFileName] = useState<string>("Choose a CSV");
@@ -16,6 +17,7 @@ export default function HandleCsv() {
   const { createLabels, storeData } = useCreateLabels();
   const balance = api.balance.getAmount.useQuery();
   const updateBalance = api.balance.update.useMutation();
+  const router = useRouter();
 
   function newCheckpoint(checkpoint: string): void {
     checkpoints.push(checkpoint);
@@ -186,6 +188,8 @@ export default function HandleCsv() {
     const newBalance = parseFloat(balance.data.amount) - parseFloat(totalPrice);
     updateBalance.mutate({ amount: newBalance.toString() });
     setRenderableErrorFlags([]);
+    router.push("/user/dashboard");
+    router.refresh();
   }
 
   return (
