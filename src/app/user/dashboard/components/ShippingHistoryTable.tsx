@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { api } from "~/trpc/server";
-import DownloadButton from "./DownloadButton";
+import DownloadButton from "./dButton";
 export default async function ShippingHistoryTable() {
   const shippingHistory = await api.labelGroup.getShippingHistory.query();
 
