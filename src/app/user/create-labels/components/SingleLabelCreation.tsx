@@ -3,6 +3,7 @@ import { type FormEvent, useState } from "react";
 import { api } from "~/trpc/react";
 import { zipCodeRegex, phoneNumberRegex } from "~/utils/regex";
 import useCreateLabels from "~/utils/createLabels";
+import { useRouter } from "next/navigation";
 
 export default function SingleLabelCreation() {
   const initialState = {
@@ -32,6 +33,7 @@ export default function SingleLabelCreation() {
   const [formData, setFormData] = useState(initialState);
   const [price, setPrice] = useState("0.00");
   const [errorMessage, setErrorMessage] = useState("");
+  const router = useRouter();
 
   const statesList = [
     { name: "", abbreviation: "" },
@@ -178,6 +180,8 @@ export default function SingleLabelCreation() {
     const newBalance = parseFloat(balance.data.amount) - parseFloat(price);
     updateBalance.mutate({ amount: newBalance.toString() });
     setErrorMessage("");
+    router.push("/user/dashboard");
+    router.refresh();
   };
 
   return (
