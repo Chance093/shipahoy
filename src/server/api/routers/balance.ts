@@ -11,6 +11,13 @@ export const balanceRouter = createTRPCRouter({
     });
   }),
 
+  getAmountByUserId: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
+    return ctx.db.query.balance.findFirst({
+      where: eq(balance.userId, input),
+      columns: { amount: true },
+    });
+  }),
+
   add: protectedProcedure.mutation(async ({ ctx }) => {
     const existingBalance = await ctx.db.query.balance.findFirst({
       where: eq(balance.userId, ctx.auth.userId),
@@ -35,5 +42,21 @@ export const balanceRouter = createTRPCRouter({
           amount: input.amount,
         })
         .where(eq(balance.userId, ctx.auth.userId));
+    }),
+
+  updateByUserId: protectedProcedure
+    .input(
+      z.object({
+        amount: z.string(),
+        userId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(balance)
+        .set({
+          amount: input.amount,
+        })
+        .where(eq(balance.userId, input.userId));
     }),
 });

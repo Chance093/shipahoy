@@ -26,6 +26,28 @@ export const labelGroupRouter = createTRPCRouter({
     });
   }),
 
+  getShippingHistoryByUserId: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
+    return ctx.db.query.labelGroup.findMany({
+      where: eq(labelGroup.userId, input),
+      columns: {
+        id: true,
+        totalPrice: true,
+        labelCount: true,
+        pdfLink: true,
+        csvLink: true,
+        zipLink: true,
+        createdAt: true,
+      },
+      with: {
+        shippingService: {
+          columns: {
+            service: true,
+          },
+        },
+      },
+    });
+  }),
+
   add: protectedProcedure
     .input(
       z.object({
