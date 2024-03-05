@@ -43,3 +43,69 @@ const response = {
   },
 };
 
+function fixMethod_1(string: string) {
+  const indexes = [];
+  for (let x = 0, y = []; x < string.length; ++x) {
+    if (y.length === 2) {
+      indexes.push(y);
+      y = [];
+    }
+    const character = string[x];
+    if (character !== '"') continue;
+    y.push(x);
+  }
+  for (const [start, end] of indexes) {
+    if (!start || !end) continue;
+    const substring = string.slice(start, end + 1);
+    const fixedSubstring = substring.replace(/,/g, '');
+    string = string.replace(substring, fixedSubstring);
+  }
+  return string;
+}
+
+function fixMethod_2(string: string) {
+  const regex = /"[^"]*"/g;
+  const fixedString = string.replace(regex, (match) => match.replace(/,/g, ''));
+  return fixedString;
+}
+
+function fixMethod_3(string: string) {
+  for (const character of string) {
+    if (character !== '"') continue;
+    const quoteIndex = string.indexOf(character);
+    const commaIndexes = [];
+    for (let x = quoteIndex + 1; x < string.length; ++x) {
+      if (string[x] === '"') break;
+      if (string[x] !== ',') continue;
+      commaIndexes.push(x);
+    }
+    const arr = string.split('');
+    for (const index of commaIndexes) arr[index] = '';
+    string = arr.join('');
+  }
+  return string;
+}
+
+function testing() {
+  const string = 'FromCountry,FromName,FromCompany,FromPhone,FromStreet,FromStreet2,FromCity,FromZip,FromState,ToCountry,ToName,ToCompany,ToPhone,ToStreet,ToStreet2,ToCity,ToZip,ToState,Length,Height,Width,Weight\r\n' +
+    'US,X Trader Link,,7023816104,6038 S Topaz St ,# 3,Las Vegas,89120,NV,US,jack ali,,346-307-9643 ext. 07147,1422 CUPPLES RD,,SAN ANTONIO,78226-1208,TX,15,15,15,4\r\n' +
+    'US,X Trader Link,,7023816104,6038 S Topaz St ,# 3,Las Vegas,89120,NV,US,"Paola Scarnato, Venerable",,347-448-3190 ext. 29034,1475 DUNWOODY DR ,STE 200,WEST CHESTER,19380-1478,PA,15,15,15,3';
+  const string2 = 'FromCountry,"FromName",FromCompany,FromPhone,FromStreet,FromStreet2,"Fro,mCity",FromZip,FromState,ToCountry,ToName,ToCompany,ToPhone,ToStreet,ToStreet2,ToCity,ToZip,ToState,Length,Height,Width,Weight\r\n' +
+    'US,X Trader Link,,7023816104,6038 S Topaz St ,# 3,Las Vegas,89120,NV,US,jack ali,,"346-307-,9643 e,xt. 07147",1422 CUPPLES RD,,SAN ANTONIO,78226-1208,TX,15,15,15,4\r\n' +
+    'US,X Trader Link,,7023816104,6038 S Topaz St ,# 3,Las Vegas,89120,NV,US,"Paola Scarnato, Venerable",,347-448-3190 ext. 29034,1475 DUNWOODY DR ,STE 200,WEST CHESTER,19380-1478,PA,15,15,15,3';
+  const first = fixMethod_1(string2);
+  const second = fixMethod_2(string2);
+  const third = fixMethod_3(string2);
+  first.match(/,/g).length; //?
+  second.match(/,/g).length; //?
+  third.match(/,/g).length; //?
+  string2.match(/,/g).length; //?
+  string.match(/,/g).length; //?
+  console.log(first === second, first === third, second === third);
+  for (let x = 0; x < 100000; ++x) fixMethod_1(string); //?.
+  for (let x = 0; x < 100000; ++x) fixMethod_2(string); //?.
+  for (let x = 0; x < 100000; ++x) fixMethod_3(string); //?.
+}
+
+testing();
+
