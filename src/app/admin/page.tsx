@@ -7,25 +7,47 @@ import { format } from "date-fns";
 
 export default function Admin() {
   const [userId, setUserId] = useState("");
-  const [shippingHistory, setShippingHistory] = useState([]);
-  const [invoiceHistory, setInvoiceHistory] = useState([]);
-  const [balance, setBalance] = useState("$0.00");
-  const [isLoading, setIsLoading] = useState(false);
+  const [shippingHistory, setShippingHistory] = useState<
+    | {
+        id: number;
+        createdAt: Date | null;
+        labelCount: number;
+        totalPrice: string;
+        pdfLink: string;
+        csvLink: string;
+        zipLink: string;
+        shippingService: {
+          service: string;
+        };
+      }[]
+    | undefined
+  >([]);
+  const [invoiceHistory, setInvoiceHistory] = useState<
+    | {
+        id: number;
+        amount: string;
+        paymentMethod: string;
+        createdAt: Date | null;
+        paymentStatus: {
+          status: string | null;
+        };
+      }[]
+    | undefined
+  >([]);
+  const [balance, setBalance] = useState<string | null | undefined>("$0.00");
+  const [isUserFetched, setIsUserFetched] = useState(false);
 
   const orders = api.labelGroup.getShippingHistoryByUserId.useQuery(userId);
   const invoices = api.invoice.getInvoicesByUserId.useQuery(userId);
   const amount = api.balance.getAmountByUserId.useQuery(userId);
 
   function fetchUser() {
-    setIsLoading(true);
-    console.log(amount.data);
+    setIsUserFetched(false);
     setShippingHistory(orders.data);
     setInvoiceHistory(invoices.data);
-    setBalance(amount.data.amount);
-    setIsLoading(false);
+    setBalance(amount.data?.amount);
+    setIsUserFetched(true);
   }
-
-  //    const shippingHistory =  api.labelGroup.getShippingHistoryById.useQuery("string");
 
   return (
     <main className="flex min-h-screen flex-col">
@@ -33,22 +55,25 @@ export default function Admin() {
         <GlobeAsiaAustraliaIcon className="w-12" />
         Proglo Shipping
       </h1>
-      <section className="flex-1 p-8">
+      <section className="flex flex-1 flex-col gap-8 p-8">
         <h1 className="text-center text-3xl">Admin Panel</h1>
         <section>
           <h2>Search User:</h2>
           <input type="text" placeholder="User Id" value={userId} onChange={(e) => setUserId(e.target.value)} />
           <button onClick={fetchUser}>Submit</button>
         </section>
-        <section>
-          <h2>Balance: {balance}</h2>
-          <input type="text" placeholder="Add balance" />
-        </section>
-        {invoiceHistory.length === 0 ? null : (
+        {isUserFetched ? (
+          <section>
+            <h2>Balance: {balance}</h2>
+            <input type="text" placeholder="Add balance" />
+          </section>
+        ) : null}
+
+        {invoiceHistory?.length === 0 ? null : (
           <section className="flex flex-1 flex-col rounded-2xl bg-linear-gradient">
             <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] flex-1 translate-x-[1.5px] translate-y-[1.5px] flex-col gap-2 rounded-2xl bg-radial-gradient p-5">
               <h2 className="p-2 text-2xl">Invoices</h2>
-              {invoiceHistory.length === 0 ? (
+              {invoiceHistory?.length === 0 ? (
                 <div className="flex flex-1 items-center justify-center pb-8">
                   <p className="text-2xl">You have no invoices!</p>
                 </div>
@@ -63,7 +88,7 @@ export default function Admin() {
                     </tr>
                   </thead>
                   <tbody>
-                    {invoiceHistory.length === 0 && <p>You have no invoices!</p>}
+                    {invoiceHistory?.length === 0 && <p>You have no invoices!</p>}
                     {invoiceHistory?.map((invoice) => (
                       <tr key={invoice.id} className="border-b border-gray-600/50">
                         <td className="p-4 py-6">{invoice.createdAt ? format(invoice.createdAt, "MM-dd-yyyy") : ""}</td>
@@ -78,11 +103,11 @@ export default function Admin() {
             </div>
           </section>
         )}
-        {shippingHistory.length === 0 ? null : (
+        {shippingHistory?.length === 0 ? null : (
           <section className="flex flex-1 flex-col rounded-2xl bg-linear-gradient">
             <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] flex-1 translate-x-[1.5px] translate-y-[1.5px] flex-col gap-2 rounded-2xl bg-radial-gradient p-5">
               <h2 className="p-2 text-2xl">Shipping History</h2>
-              {shippingHistory.length === 0 ? (
+              {shippingHistory?.length === 0 ? (
                 <div className="flex flex-1 items-center justify-center pb-8">
                   <p className="text-2xl">You have no orders!</p>
                 </div>
