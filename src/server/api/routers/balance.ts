@@ -43,4 +43,20 @@ export const balanceRouter = createTRPCRouter({
         })
         .where(eq(balance.userId, ctx.auth.userId));
     }),
+
+  updateByUserId: protectedProcedure
+    .input(
+      z.object({
+        amount: z.string(),
+        userId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(balance)
+        .set({
+          amount: input.amount,
+        })
+        .where(eq(balance.userId, input.userId));
+    }),
 });

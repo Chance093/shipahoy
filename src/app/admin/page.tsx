@@ -4,9 +4,12 @@ import { useState } from "react";
 import { api } from "~/trpc/react";
 import DownloadButton from "../user/dashboard/components/DownloadButton";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
 
 export default function Admin() {
+  const router = useRouter();
   const [userId, setUserId] = useState("");
+  const [addedBalance, setAddedBalance] = useState(0);
   const [shippingHistory, setShippingHistory] = useState<
     | {
         id: number;
@@ -34,12 +37,13 @@ export default function Admin() {
       }[]
     | undefined
   >([]);
-  const [balance, setBalance] = useState<string | null | undefined>("$0.00");
+  const [balance, setBalance] = useState<string | null | undefined>("0.00");
   const [isUserFetched, setIsUserFetched] = useState(false);
 
   const orders = api.labelGroup.getShippingHistoryByUserId.useQuery(userId);
   const invoices = api.invoice.getInvoicesByUserId.useQuery(userId);
   const amount = api.balance.getAmountByUserId.useQuery(userId);
+  const updateBalance = api.balance.updateByUserId.useMutation();
 
   function fetchUser() {
     setIsUserFetched(false);
@@ -47,6 +51,14 @@ export default function Admin() {
     setInvoiceHistory(invoices.data);
     setBalance(amount.data?.amount);
     setIsUserFetched(true);
+  }
+
+  function addBalance() {
+    if (!balance) return;
+    updateBalance.mutate({ amount: (parseFloat(balance) + addedBalance).toString(), userId: userId });
+    setBalance((parseFloat(balance) + addedBalance).toFixed(2).toString());
+    setAddedBalance(0);
+    router.refresh();
   }
 
   return (
@@ -75,11 +87,14 @@ export default function Admin() {
             <h2 className="text-2xl">Balance: ${balance}</h2>
             <div className="flex gap-4">
               <input
-                type="text"
+                type="number"
                 placeholder="Add balance"
+                value={addedBalance}
+                onChange={(e) => setAddedBalance(parseFloat(e.target.value))}
                 className="w-80 rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
+                min={0}
               />
-              <button>Update</button>
+              <button onClick={addBalance}>Update</button>
             </div>
           </section>
         ) : null}
