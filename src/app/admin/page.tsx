@@ -57,15 +57,30 @@ export default function Admin() {
       </h1>
       <section className="flex flex-1 flex-col gap-8 p-8">
         <h1 className="text-center text-3xl">Admin Panel</h1>
-        <section>
-          <h2>Search User:</h2>
-          <input type="text" placeholder="User Id" value={userId} onChange={(e) => setUserId(e.target.value)} />
-          <button onClick={fetchUser}>Submit</button>
+        <section className="flex flex-col gap-4">
+          <h2 className="text-2xl">Search User:</h2>
+          <div className="flex gap-4">
+            <input
+              type="text"
+              placeholder="User Id"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              className="w-80 rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
+            />
+            <button onClick={fetchUser}>Search</button>
+          </div>
         </section>
         {isUserFetched ? (
-          <section>
-            <h2>Balance: {balance}</h2>
-            <input type="text" placeholder="Add balance" />
+          <section className="flex flex-col gap-4">
+            <h2 className="text-2xl">Balance: ${balance}</h2>
+            <div className="flex gap-4">
+              <input
+                type="text"
+                placeholder="Add balance"
+                className="w-80 rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
+              />
+              <button>Update</button>
+            </div>
           </section>
         ) : null}
 
