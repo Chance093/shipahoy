@@ -23,6 +23,25 @@ export const invoiceRouter = createTRPCRouter({
     });
   }),
 
+  getInvoicesByUserId: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
+    return ctx.db.query.invoice.findMany({
+      where: eq(invoice.userId, input),
+      columns: {
+        id: true,
+        amount: true,
+        paymentMethod: true,
+        createdAt: true,
+      },
+      with: {
+        paymentStatus: {
+          columns: {
+            status: true,
+          },
+        },
+      },
+    });
+  }),
+
   add: protectedProcedure
     .input(
       z.object({
