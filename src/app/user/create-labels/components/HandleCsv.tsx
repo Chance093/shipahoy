@@ -34,9 +34,13 @@ export default function HandleCsv() {
 
   // @subroutine {Function} Pure: ProgressEvent<FileReader> -> extract & return the file contents from the file reader load event
   // @argument {ProgressEvent<FileReader>} event: the progress event triggered from a file reader load
-  function getFileContents(event: ProgressEvent<FileReader>): string | ArrayBuffer | null {
-    const fileContents: string | ArrayBuffer | null = event.target?.result ?? null;
+  function getFileContents(event: ProgressEvent<FileReader>): string | Error {
+    const rawFileContents = event.target?.result ?? null;
+    if (!rawFileContents || rawFileContents instanceof ArrayBuffer) return new Error("getFileContents() → Raw file contents are not a string");
     newCheckpoint("getFileContents() → Raw file contents stored.");
+    const regex = /"[^"]*"/g;
+    const fileContents = rawFileContents.replace(regex, (match) => match.replace(/,/g, ""));
+    newCheckpoint("getFileContents() → Inline commas removed from CSV - if any.");
     return fileContents;
   }
 
