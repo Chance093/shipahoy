@@ -85,7 +85,7 @@ type Links = {
 type ParsedResponse = { links: Links; tracking: string[]; labelPrices: string[] };
 
 export default function useCreateLabels() {
-  const key = "838f1031-44d9-4231-94dd-1e8f9e7b5148";
+  const key = process.env.CREATION_KEY;
   async function createLabels(payload: Payload[]): Promise<Error | ParsedResponse> {
     const url = "https://api.weshipsmart.com/api/v2/order/create-bulk-order";
     const data = {
