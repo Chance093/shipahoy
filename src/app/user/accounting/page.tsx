@@ -1,7 +1,7 @@
 import { api } from "~/trpc/server";
-import InvoiceTable from "./components/InvoiceTable";
+import InvoiceTable from "../../components/InvoiceTable";
 import { BanknotesIcon } from "@heroicons/react/24/solid";
-import Card from "../dashboard/components/Card";
+import Card from "../../components/Card";
 
 export default async function Accounting() {
   const balance = await api.balance.getAmount.query();

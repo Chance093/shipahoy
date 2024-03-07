@@ -2,7 +2,7 @@
 import { GlobeAsiaAustraliaIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { api } from "~/trpc/react";
-import DownloadButton from "../user/dashboard/components/DownloadButton";
+import DownloadButton from "../components/DownloadButton";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useOrganizationList } from "@clerk/nextjs";
