@@ -47,23 +47,4 @@ export const labelGroupRouter = createTRPCRouter({
       },
     });
   }),
-
-  add: protectedProcedure
-    .input(
-      z.object({
-        shippingServiceId: z.number(),
-        labelCount: z.number(),
-        totalPrice: z.string(),
-        pdf: z.string(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const lbgroup = await ctx.db.insert(labelGroup).values({
-        userId: ctx.auth.userId,
-        shippingServiceId: input.shippingServiceId,
-        labelCount: input.labelCount,
-        totalPrice: input.totalPrice,
-        pdf: input.pdf,
-      });
-    }),
 });
