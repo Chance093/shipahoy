@@ -78,3 +78,28 @@ export const statesList = [
   { name: "Wisconsin", abbreviation: "WI" },
   { name: "Wyoming", abbreviation: "WY" },
 ];
+
+export const initialState = {
+  FromCountry: "United States",
+  FromName: "",
+  FromCompany: "",
+  FromPhone: "",
+  FromStreet: "",
+  FromStreet2: "",
+  FromCity: "",
+  FromZip: "",
+  FromState: "",
+  ToCountry: "United States",
+  ToName: "",
+  ToCompany: "",
+  ToPhone: "",
+  ToStreet: "",
+  ToStreet2: "",
+  ToCity: "",
+  ToZip: "",
+  ToState: "",
+  Length: "",
+  Height: "",
+  Width: "",
+  Weight: "",
+};

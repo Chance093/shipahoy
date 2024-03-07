@@ -1,4 +1,4 @@
-export type FormDataType = {
+export type FormData = {
   FromCountry: string;
   FromName: string;
   FromCompany: string;
@@ -23,5 +23,5 @@ export type FormDataType = {
   Weight: string;
 };
 
-export type HandleChange = (fields: Partial<FormDataType>) => void;
+export type HandleChange = (fields: Partial<FormData>) => void;
 export type UpdateWeight = (value: string) => void;

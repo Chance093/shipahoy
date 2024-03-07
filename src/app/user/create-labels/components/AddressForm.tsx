@@ -1,7 +1,7 @@
 import { formInputs, statesList } from "~/utils/lists";
-import { type FormDataType, type HandleChange } from "~/utils/definitions";
+import { type FormData, type HandleChange } from "~/utils/definitions";
 
-export default function AddressForm({ formData, handleChange, label }: { formData: FormDataType; handleChange: HandleChange; label: string }) {
+export default function AddressForm({ formData, handleChange, label }: { formData: FormData; handleChange: HandleChange; label: string }) {
   return (
     <section className="rounded-2xl bg-linear-gradient">
       <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] translate-x-[1.5px] translate-y-[1.5px] flex-col justify-between gap-8 rounded-2xl bg-radial-gradient p-5">
