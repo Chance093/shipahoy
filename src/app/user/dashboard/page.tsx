@@ -24,7 +24,7 @@ export default async function Dashboard() {
         </Card>
       </section>
 
-      <ShippingHistoryTable />
+      <ShippingHistoryTable shippingHistory={shippingHistory} />
     </main>
   );
 }

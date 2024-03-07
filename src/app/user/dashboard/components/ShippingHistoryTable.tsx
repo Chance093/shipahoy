@@ -1,9 +1,20 @@
 import { format } from "date-fns";
-import { api } from "~/trpc/server";
 import DownloadButton from "./DownloadButton";
-export default async function ShippingHistoryTable() {
-  const shippingHistory = await api.labelGroup.getShippingHistory.query();
 
+type ShippingHistory = {
+  id: number;
+  createdAt: Date | null;
+  labelCount: number;
+  totalPrice: string;
+  pdfLink: string;
+  csvLink: string;
+  zipLink: string;
+  shippingService: {
+    service: string;
+  };
+}[];
+
+export default function ShippingHistoryTable({ shippingHistory }: { shippingHistory: ShippingHistory }) {
   return (
     <section className="flex flex-1 flex-col rounded-2xl bg-linear-gradient">
       <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] flex-1 translate-x-[1.5px] translate-y-[1.5px] flex-col gap-2 rounded-2xl bg-radial-gradient p-5">
