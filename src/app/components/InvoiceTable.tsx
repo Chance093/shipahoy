@@ -1,9 +1,16 @@
-import { api } from "~/trpc/server";
 import { format } from "date-fns";
 
-export default async function InvoiceTable() {
-  const invoices = await api.invoice.getInvoices.query();
+type Invoices = {
+  id: number;
+  amount: string;
+  paymentMethod: string;
+  createdAt: Date | null;
+  paymentStatus: {
+    status: string | null;
+  };
+}[];
 
+export default function InvoiceTable({ invoices }: { invoices: Invoices }) {
   return (
     <section className="flex flex-1 flex-col rounded-2xl bg-linear-gradient">
       <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] flex-1 translate-x-[1.5px] translate-y-[1.5px] flex-col gap-2 rounded-2xl bg-radial-gradient p-5">
