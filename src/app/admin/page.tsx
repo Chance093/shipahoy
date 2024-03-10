@@ -42,7 +42,7 @@ export default function Admin() {
   const [balance, setBalance] = useState<string | null | undefined>("0.00");
   const [isUserFetched, setIsUserFetched] = useState(false);
 
-  const orders = api.labelGroup.getShippingHistoryByUserId.useQuery(userId);
+  const orders = api.shippingHistory.getShippingHistoryByUserId.useQuery(userId);
   const invoices = api.invoice.getInvoicesByUserId.useQuery(userId);
   const amount = api.balance.getAmountByUserId.useQuery(userId);
   const updateBalance = api.balance.updateByUserId.useMutation();
