@@ -60,4 +60,24 @@ export const invoiceRouter = createTRPCRouter({
         paymentStatusId: input.paymentStatusId,
       });
     }),
+
+  addByUserId: protectedProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        balanceId: z.number(),
+        amount: z.string(),
+        paymentMethod: z.string(),
+        paymentStatusId: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.insert(invoice).values({
+        userId: input.userId,
+        balanceId: input.balanceId,
+        amount: input.amount,
+        paymentMethod: input.paymentMethod,
+        paymentStatusId: input.paymentStatusId,
+      });
+    }),
 });
