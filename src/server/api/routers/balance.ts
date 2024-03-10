@@ -18,17 +18,6 @@ export const balanceRouter = createTRPCRouter({
     });
   }),
 
-  add: protectedProcedure.mutation(async ({ ctx }) => {
-    const existingBalance = await ctx.db.query.balance.findFirst({
-      where: eq(balance.userId, ctx.auth.userId),
-    });
-    if (existingBalance) return;
-    await ctx.db.insert(balance).values({
-      userId: ctx.auth.userId,
-      amount: "0.00",
-    });
-  }),
-
   update: protectedProcedure
     .input(
       z.object({
