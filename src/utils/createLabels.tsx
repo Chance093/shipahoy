@@ -1,88 +1,7 @@
 "use client";
-"use strict";
 import axios from "axios";
 import { api } from "~/trpc/react";
-
-type Payload = Record<string, string>;
-
-type InitialState = {
-  FromCountry: string;
-  FromName: string;
-  FromCompany: string;
-  FromPhone: string;
-  FromStreet: string;
-  FromStreet2: string;
-  FromCity: string;
-  FromZip: string;
-  FromState: string;
-  ToCountry: string;
-  ToName: string;
-  ToCompany: string;
-  ToPhone: string;
-  ToStreet: string;
-  ToStreet2: string;
-  ToCity: string;
-  ToZip: string;
-  ToState: string;
-  Length: string;
-  Height: string;
-  Width: string;
-  Weight: string;
-};
-
-interface ResponseData {
-  type: string;
-  message: string;
-  bulkOrder: BulkOrder;
-}
-
-interface BulkOrder {
-  _id: string;
-  user: string;
-  orders: Order[];
-  labelType: string;
-  total: number;
-  status: string;
-  uuid: string;
-  csv: string;
-  pdf: string;
-  zip: string;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-  csvLink: string;
-  pdfLink: string;
-  zipLink: string;
-}
-
-interface Order {
-  _id: string;
-  uuid: string;
-  user: string;
-  isApi: boolean;
-  labelType: LabelType;
-  price: number;
-  status: string;
-  pdf: string;
-  tracking: string;
-  tracking_details: unknown[];
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-}
-
-interface LabelType {
-  _id: string;
-  name: string;
-  uid: string;
-}
-
-type Links = {
-  pdf: string;
-  csv: string;
-  zip: string;
-};
-type ParsedResponse = { links: Links; tracking: string[]; labelPrices: string[] };
+import { type FormData, type ResponseData, type Links, type ParsedResponse, type Payload } from "./definitions";
 
 export default function useCreateLabels() {
   const key = "temp value";
@@ -103,7 +22,7 @@ export default function useCreateLabels() {
     try {
       const response = await axios.post(url, data, config);
       const responseData = response.data as ResponseData;
-      const bulkOrder: BulkOrder = responseData.bulkOrder;
+      const bulkOrder = responseData.bulkOrder;
       if (!bulkOrder) return new Error("Response data does not contain bulkOrder");
       const orders = bulkOrder.orders;
       if (!orders) return new Error("Bulk order does not contain orders");
@@ -121,26 +40,19 @@ export default function useCreateLabels() {
         csv: bulkOrder.csvLink,
         zip: bulkOrder.zipLink,
       };
-      const parsedResponse: ParsedResponse = { links, tracking, labelPrices };
-      return parsedResponse;
+      return { links, tracking, labelPrices };
     } catch (error) {
       console.error(`%cReq failed: ${JSON.stringify(error)}`, "color: red");
       return new Error(`Req failed: ${JSON.stringify(error)}`);
     }
   }
 
-  const createLabelGroup = api.label.createLabel.useMutation({
-    onSuccess: () => {
-      console.log("success");
-    },
-  });
+  const createLabelGroup = api.label.createLabel.useMutation();
 
-  const storeData = (tracking: string[], links: Links, payload: InitialState[], price: string[]) => {
+  const storeData = (tracking: string[], links: Links, payload: FormData[], price: string[]) => {
     if (!links || !tracking) return;
     createLabelGroup.mutate({ orders: payload, links: links, tracking: tracking, labelPrices: price });
   };
 
   return { createLabels, storeData };
 }
-
-export { type Payload, type InitialState };
