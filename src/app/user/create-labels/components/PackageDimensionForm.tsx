@@ -1,4 +1,4 @@
-import { type HandleChange, type FormData, type UpdateWeight } from "~/utils/definitions";
+import { type HandleChange, type FormData, type UpdateWeight } from "~/lib/definitions";
 
 export default function PackageDimensionForm({
   formData,

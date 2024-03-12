@@ -1,4 +1,4 @@
-import { zipCodeRegex, phoneNumberRegex } from "~/utils/regex";
+import { zipCodeRegex, phoneNumberRegex } from "~/lib/regex";
 
 export const formInputs = [
   { id: 31, label: "Name", property: "FromName", required: true },

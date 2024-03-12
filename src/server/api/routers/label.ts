@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { parcel, labelAddress, label, labelGroup } from "~/server/db/schema";
-import { zipCodeRegex } from "~/utils/regex";
+import { zipCodeRegex } from "~/lib/regex";
 
 export const labelRouter = createTRPCRouter({
   createLabel: protectedProcedure

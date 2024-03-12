@@ -1,7 +1,7 @@
 "use client";
 import axios from "axios";
 import { api } from "~/trpc/react";
-import { type FormData, type ResponseData, type Links, type ParsedResponse, type Payload } from "./definitions";
+import { type FormData, type ResponseData, type Links, type ParsedResponse, type Payload } from "../lib/definitions";
 
 export default function useCreateLabels() {
   const key = "temp value";

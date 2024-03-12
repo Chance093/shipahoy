@@ -1,5 +1,5 @@
-import { formInputs, statesList } from "~/utils/lists";
-import { type FormData, type HandleChange } from "~/utils/definitions";
+import { formInputs, statesList } from "~/lib/lists";
+import { type FormData, type HandleChange } from "~/lib/definitions";
 
 export default function AddressForm({ formData, handleChange, label }: { formData: FormData; handleChange: HandleChange; label: string }) {
   return (

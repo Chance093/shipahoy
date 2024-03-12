@@ -2,9 +2,9 @@
 
 import { type FormEvent, useState } from "react";
 import { api } from "~/trpc/react";
-import useCreateLabels from "~/utils/createLabels";
+import useCreateLabels from "~/hooks/useCreateLabels";
 import { useRouter } from "next/navigation";
-import { initialState } from "~/utils/lists";
+import { initialState } from "~/lib/lists";
 
 export default function useFormValidation() {
   const router = useRouter();

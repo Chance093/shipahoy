@@ -3,10 +3,10 @@
 import { useState, type FormEvent } from "react";
 import Modal from "~/app/components/Modal";
 import { api } from "~/trpc/react";
-import useCreateLabels from "~/utils/createLabels";
-import handleValidation from "~/utils/handleValidation";
+import useCreateLabels from "~/hooks/useCreateLabels";
+import handleValidation from "~/lib/handleValidation";
 import { useRouter } from "next/navigation";
-import { type FormData } from "~/utils/definitions";
+import { type FormData } from "~/lib/definitions";
 
 export default function HandleCsv() {
   const [fileName, setFileName] = useState<string>("Choose a CSV");
