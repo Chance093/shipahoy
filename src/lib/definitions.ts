@@ -23,6 +23,29 @@ export type FormData = {
   Weight: string;
 };
 
+export type ShippingHistory = {
+  id: number;
+  createdAt: Date | null;
+  labelCount: number;
+  totalPrice: string;
+  pdfLink: string;
+  csvLink: string;
+  zipLink: string;
+  shippingService: {
+    service: string;
+  };
+}[];
+
+export type InvoiceHistory = {
+  id: number;
+  amount: string;
+  paymentMethod: string;
+  createdAt: Date | null;
+  paymentStatus: {
+    status: string | null;
+  };
+}[];
+
 export type HandleChange = (fields: Partial<FormData>) => void;
 export type UpdateWeight = (value: string) => void;
 
