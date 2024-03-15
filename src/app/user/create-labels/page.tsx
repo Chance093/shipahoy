@@ -1,11 +1,11 @@
-import HandleCsv from "./components/HandleCsv";
+import BulkLabelCreation from "./components/BulkLabelCreation";
 import SingleLabelCreation from "./components/SingleLabelCreation";
 import Divider from "~/app/components/Divider";
 
 export default function CreateLabels() {
   return (
     <>
-      <HandleCsv />
+      <BulkLabelCreation />
       <Divider />
       <SingleLabelCreation />
     </>
