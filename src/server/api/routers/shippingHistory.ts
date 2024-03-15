@@ -3,7 +3,7 @@ import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { labelGroup } from "~/server/db/schema";
 import { z } from "zod";
 
-export const labelGroupRouter = createTRPCRouter({
+export const shippingHistoryRouter = createTRPCRouter({
   getShippingHistory: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.labelGroup.findMany({
       where: eq(labelGroup.userId, ctx.auth.userId),

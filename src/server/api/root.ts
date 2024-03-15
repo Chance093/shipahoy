@@ -1,6 +1,6 @@
 import { createTRPCRouter } from "~/server/api/trpc";
 import { balanceRouter } from "./routers/balance";
-import { labelGroupRouter } from "./routers/labelGroup";
+import { shippingHistoryRouter } from "./routers/shippingHistory";
 import { pricingRouter } from "./routers/pricing";
 import { invoiceRouter } from "./routers/invoice";
 import { labelRouter } from "./routers/label";
@@ -12,7 +12,7 @@ import { labelRouter } from "./routers/label";
  */
 export const appRouter = createTRPCRouter({
   balance: balanceRouter,
-  labelGroup: labelGroupRouter,
+  shippingHistory: shippingHistoryRouter,
   pricing: pricingRouter,
   invoice: invoiceRouter,
   label: labelRouter,

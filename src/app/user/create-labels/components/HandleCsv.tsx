@@ -3,9 +3,10 @@
 import { useState, type FormEvent } from "react";
 import Modal from "~/app/components/Modal";
 import { api } from "~/trpc/react";
-import useCreateLabels, { type InitialState } from "~/utils/createLabels";
-import handleValidation from "~/utils/handleValidation";
+import useCreateLabels from "~/hooks/useCreateLabels";
+import handleValidation from "~/lib/handleValidation";
 import { useRouter } from "next/navigation";
+import { type FormData } from "~/lib/definitions";
 
 export default function HandleCsv() {
   const [fileName, setFileName] = useState<string>("Choose a CSV");
@@ -186,7 +187,7 @@ export default function HandleCsv() {
       return;
     }
     const { tracking, links, labelPrices } = apiResponse;
-    storeData(tracking, links, payload as InitialState[], labelPrices);
+    storeData(tracking, links, payload as FormData[], labelPrices);
     setTotalPrice("0.00");
     setPayload([]);
     const newBalance = parseFloat(balance.data.amount) - parseFloat(totalPrice);

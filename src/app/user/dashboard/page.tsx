@@ -5,7 +5,7 @@ import { DocumentPlusIcon, BanknotesIcon, ClipboardDocumentListIcon } from "@her
 
 export default async function Dashboard() {
   const balance = await api.balance.getAmount.query();
-  const shippingHistory = await api.labelGroup.getShippingHistory.query();
+  const shippingHistory = await api.shippingHistory.getShippingHistory.query();
   let labelCount = 0;
   shippingHistory.forEach((item) => (labelCount += item.labelCount));
 
