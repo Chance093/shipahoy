@@ -105,3 +105,5 @@ interface LabelType {
   name: string;
   uid: string;
 }
+
+export type ErrorFlagDetails = Array<string | number | Map<string, number[]> | undefined>;

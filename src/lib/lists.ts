@@ -103,3 +103,28 @@ export const initialState = {
   Width: "",
   Weight: "",
 };
+
+export const EXPECTED_COLUMN_HEADERS = [
+  "FromCountry",
+  "FromName",
+  "FromCompany",
+  "FromPhone",
+  "FromStreet",
+  "FromStreet2",
+  "FromCity",
+  "FromZip",
+  "FromState",
+  "ToCountry",
+  "ToName",
+  "ToCompany",
+  "ToPhone",
+  "ToStreet",
+  "ToStreet2",
+  "ToCity",
+  "ToZip",
+  "ToState",
+  "Length",
+  "Height",
+  "Width",
+  "Weight",
+];
