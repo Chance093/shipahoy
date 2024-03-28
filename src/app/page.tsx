@@ -1,6 +1,8 @@
 import SignInButtons from "./components/SignInButtons";
 import Image from "next/image";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <main className="flex min-h-screen">
@@ -13,12 +15,7 @@ export default function Home() {
         <SignInButtons />
       </section>
       <section className="relative flex-1">
-        <Image
-          src="/jiawei-zhao-BsXeYX3efOI-unsplash.jpg"
-          fill={true}
-          alt="Picture of the author"
-          className=""
-        />
+        <Image src="/jiawei-zhao-BsXeYX3efOI-unsplash.jpg" fill={true} alt="Picture of the author" className="" />
       </section>
     </main>
   );
