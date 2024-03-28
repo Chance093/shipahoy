@@ -1,9 +1,11 @@
-import { SignIn } from '@clerk/nextjs';
+import { SignIn } from "@clerk/nextjs";
+
+import { env } from "~/env.mjs";
 
 export default function Page() {
   return (
-    <main className='h-screen flex justify-center items-center'>
-      <SignIn afterSignInUrl={'http://localhost:3000/user/dashboard'} />
+    <main className="flex h-screen items-center justify-center">
+      <SignIn afterSignInUrl={env.DOMAIN ? `https://${env.DOMAIN}/user/dashboard` : "http://localhost:3000/user/dashboard"} />
     </main>
   );
 }
