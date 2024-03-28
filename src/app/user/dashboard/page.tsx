@@ -3,6 +3,8 @@ import ShippingHistoryTable from "../../components/ShippingHistoryTable";
 import Card from "../../components/Card";
 import { DocumentPlusIcon, BanknotesIcon, ClipboardDocumentListIcon } from "@heroicons/react/24/solid";
 
+export const dynamic = "force-dynamic";
+
 export default async function Dashboard() {
   const balance = await api.balance.getAmount.query();
   const shippingHistory = await api.shippingHistory.getShippingHistory.query();
