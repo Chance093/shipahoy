@@ -14,7 +14,7 @@ export const env = createEnv({
       .refine((str) => !str.includes("YOUR_MYSQL_URL_HERE"), "You forgot to change the default URL"),
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
     CLERK_SECRET_KEY: z.string(),
-    VERCEL_URL: z.string().url().optional(),
+    // VERCEL_URL: z.string().url().optional(),
     WEBHOOK_SECRET: z.string(),
   },
 
@@ -37,7 +37,7 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
-    VERCEL_URL: process.env.VERCEL_URL,
+    // VERCEL_URL: process.env.VERCEL_URL,
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
