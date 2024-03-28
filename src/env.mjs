@@ -16,7 +16,6 @@ export const env = createEnv({
     CLERK_SECRET_KEY: z.string(),
     VERCEL_URL: z.string().url().optional(),
     WEBHOOK_SECRET: z.string(),
-    MOKA_KEY: z.string(),
   },
 
   /**
@@ -31,6 +30,7 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string(),
     NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z.string(),
     NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: z.string(),
+    NEXT_PUBLIC_MOKA_KEY: z.string(),
   },
 
   /**
@@ -48,7 +48,7 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL,
     NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL,
     NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL,
-    MOKA_KEY: process.env.MOKA_KEY,
+    NEXT_PUBLIC_MOKA_KEY: process.env.MOKA_KEY,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

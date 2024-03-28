@@ -5,7 +5,7 @@ import { type FormData, type ResponseData, type Links, type ParsedResponse, type
 import { env } from "~/env.mjs";
 
 export default function useCreateLabels() {
-  const key: string = env.MOKA_KEY;
+  const key: string = env.NEXT_PUBLIC_MOKA_KEY;
   async function createLabels(payload: Payload[]): Promise<Error | ParsedResponse> {
     const url = "https://api.weshipsmart.com/api/v2/order/create-bulk-order";
     const data = {
