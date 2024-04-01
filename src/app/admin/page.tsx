@@ -5,7 +5,21 @@ import InvoiceTable from "../components/InvoiceTable";
 import ShippingHistoryTable from "../components/ShippingHistoryTable";
 
 export default function Admin() {
-  const { userMemberships, isLoaded, userId, setUserId, orders, invoices, amount, fetchUser, addBalance, addedBalance, setAddedBalance } = useAdmin();
+  const {
+    userMemberships,
+    isLoaded,
+    userId,
+    setUserId,
+    orders,
+    invoices,
+    amount,
+    fetchUser,
+    addBalance,
+    addedBalance,
+    setAddedBalance,
+    paymentMethod,
+    setPaymentMethod,
+  } = useAdmin();
 
   if (isLoaded) {
     if (!userMemberships.data) return <p>Something went wrong!</p>;
@@ -50,6 +64,24 @@ export default function Admin() {
                       className="w-80 rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                       min={0}
                     />
+                    <select
+                      name="payment-method"
+                      id="payment-method"
+                      className="w-80 rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
+                      value={paymentMethod}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                    >
+                      <option value="" className="border-gray-600/50 bg-[#1a1a1b]"></option>
+                      <option value="ACH" className="border-gray-600/50 bg-[#1a1a1b]">
+                        ACH
+                      </option>
+                      <option value="Zelle" className="border-gray-600/50 bg-[#1a1a1b]">
+                        Zelle
+                      </option>
+                      <option value="Wire" className="border-gray-600/50 bg-[#1a1a1b]">
+                        Wire
+                      </option>
+                    </select>
                     <button onClick={addBalance}>Update</button>
                   </div>
                 </section>

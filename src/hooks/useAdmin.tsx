@@ -7,6 +7,7 @@ export default function useAdmin() {
   const { userMemberships, isLoaded } = useOrganizationList({ userMemberships: true });
   const [userId, setUserId] = useState("");
   const [addedBalance, setAddedBalance] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
 
   const { data: orders, refetch: refetchOrders } = api.shippingHistory.getShippingHistoryByUserId.useQuery(userId, { enabled: false });
   const { data: invoices, refetch: refetchInvoices } = api.invoice.getInvoicesByUserId.useQuery(userId, { enabled: false });
@@ -15,6 +16,12 @@ export default function useAdmin() {
     onSuccess: async () => {
       setAddedBalance("");
       await refetchBalance();
+    },
+  });
+  const updateInvoice = api.invoice.addByUserId.useMutation({
+    onSuccess: async () => {
+      setPaymentMethod("");
+      await refetchInvoices();
     },
   });
 
@@ -28,7 +35,22 @@ export default function useAdmin() {
     if (!amount?.amount) return;
     if (!addedBalance) return;
     updateBalance.mutate({ amount: (Number(amount.amount) + Number(addedBalance)).toString(), userId: userId });
+    updateInvoice.mutate({ userId: userId, balanceId: 123, amount: addedBalance, paymentMethod: paymentMethod, paymentStatusId: 1 });
   }
 
-  return { userMemberships, isLoaded, userId, setUserId, orders, invoices, amount, fetchUser, addBalance, addedBalance, setAddedBalance };
+  return {
+    userMemberships,
+    isLoaded,
+    userId,
+    setUserId,
+    orders,
+    invoices,
+    amount,
+    fetchUser,
+    addBalance,
+    addedBalance,
+    setAddedBalance,
+    paymentMethod,
+    setPaymentMethod,
+  };
 }
