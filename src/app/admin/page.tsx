@@ -38,7 +38,7 @@ export default function Admin() {
                   <button onClick={fetchUser}>Search</button>
                 </div>
               </section>
-              {amount ? (
+              {amount && amount.amount !== undefined ? (
                 <section className="flex flex-col gap-4">
                   <h2 className="text-2xl">Balance: ${!amount ? "0.00" : amount.amount}</h2>
                   <div className="flex gap-4">
