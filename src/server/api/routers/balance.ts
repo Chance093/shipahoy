@@ -7,14 +7,14 @@ export const balanceRouter = createTRPCRouter({
   getAmount: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.balance.findFirst({
       where: eq(balance.userId, ctx.auth.userId),
-      columns: { amount: true },
+      columns: { amount: true, id: true },
     });
   }),
 
   getAmountByUserId: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
     return ctx.db.query.balance.findFirst({
       where: eq(balance.userId, input),
-      columns: { amount: true },
+      columns: { amount: true, id: true },
     });
   }),
 
