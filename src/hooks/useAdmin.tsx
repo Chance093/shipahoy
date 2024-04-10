@@ -33,9 +33,10 @@ export default function useAdmin() {
 
   function addBalance() {
     if (!amount?.amount) return;
+    if (!amount?.id) return;
     if (!addedBalance) return;
     updateBalance.mutate({ amount: (Number(amount.amount) + Number(addedBalance)).toString(), userId: userId });
-    updateInvoice.mutate({ userId: userId, balanceId: 123, amount: addedBalance, paymentMethod: paymentMethod, paymentStatusId: 1 });
+    updateInvoice.mutate({ userId: userId, balanceId: Number(amount.id), amount: addedBalance, paymentMethod: paymentMethod, paymentStatusId: 1 });
   }
 
   return {
