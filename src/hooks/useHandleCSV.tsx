@@ -77,9 +77,9 @@ export default function useHandleCSV() {
     const payload: FormData[] = [];
 
     for (let x = 0; x < payloadSize; ++x) {
-      const payloadObject: FormData = initialState;
+      const payloadObject: FormData = { ...initialState };
       for (const [columnHeader, rowsInColumn] of transformedCsvContents) {
-        payloadObject[columnHeader as keyof typeof payloadObject] = rowsInColumn[x]!;
+        payloadObject[columnHeader] = rowsInColumn[x]!;
       }
       payload.push(payloadObject);
     }
@@ -147,12 +147,12 @@ export default function useHandleCSV() {
       const payloadSize: number = getPayloadSize(transformedCsvContents);
       const payload = createPayload(transformedCsvContents, payloadSize);
       const weights = payload.map((order) => order.Weight ?? "0");
-      console.log(weights);
+      // console.log(weights);
       const price = calculateTotalPrice(weights);
       setPayload(payload);
       setTotalPrice(price);
 
-      console.log(checkpoints.join("\n\n")); //* uncomment when debugging
+      // console.log(checkpoints.join("\n\n")); //* uncomment when debugging
       console.log(payload); //* uncomment when debugging
     };
   }
