@@ -1,4 +1,5 @@
 export type FormData = {
+  [key: string]: string;
   FromCountry: string;
   FromName: string;
   FromCompany: string;
