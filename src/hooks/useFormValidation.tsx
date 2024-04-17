@@ -27,25 +27,28 @@ export default function useFormValidation() {
     });
     switch (true) {
       case 0 < parseInt(value) && parseInt(value) <= 7.99:
-        setPrice("5.50");
+        setPrice("7.00");
         break;
       case 8 <= parseInt(value) && parseInt(value) <= 14.99:
-        setPrice("11.00");
-        break;
-      case 15 <= parseInt(value) && parseInt(value) <= 24.99:
-        setPrice("11.50");
-        break;
-      case 25 <= parseInt(value) && parseInt(value) <= 34.99:
         setPrice("12.00");
         break;
+      case 15 <= parseInt(value) && parseInt(value) <= 24.99:
+        setPrice("14.00");
+        break;
+      case 25 <= parseInt(value) && parseInt(value) <= 34.99:
+        setPrice("16.00");
+        break;
       case 35 <= parseInt(value) && parseInt(value) <= 44.99:
-        setPrice("12.50");
+        setPrice("18.00");
         break;
       case 45 <= parseInt(value) && parseInt(value) <= 54.99:
-        setPrice("12.50");
+        setPrice("20.00");
         break;
-      case 55 <= parseInt(value) && parseInt(value) <= 70.0:
-        setPrice("12.50");
+      case 55 <= parseInt(value) && parseInt(value) <= 64.99:
+        setPrice("22.00");
+        break;
+      case 65 <= parseInt(value) && parseInt(value) <= 70:
+        setPrice("24.00");
         break;
       default:
         setPrice("0.00");

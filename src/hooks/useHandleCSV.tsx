@@ -87,31 +87,36 @@ export default function useHandleCSV() {
     return payload;
   }
 
+  // TODO: Refactor to implement with other weight checking function
+  // TODO: Write test case for this
   function calculateTotalPrice(data: string[]) {
     const weights = data.map((z) => +z);
     const prices: number[] = [];
     weights.map((weight) => {
       switch (true) {
         case 0 < weight && weight <= 7.99:
-          prices.push(5.5);
+          prices.push(7);
           break;
         case 8 <= weight && weight <= 14.99:
-          prices.push(11);
-          break;
-        case 15 <= weight && weight <= 24.99:
-          prices.push(11.5);
-          break;
-        case 25 <= weight && weight <= 34.99:
           prices.push(12);
           break;
+        case 15 <= weight && weight <= 24.99:
+          prices.push(14);
+          break;
+        case 25 <= weight && weight <= 34.99:
+          prices.push(16);
+          break;
         case 35 <= weight && weight <= 44.99:
-          prices.push(12.5);
+          prices.push(18);
           break;
         case 45 <= weight && weight <= 54.99:
-          prices.push(12.5);
+          prices.push(20);
           break;
-        case 55 <= weight && weight <= 70.0:
-          prices.push(12.5);
+        case 55 <= weight && weight <= 64.99:
+          prices.push(22);
+          break;
+        case 65 <= weight && weight <= 70:
+          prices.push(24);
           break;
         default:
           prices.push(0);
