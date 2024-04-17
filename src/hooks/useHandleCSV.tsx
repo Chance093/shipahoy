@@ -6,6 +6,7 @@ import handleValidation from "~/lib/handleValidation";
 import { useRouter } from "next/navigation";
 import { type FormData } from "~/lib/definitions";
 import { initialState } from "~/lib/lists";
+import { useOrganizationList } from "@clerk/nextjs";
 
 export default function useHandleCSV() {
   const [fileName, setFileName] = useState("Choose a CSV");
@@ -18,6 +19,7 @@ export default function useHandleCSV() {
   const balance = api.balance.getAmount.useQuery();
   const updateBalance = api.balance.update.useMutation();
   const router = useRouter();
+  const { userMemberships, isLoaded } = useOrganizationList({ userMemberships: true });
 
   function newCheckpoint(checkpoint: string): void {
     checkpoints.push(checkpoint);
@@ -92,36 +94,59 @@ export default function useHandleCSV() {
   function calculateTotalPrice(data: string[]) {
     const weights = data.map((z) => +z);
     const prices: number[] = [];
-    weights.map((weight) => {
-      switch (true) {
-        case 0 < weight && weight <= 7.99:
-          prices.push(7);
-          break;
-        case 8 <= weight && weight <= 14.99:
-          prices.push(12);
-          break;
-        case 15 <= weight && weight <= 24.99:
-          prices.push(14);
-          break;
-        case 25 <= weight && weight <= 34.99:
-          prices.push(16);
-          break;
-        case 35 <= weight && weight <= 44.99:
-          prices.push(18);
-          break;
-        case 45 <= weight && weight <= 54.99:
-          prices.push(20);
-          break;
-        case 55 <= weight && weight <= 64.99:
-          prices.push(22);
-          break;
-        case 65 <= weight && weight <= 70:
-          prices.push(24);
-          break;
-        default:
-          prices.push(0);
+    if (isLoaded) {
+      if (!userMemberships.data) throw new Error("Could not find User Role");
+      else {
+        const adminOrganization = userMemberships.data.find((org) => org.role === "org:admin");
+        if (!adminOrganization || adminOrganization.role !== "org:admin") {
+          //* If user is not admin
+          weights.map((weight) => {
+            switch (true) {
+              case 0 < weight && weight <= 7.99:
+                prices.push(7);
+                break;
+              case 8 <= weight && weight <= 14.99:
+                prices.push(12);
+                break;
+              case 15 <= weight && weight <= 24.99:
+                prices.push(14);
+                break;
+              case 25 <= weight && weight <= 34.99:
+                prices.push(16);
+                break;
+              case 35 <= weight && weight <= 44.99:
+                prices.push(18);
+                break;
+              case 45 <= weight && weight <= 54.99:
+                prices.push(20);
+                break;
+              case 55 <= weight && weight <= 64.99:
+                prices.push(22);
+                break;
+              case 65 <= weight && weight <= 70:
+                prices.push(24);
+                break;
+              default:
+                prices.push(0);
+            }
+          });
+        } else {
+          //* If user is admin
+          weights.map((weight) => {
+            switch (true) {
+              case 0 < weight && weight <= 8:
+                prices.push(5.5);
+                break;
+              case 8.1 <= weight && weight <= 70:
+                prices.push(10);
+                break;
+              default:
+                prices.push(0);
+            }
+          });
+        }
       }
-    });
+    }
     const totalPrice = prices.reduce((a, b) => a + b);
     return totalPrice.toFixed(2);
   }
