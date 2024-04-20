@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "~/trpc/react";
 import { useOrganizationList } from "@clerk/nextjs";
 import { initialPricingState } from "~/lib/lists";
@@ -13,8 +13,14 @@ export default function useAdmin() {
   const { data: orders, refetch: refetchOrders } = api.shippingHistory.getShippingHistoryByUserId.useQuery(userId, { enabled: false });
   const { data: invoices, refetch: refetchInvoices } = api.invoice.getInvoicesByUserId.useQuery(userId, { enabled: false });
   const { data: amount, refetch: refetchBalance } = api.balance.getAmountByUserId.useQuery(userId, { enabled: false });
-  const { data: pricing, refetch: refetchPricing } = api.pricing.getPricingByUserId.useQuery(userId, { enabled: false });
-  const [pricingData, setPricingData] = useState(pricing ?? initialPricingState);
+  const { data: pricing, refetch: refetchPricing } = api.pricing.getPricingByUserId.useQuery(userId, {
+    enabled: false,
+    onSuccess: (data) => {
+      console.log(data);
+      setPricingData(data ?? initialPricingState);
+    },
+  });
+
   const updateBalance = api.balance.updateByUserId.useMutation({
     onSuccess: async () => {
       setAddedBalance("");
@@ -33,6 +39,11 @@ export default function useAdmin() {
       await refetchPricing();
     },
   });
+
+  const [pricingData, setPricingData] = useState(pricing ?? initialPricingState);
+  useEffect(() => {
+    setPricingData(pricing ?? initialPricingState);
+  }, [pricing]);
 
   async function fetchUser() {
     await refetchOrders();

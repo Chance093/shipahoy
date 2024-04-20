@@ -3,6 +3,7 @@ import { GlobeAsiaAustraliaIcon } from "@heroicons/react/24/solid";
 import useAdmin from "~/hooks/useAdmin";
 import InvoiceTable from "../components/InvoiceTable";
 import ShippingHistoryTable from "../components/ShippingHistoryTable";
+import PricingTable from "../components/PricingTable";
 
 export default function Admin() {
   const {
@@ -86,7 +87,7 @@ export default function Admin() {
                   </div>
                 </section>
               ) : null}
-
+              {userId !== "" ? <PricingTable /> : null}
               {!invoices ? null : <InvoiceTable invoices={invoices} />}
               {!orders ? null : <ShippingHistoryTable shippingHistory={orders} />}
             </section>
