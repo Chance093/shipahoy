@@ -20,5 +20,35 @@ export const pricingRouter = createTRPCRouter({
         sixtyFiveToSeventy: true,
       },
     })
-  })
+  }),
+  update: protectedProcedure
+    .input(
+      z.object({
+        zeroToFour: z.string(),
+        fourToEight: z.string(),
+        eightToFifteen: z.string(),
+        fifteenToTwentyFive: z.string(),
+        twentyFiveToThirtyFive: z.string(),
+        thirtyFiveToFortyFive: z.string(),
+        fortyFiveToFiftyFive: z.string(),
+        fiftyFiveToSixtyFive: z.string(),
+        sixtyFiveToSeventy: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(pricing)
+        .set({
+          zeroToFour: input.zeroToFour,
+          fourToEight: input.fourToEight,
+          eightToFifteen: input.eightToFifteen,
+          fifteenToTwentyFive: input.fifteenToTwentyFive,
+          twentyFiveToThirtyFive: input.twentyFiveToThirtyFive,
+          thirtyFiveToFortyFive: input.thirtyFiveToFortyFive,
+          fortyFiveToFiftyFive: input.fortyFiveToFiftyFive,
+          fiftyFiveToSixtyFive: input.fiftyFiveToSixtyFive,
+          sixtyFiveToSeventy: input.sixtyFiveToSeventy,
+        })
+        .where(eq(pricing.userId, ctx.auth.userId));
+    }),
 });
