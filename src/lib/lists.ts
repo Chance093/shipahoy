@@ -79,6 +79,18 @@ export const statesList = [
   { name: "Wyoming", abbreviation: "WY" },
 ];
 
+export const initialPricingState = {
+  zeroToFour: "",
+  fourToEight: "",
+  eightToFifteen: "",
+  fifteenToTwentyFive: "",
+  twentyFiveToThirtyFive: "",
+  thirtyFiveToFortyFive: "",
+  fortyFiveToFiftyFive: "",
+  fiftyFiveToSixtyFive: "",
+  sixtyFiveToSeventy: "",
+}
+
 export const initialState = {
   FromCountry: "United States",
   FromName: "",
