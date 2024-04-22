@@ -80,16 +80,16 @@ export const statesList = [
 ];
 
 export const initialPricingState = {
-  zeroToFour: "",
-  fourToEight: "",
-  eightToFifteen: "",
-  fifteenToTwentyFive: "",
-  twentyFiveToThirtyFive: "",
-  thirtyFiveToFortyFive: "",
-  fortyFiveToFiftyFive: "",
-  fiftyFiveToSixtyFive: "",
-  sixtyFiveToSeventy: "",
-}
+  zeroToFour: "7.00",
+  fourToEight: "9.00",
+  eightToFifteen: "14.00",
+  fifteenToTwentyFive: "18.00",
+  twentyFiveToThirtyFive: "22.00",
+  thirtyFiveToFortyFive: "26.00",
+  fortyFiveToFiftyFive: "28.00",
+  fiftyFiveToSixtyFive: "30.00",
+  sixtyFiveToSeventy: "32.00",
+};
 
 export const initialState = {
   FromCountry: "United States",

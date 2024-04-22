@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { api } from "~/trpc/react";
 import { useOrganizationList } from "@clerk/nextjs";
 import { initialPricingState } from "~/lib/lists";
@@ -9,17 +9,12 @@ export default function useAdmin() {
   const [userId, setUserId] = useState("");
   const [addedBalance, setAddedBalance] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
+  const [addedPrice, setAddedPrice] = useState("");
 
   const { data: orders, refetch: refetchOrders } = api.shippingHistory.getShippingHistoryByUserId.useQuery(userId, { enabled: false });
   const { data: invoices, refetch: refetchInvoices } = api.invoice.getInvoicesByUserId.useQuery(userId, { enabled: false });
   const { data: amount, refetch: refetchBalance } = api.balance.getAmountByUserId.useQuery(userId, { enabled: false });
-  const { data: pricing, refetch: refetchPricing } = api.pricing.getPricingByUserId.useQuery(userId, {
-    enabled: false,
-    onSuccess: (data) => {
-      console.log(data);
-      setPricingData(data ?? initialPricingState);
-    },
-  });
+  const { data: pricing, refetch: refetchPricing } = api.pricing.getPricingByUserId.useQuery(userId, { enabled: false });
 
   const updateBalance = api.balance.updateByUserId.useMutation({
     onSuccess: async () => {
@@ -40,11 +35,6 @@ export default function useAdmin() {
     },
   });
 
-  const [pricingData, setPricingData] = useState(pricing ?? initialPricingState);
-  useEffect(() => {
-    setPricingData(pricing ?? initialPricingState);
-  }, [pricing]);
-
   async function fetchUser() {
     await refetchOrders();
     await refetchInvoices();
@@ -60,20 +50,22 @@ export default function useAdmin() {
     updateInvoice.mutate({ userId: userId, balanceId: Number(amount.id), amount: addedBalance, paymentMethod: paymentMethod, paymentStatusId: 1 });
   }
 
-  const updatePricingData = () => {
-    if (pricingData === undefined) return;
+  function addPricing() {
+    console.log(amount?.amount);
+    if (!pricing) return;
+    if (addedPrice === "") return;
     updatePricing.mutate({
-      zeroToFour: pricingData.zeroToFour,
-      fourToEight: pricingData.fourToEight,
-      eightToFifteen: pricingData.eightToFifteen,
-      fifteenToTwentyFive: pricingData.fifteenToTwentyFive,
-      twentyFiveToThirtyFive: pricingData.twentyFiveToThirtyFive,
-      thirtyFiveToFortyFive: pricingData.thirtyFiveToFortyFive,
-      fortyFiveToFiftyFive: pricingData.fortyFiveToFiftyFive,
-      fiftyFiveToSixtyFive: pricingData.fiftyFiveToSixtyFive,
-      sixtyFiveToSeventy: pricingData.sixtyFiveToSeventy,
+      zeroToFour: addedPrice,
+      fourToEight: pricing.fourToEight,
+      eightToFifteen: pricing.eightToFifteen,
+      fifteenToTwentyFive: pricing.fifteenToTwentyFive,
+      twentyFiveToThirtyFive: pricing.twentyFiveToThirtyFive,
+      thirtyFiveToFortyFive: pricing.thirtyFiveToFortyFive,
+      fortyFiveToFiftyFive: pricing.fortyFiveToFiftyFive,
+      fiftyFiveToSixtyFive: pricing.fiftyFiveToSixtyFive,
+      sixtyFiveToSeventy: pricing.sixtyFiveToSeventy,
     });
-  };
+  }
 
   return {
     userMemberships,
@@ -89,8 +81,9 @@ export default function useAdmin() {
     setAddedBalance,
     paymentMethod,
     setPaymentMethod,
-    updatePricingData,
-    pricingData,
-    setPricingData,
+    pricing,
+    addPricing,
+    addedPrice,
+    setAddedPrice,
   };
 }
