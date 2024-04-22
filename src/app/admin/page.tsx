@@ -87,7 +87,7 @@ export default function Admin() {
                   </div>
                 </section>
               ) : null}
-              <PricingTable userId={userId} />
+              {amount === undefined ? null : <PricingTable userId={userId} />}
               {!invoices ? null : <InvoiceTable invoices={invoices} />}
               {!orders ? null : <ShippingHistoryTable shippingHistory={orders} />}
             </section>

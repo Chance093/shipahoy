@@ -13,6 +13,14 @@ export default function useAdminPricing(userId: string) {
     setPricingInputs({ ...pricing });
   }, [pricing]);
 
+  useEffect(() => {
+    if (userId === "") return;
+    async function refetch() {
+      await refetchPricing();
+    }
+    refetch().catch(console.error);
+  }, [userId, refetchPricing]);
+
   const updatePricing = api.pricing.update.useMutation({
     onSuccess: async () => {
       await refetchPricing();
