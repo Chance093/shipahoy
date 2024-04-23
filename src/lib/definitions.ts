@@ -24,6 +24,18 @@ export type FormData = {
   Weight: string;
 };
 
+export type Pricing = {
+  zeroToFour: string;
+  fourToEight: string;
+  eightToFifteen: string;
+  fifteenToTwentyFive: string;
+  twentyFiveToThirtyFive: string;
+  thirtyFiveToFortyFive: string;
+  fortyFiveToFiftyFive: string;
+  fiftyFiveToSixtyFive: string;
+  sixtyFiveToSeventy: string;
+};
+
 export type ShippingHistory = {
   id: number;
   createdAt: Date | null;

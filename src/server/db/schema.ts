@@ -54,6 +54,20 @@ export const invoice = mysqlTable(
   (table) => ({ userIdx: index("user_idx").on(table.userId) }),
 );
 
+export const pricing = mysqlTable("pricing", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id", { length: 200 }).notNull(),
+  zeroToFour: decimal("0-4", { precision: 4, scale: 2 }).default("7.00").notNull(),
+  fourToEight: decimal("4-8", { precision: 4, scale: 2 }).default("9.00").notNull(),
+  eightToFifteen: decimal("8-15", { precision: 4, scale: 2 }).default("14.00").notNull(),
+  fifteenToTwentyFive: decimal("15-25", { precision: 4, scale: 2 }).default("18.00").notNull(),
+  twentyFiveToThirtyFive: decimal("25-35", { precision: 4, scale: 2 }).default("22.00").notNull(),
+  thirtyFiveToFortyFive: decimal("35-45", { precision: 4, scale: 2 }).default("26.00").notNull(),
+  fortyFiveToFiftyFive: decimal("45-55", { precision: 4, scale: 2 }).default("28.00").notNull(),
+  fiftyFiveToSixtyFive: decimal("55-65", { precision: 4, scale: 2 }).default("30.00").notNull(),
+  sixtyFiveToSeventy: decimal("65-70", { precision: 4, scale: 2 }).default("32.00").notNull(),
+});
+
 export const paymentStatus = mysqlTable("payment_status", {
   id: serial("id").primaryKey(),
   status: varchar("status", { length: 8 }),

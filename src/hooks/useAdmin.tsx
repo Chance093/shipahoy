@@ -12,6 +12,7 @@ export default function useAdmin() {
   const { data: orders, refetch: refetchOrders } = api.shippingHistory.getShippingHistoryByUserId.useQuery(userId, { enabled: false });
   const { data: invoices, refetch: refetchInvoices } = api.invoice.getInvoicesByUserId.useQuery(userId, { enabled: false });
   const { data: amount, refetch: refetchBalance } = api.balance.getAmountByUserId.useQuery(userId, { enabled: false });
+
   const updateBalance = api.balance.updateByUserId.useMutation({
     onSuccess: async () => {
       setAddedBalance("");
