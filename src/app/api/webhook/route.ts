@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { type WebhookEvent } from "@clerk/nextjs/server";
 import { env } from "~/env.mjs";
 import { db } from "~/server/db";
-import { balance } from "~/server/db/schema";
+import { balance, pricing } from "~/server/db/schema";
 
 export async function POST(req: Request) {
   // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
@@ -59,6 +59,10 @@ export async function POST(req: Request) {
     await db.insert(balance).values({
       userId: id,
       amount: "0.00",
+    });
+
+    await db.insert(pricing).values({
+      userId: id,
     });
   }
 
