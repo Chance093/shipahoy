@@ -6,7 +6,6 @@ import handleValidation from "~/lib/handleValidation";
 import { useRouter } from "next/navigation";
 import { type FormData } from "~/lib/definitions";
 import { initialState } from "~/lib/lists";
-import { useOrganizationList } from "@clerk/nextjs";
 
 export default function useHandleCSV() {
   const [fileName, setFileName] = useState("Choose a CSV");
@@ -18,8 +17,8 @@ export default function useHandleCSV() {
   const { createLabels, storeData } = useCreateLabels();
   const balance = api.balance.getAmount.useQuery();
   const updateBalance = api.balance.update.useMutation();
+  const userPricing = api.pricing.getPricing.useQuery();
   const router = useRouter();
-  const { userMemberships, isLoaded } = useOrganizationList({ userMemberships: true });
 
   function newCheckpoint(checkpoint: string): void {
     checkpoints.push(checkpoint);
@@ -92,61 +91,57 @@ export default function useHandleCSV() {
   // TODO: Refactor to implement with other weight checking function
   // TODO: Write test case for this
   function calculateTotalPrice(data: string[]) {
-    const weights = data.map((z) => +z);
+    const userPricingData = userPricing.data;
+    const weights = data.map((x) => +x);
     const prices: number[] = [];
-    if (isLoaded) {
-      if (!userMemberships.data) throw new Error("Could not find User Role");
-      else {
-        const adminOrganization = userMemberships.data.find((org) => org.role === "org:admin");
-        if (!adminOrganization || adminOrganization.role !== "org:admin") {
-          //* If user is not admin
-          weights.map((weight) => {
-            switch (true) {
-              case 0 < weight && weight <= 7.99:
-                prices.push(7);
-                break;
-              case 8 <= weight && weight <= 14.99:
-                prices.push(12);
-                break;
-              case 15 <= weight && weight <= 24.99:
-                prices.push(14);
-                break;
-              case 25 <= weight && weight <= 34.99:
-                prices.push(16);
-                break;
-              case 35 <= weight && weight <= 44.99:
-                prices.push(18);
-                break;
-              case 45 <= weight && weight <= 54.99:
-                prices.push(20);
-                break;
-              case 55 <= weight && weight <= 64.99:
-                prices.push(22);
-                break;
-              case 65 <= weight && weight <= 70:
-                prices.push(24);
-                break;
-              default:
-                prices.push(0);
-            }
-          });
-        } else {
-          //* If user is admin
-          weights.map((weight) => {
-            switch (true) {
-              case 0 < weight && weight <= 8:
-                prices.push(5.5);
-                break;
-              case 8.1 <= weight && weight <= 70:
-                prices.push(10);
-                break;
-              default:
-                prices.push(0);
-            }
-          });
+    weights.map((weight) => {
+      switch (true) {
+        case 0 < weight && weight <= 7.99: {
+          const price = userPricingData?.zeroToFour;
+          prices.push(Number(price));
+          break;
+        }
+        case 8 <= weight && weight <= 14.99: {
+          const price = userPricingData?.eightToFifteen;
+          prices.push(Number(price));
+          break;
+        }
+        case 15 <= weight && weight <= 24.99: {
+          const price = userPricingData?.fifteenToTwentyFive;
+          prices.push(Number(price));
+          break;
+        }
+        case 25 <= weight && weight <= 34.99: {
+          const price = userPricingData?.twentyFiveToThirtyFive;
+          prices.push(Number(price));
+          break;
+        }
+        case 35 <= weight && weight <= 44.99: {
+          const price = userPricingData?.thirtyFiveToFortyFive;
+          prices.push(Number(price));
+          break;
+        }
+        case 45 <= weight && weight <= 54.99: {
+          const price = userPricingData?.fortyFiveToFiftyFive;
+          prices.push(Number(price));
+          break;
+        }
+        case 55 <= weight && weight <= 64.99: {
+          const price = userPricingData?.fiftyFiveToSixtyFive;
+          prices.push(Number(price));
+          break;
+        }
+        case 65 <= weight && weight <= 70: {
+          const price = userPricingData?.sixtyFiveToSeventy;
+          prices.push(Number(price));
+          break;
+        }
+        default: {
+          // ! TODO: throw an error modal for this
+          throw new Error("Weight is out of range");
         }
       }
-    }
+    });
     const totalPrice = prices.reduce((a, b) => a + b);
     return totalPrice.toFixed(2);
   }
