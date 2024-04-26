@@ -96,8 +96,13 @@ export default function useHandleCSV() {
     const prices: number[] = [];
     weights.map((weight) => {
       switch (true) {
-        case 0 < weight && weight <= 7.99: {
+        case 0 < weight && weight <= 3.99: {
           const price = userPricingData?.zeroToFour;
+          prices.push(Number(price));
+          break;
+        }
+        case 4 <= weight && weight <= 7.99: {
+          const price = userPricingData?.fourToEight;
           prices.push(Number(price));
           break;
         }
