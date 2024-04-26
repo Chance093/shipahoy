@@ -5,12 +5,10 @@ import { api } from "~/trpc/react";
 import useCreateLabels from "~/hooks/useCreateLabels";
 import { useRouter } from "next/navigation";
 import { initialState } from "~/lib/lists";
-import { useOrganizationList } from "@clerk/nextjs";
 
 export default function useFormValidation() {
   const router = useRouter();
 
-  const { userMemberships, isLoaded } = useOrganizationList({ userMemberships: true });
   const [formData, setFormData] = useState(initialState);
   const [price, setPrice] = useState("0.00");
   const [errorMessage, setErrorMessage] = useState("");
@@ -23,58 +21,63 @@ export default function useFormValidation() {
     });
   };
 
+  const userPricing = api.pricing.getPricing.useQuery();
+
   // TODO: Refactor to implement with other weight checking function
   const updateWeight = (value: string) => {
+    const userPricingData = userPricing.data;
     setFormData((prev) => {
       return { ...prev, Weight: value };
     });
-    if (isLoaded) {
-      if (!userMemberships.data) throw new Error("Could not find User Role");
-      else {
-        const adminOrganization = userMemberships.data.find((org) => org.role === "org:admin");
-        if (!adminOrganization || adminOrganization.role !== "org:admin") {
-          // * If user is not admin
-          switch (true) {
-            case 0 < parseInt(value) && parseInt(value) <= 7.99:
-              setPrice("7.00");
-              break;
-            case 8 <= parseInt(value) && parseInt(value) <= 14.99:
-              setPrice("12.00");
-              break;
-            case 15 <= parseInt(value) && parseInt(value) <= 24.99:
-              setPrice("14.00");
-              break;
-            case 25 <= parseInt(value) && parseInt(value) <= 34.99:
-              setPrice("16.00");
-              break;
-            case 35 <= parseInt(value) && parseInt(value) <= 44.99:
-              setPrice("18.00");
-              break;
-            case 45 <= parseInt(value) && parseInt(value) <= 54.99:
-              setPrice("20.00");
-              break;
-            case 55 <= parseInt(value) && parseInt(value) <= 64.99:
-              setPrice("22.00");
-              break;
-            case 65 <= parseInt(value) && parseInt(value) <= 70:
-              setPrice("24.00");
-              break;
-            default:
-              setPrice("0.00");
-          }
-        } else {
-          // * If user is admin
-          switch (true) {
-            case 0 < parseInt(value) && parseInt(value) <= 8:
-              setPrice("5.50");
-              break;
-            case 8.1 <= parseInt(value) && parseInt(value) <= 70:
-              setPrice("10.00");
-              break;
-            default:
-              setPrice("0.00");
-          }
-        }
+    const weight = Number(value);
+    switch (true) {
+      case 0 < weight && weight <= 3.99: {
+        const price = userPricingData?.zeroToFour;
+        setPrice(`${price}`);
+        break;
+      }
+      case 4 <= weight && weight <= 7.99: {
+        const price = userPricingData?.fourToEight;
+        setPrice(`${price}`);
+        break;
+      }
+      case 8 <= weight && weight <= 14.99: {
+        const price = userPricingData?.eightToFifteen;
+        setPrice(`${price}`);
+        break;
+      }
+      case 15 <= weight && weight <= 24.99: {
+        const price = userPricingData?.fifteenToTwentyFive;
+        setPrice(`${price}`);
+        break;
+      }
+      case 25 <= weight && weight <= 34.99: {
+        const price = userPricingData?.twentyFiveToThirtyFive;
+        setPrice(`${price}`);
+        break;
+      }
+      case 35 <= weight && weight <= 44.99: {
+        const price = userPricingData?.thirtyFiveToFortyFive;
+        setPrice(`${price}`);
+        break;
+      }
+      case 45 <= weight && weight <= 54.99: {
+        const price = userPricingData?.fortyFiveToFiftyFive;
+        setPrice(`${price}`);
+        break;
+      }
+      case 55 <= weight && weight <= 64.99: {
+        const price = userPricingData?.fiftyFiveToSixtyFive;
+        setPrice(`${price}`);
+        break;
+      }
+      case 65 <= weight && weight <= 70: {
+        const price = userPricingData?.sixtyFiveToSeventy;
+        setPrice(`${price}`);
+        break;
+      }
+      default: {
+        throw new Error("Weight is out of range");
       }
     }
   };
