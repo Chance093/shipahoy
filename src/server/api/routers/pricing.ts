@@ -21,6 +21,22 @@ export const pricingRouter = createTRPCRouter({
       },
     })
   }),
+  getPricing: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.query.pricing.findFirst({
+      where: eq(pricing.userId, ctx.auth.userId),
+      columns: {
+        zeroToFour: true,
+        fourToEight: true,
+        eightToFifteen: true,
+        fifteenToTwentyFive: true,
+        twentyFiveToThirtyFive: true,
+        thirtyFiveToFortyFive: true,
+        fortyFiveToFiftyFive: true,
+        fiftyFiveToSixtyFive: true,
+        sixtyFiveToSeventy: true,
+      },
+    });
+  }),
   update: protectedProcedure
     .input(
       z.object({
