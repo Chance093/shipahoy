@@ -3,7 +3,16 @@ import Modal from "~/app/components/Modal";
 import useHandleCSV from "~/hooks/useHandleCSV";
 
 export default function BulkLabelCreation() {
-  const { submitOrder, fileName, csvHandlingHelper, totalPrice, showErrorModal, renderableErrorFlags } = useHandleCSV();
+  const { submitOrder, fileName, csvHandlingHelper, totalPrice, showErrorModal, renderableErrorFlags, isBalanceError, isUserPricingError } =
+    useHandleCSV();
+
+  if (isUserPricingError) {
+    throw new Error("Could not obtain pricing for user.");
+  }
+
+  if (isBalanceError) {
+    throw new Error("Could not obtain user balance");
+  }
 
   return (
     <>
