@@ -21,58 +21,57 @@ export default function useFormValidation() {
     });
   };
 
-  const userPricing = api.pricing.getPricing.useQuery();
+  const { data: userPricing, isError: isUserPricingError, error: userPricingError } = api.pricing.getPricing.useQuery();
 
   // TODO: Refactor to implement with other weight checking function
   const updateWeight = (value: string) => {
-    const userPricingData = userPricing.data;
     setFormData((prev) => {
       return { ...prev, Weight: value };
     });
     const weight = Number(value);
     switch (true) {
       case 0 < weight && weight <= 3.99: {
-        const price = userPricingData?.zeroToFour;
+        const price = userPricing?.zeroToFour;
         setPrice(`${price}`);
         break;
       }
       case 4 <= weight && weight <= 7.99: {
-        const price = userPricingData?.fourToEight;
+        const price = userPricing?.fourToEight;
         setPrice(`${price}`);
         break;
       }
       case 8 <= weight && weight <= 14.99: {
-        const price = userPricingData?.eightToFifteen;
+        const price = userPricing?.eightToFifteen;
         setPrice(`${price}`);
         break;
       }
       case 15 <= weight && weight <= 24.99: {
-        const price = userPricingData?.fifteenToTwentyFive;
+        const price = userPricing?.fifteenToTwentyFive;
         setPrice(`${price}`);
         break;
       }
       case 25 <= weight && weight <= 34.99: {
-        const price = userPricingData?.twentyFiveToThirtyFive;
+        const price = userPricing?.twentyFiveToThirtyFive;
         setPrice(`${price}`);
         break;
       }
       case 35 <= weight && weight <= 44.99: {
-        const price = userPricingData?.thirtyFiveToFortyFive;
+        const price = userPricing?.thirtyFiveToFortyFive;
         setPrice(`${price}`);
         break;
       }
       case 45 <= weight && weight <= 54.99: {
-        const price = userPricingData?.fortyFiveToFiftyFive;
+        const price = userPricing?.fortyFiveToFiftyFive;
         setPrice(`${price}`);
         break;
       }
       case 55 <= weight && weight <= 64.99: {
-        const price = userPricingData?.fiftyFiveToSixtyFive;
+        const price = userPricing?.fiftyFiveToSixtyFive;
         setPrice(`${price}`);
         break;
       }
       case 65 <= weight && weight <= 70: {
-        const price = userPricingData?.sixtyFiveToSeventy;
+        const price = userPricing?.sixtyFiveToSeventy;
         setPrice(`${price}`);
         break;
       }
@@ -82,19 +81,23 @@ export default function useFormValidation() {
     }
   };
 
-  const updateBalance = api.balance.update.useMutation();
+  const updateBalance = api.balance.update.useMutation({
+    onError: (err) => {
+      throw err;
+    },
+  });
 
-  const balance = api.balance.getAmount.useQuery();
+  const { data: balance, isError: isBalanceError, error: balanceError } = api.balance.getAmount.useQuery();
 
   const onFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!balance.data?.amount) return;
+    if (!balance?.amount) return;
     if (parseFloat(price) === 0) return;
     if (formData.FromStreet === formData.ToStreet) {
       setErrorMessage("Sender Address cannot be the same as Recipient Address.");
       return;
     }
-    if (parseFloat(balance.data?.amount) < parseFloat(price)) {
+    if (parseFloat(balance.amount) < parseFloat(price)) {
       setErrorMessage("Insufficient funds. Please add more to your balance.");
       return;
     }
@@ -107,12 +110,23 @@ export default function useFormValidation() {
     storeData(tracking, links, [formData], [price]);
     setPrice("0.00");
     setFormData(initialState);
-    const newBalance = parseFloat(balance.data.amount) - parseFloat(price);
+    const newBalance = parseFloat(balance.amount) - parseFloat(price);
     updateBalance.mutate({ amount: newBalance.toString() });
     setErrorMessage("");
     router.push("/user/dashboard");
     router.refresh();
   };
 
-  return { formData, price, errorMessage, handleChange, updateWeight, onFormSubmit };
+  return {
+    formData,
+    price,
+    errorMessage,
+    handleChange,
+    updateWeight,
+    onFormSubmit,
+    isBalanceError,
+    isUserPricingError,
+    balanceError,
+    userPricingError,
+  };
 }
