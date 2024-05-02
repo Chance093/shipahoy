@@ -15,13 +15,13 @@ export default function useHandleCSV() {
   const [totalPrice, setTotalPrice] = useState("0.00");
   const checkpoints: string[] = [];
   const { createLabels, storeData } = useCreateLabels();
-  const { data: balance, isError: isBalanceError } = api.balance.getAmount.useQuery();
+  const { data: balance, isError: isBalanceError, error: balanceError } = api.balance.getAmount.useQuery();
   const updateBalance = api.balance.update.useMutation({
     onError: (err) => {
       throw err;
     },
   });
-  const { data: userPricing, isError: isUserPricingError } = api.pricing.getPricing.useQuery();
+  const { data: userPricing, isError: isUserPricingError, error: userPricingError } = api.pricing.getPricing.useQuery();
   const router = useRouter();
 
   function newCheckpoint(checkpoint: string): void {
@@ -214,5 +214,5 @@ export default function useHandleCSV() {
     router.refresh();
   }
 
-  return { submitOrder, fileName, csvHandlingHelper, totalPrice, showErrorModal, renderableErrorFlags, isBalanceError, isUserPricingError };
+  return { submitOrder, fileName, csvHandlingHelper, totalPrice, showErrorModal, renderableErrorFlags, isBalanceError, isUserPricingError, balanceError, userPricingError };
 }
