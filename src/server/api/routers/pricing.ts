@@ -1,12 +1,12 @@
-import { z } from 'zod';
-import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { pricing } from '~/server/db/schema';
-import { eq } from 'drizzle-orm';
-
+import { z } from "zod";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { pricing } from "~/server/db/schema";
+import { eq } from "drizzle-orm";
+import { TRPCError } from "@trpc/server";
 
 export const pricingRouter = createTRPCRouter({
-  getPricingByUserId: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
-    return ctx.db.query.pricing.findFirst({
+  getPricingByUserId: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    const pricingTable = await ctx.db.query.pricing.findFirst({
       where: eq(pricing.userId, input),
       columns: {
         zeroToFour: true,
@@ -19,10 +19,16 @@ export const pricingRouter = createTRPCRouter({
         fiftyFiveToSixtyFive: true,
         sixtyFiveToSeventy: true,
       },
-    })
+    });
+
+    if (pricingTable === undefined) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Could not get Pricing Table." });
+    }
+
+    return pricingTable;
   }),
-  getPricing: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.pricing.findFirst({
+  getPricing: protectedProcedure.query(async ({ ctx }) => {
+    const pricingTable = await ctx.db.query.pricing.findFirst({
       where: eq(pricing.userId, ctx.auth.userId),
       columns: {
         zeroToFour: true,
@@ -36,6 +42,10 @@ export const pricingRouter = createTRPCRouter({
         sixtyFiveToSeventy: true,
       },
     });
+
+    if (pricingTable === undefined) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Could not get Pricing Table." });
+    }
   }),
   update: protectedProcedure
     .input(
