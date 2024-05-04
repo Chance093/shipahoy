@@ -46,6 +46,8 @@ export const pricingRouter = createTRPCRouter({
     if (pricingTable === undefined) {
       throw new TRPCError({ code: "NOT_FOUND", message: "Could not get Pricing Table." });
     }
+
+    return pricingTable;
   }),
   update: protectedProcedure
     .input(
