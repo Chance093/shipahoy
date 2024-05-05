@@ -11,14 +11,12 @@ export const balanceRouter = createTRPCRouter({
     });
   }),
 
-  getAmountByUserId: adminProcedure
-    .input(z.string())
-    .query(({ ctx, input }) => {
-      return ctx.db.query.balance.findFirst({
-        where: eq(balance.userId, input),
-        columns: { amount: true, id: true },
-      });
-    }),
+  getAmountByUserId: adminProcedure.input(z.string()).query(({ ctx, input }) => {
+    return ctx.db.query.balance.findFirst({
+      where: eq(balance.userId, input),
+      columns: { amount: true, id: true },
+    });
+  }),
 
   update: protectedProcedure
     .input(
@@ -35,7 +33,7 @@ export const balanceRouter = createTRPCRouter({
         .where(eq(balance.userId, ctx.auth.userId));
     }),
 
-  updateByUserId: protectedProcedure
+  updateByUserId: adminProcedure
     .input(
       z.object({
         amount: z.string(),
