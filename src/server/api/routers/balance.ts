@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { protectedProcedure, createTRPCRouter } from "../trpc";
+import { protectedProcedure, createTRPCRouter, adminProcedure } from "../trpc";
 import { balance } from "~/server/db/schema";
 import { z } from "zod";
 
@@ -11,12 +11,14 @@ export const balanceRouter = createTRPCRouter({
     });
   }),
 
-  getAmountByUserId: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
-    return ctx.db.query.balance.findFirst({
-      where: eq(balance.userId, input),
-      columns: { amount: true, id: true },
-    });
-  }),
+  getAmountByUserId: adminProcedure
+    .input(z.string())
+    .query(({ ctx, input }) => {
+      return ctx.db.query.balance.findFirst({
+        where: eq(balance.userId, input),
+        columns: { amount: true, id: true },
+      });
+    }),
 
   update: protectedProcedure
     .input(

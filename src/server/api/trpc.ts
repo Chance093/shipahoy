@@ -6,17 +6,18 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC, TRPCError } from '@trpc/server';
-import { type NextRequest } from 'next/server';
-import superjson from 'superjson';
-import { ZodError } from 'zod';
+import { initTRPC, TRPCError } from "@trpc/server";
+import { type NextRequest } from "next/server";
+import superjson from "superjson";
+import { ZodError } from "zod";
 import {
-  getAuth,
+  auth as authorization,
+  clerkClient,
   type SignedInAuthObject,
   type SignedOutAuthObject,
-} from '@clerk/nextjs/server';
+} from "@clerk/nextjs/server";
 
-import { db } from '~/server/db';
+import { db } from "~/server/db";
 
 /**
  * 1. CONTEXT
@@ -46,7 +47,7 @@ interface AuthContext {
  */
 export const createInnerTRPCContext = (
   opts: CreateContextOptions,
-  { auth }: AuthContext
+  { auth }: AuthContext,
 ) => {
   return {
     auth,
@@ -69,8 +70,8 @@ export const createTRPCContext = (opts: { req: NextRequest }) => {
       headers: opts.req.headers,
     },
     {
-      auth: getAuth(opts.req),
-    }
+      auth: authorization(),
+    },
   );
 };
 
@@ -105,8 +106,32 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 
 const isAuthed = t.middleware(({ next, ctx }) => {
   if (!ctx.auth.userId) {
-    throw new TRPCError({ code: 'UNAUTHORIZED' });
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "You are not a user. Please log in.",
+    });
   }
+  return next({
+    ctx: {
+      auth: ctx.auth,
+    },
+  });
+});
+
+const isAdmin = t.middleware(async ({ next, ctx }) => {
+  const org = await clerkClient.users.getOrganizationMembershipList({
+    userId: ctx.auth.userId ?? "",
+  });
+
+  const isAdmin = org.find((org) => org.role === "org:admin");
+
+  if (!isAdmin) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "You are not an administrator",
+    });
+  }
+
   return next({
     ctx: {
       auth: ctx.auth,
@@ -131,3 +156,5 @@ export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
 export const protectedProcedure = t.procedure.use(isAuthed);
+
+export const adminProcedure = protectedProcedure.use(isAdmin);
