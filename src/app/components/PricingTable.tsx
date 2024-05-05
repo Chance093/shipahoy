@@ -4,10 +4,14 @@
 import useAdminPricing from "~/hooks/useAdminPricing";
 
 export default function PricingTable({ userId }: { userId: string }) {
-  const { pricingInputs, handleChange, addPricing, isLoading } = useAdminPricing(userId);
+  const { pricingInputs, handleChange, addPricing, isLoading, isPricingError, pricingError } = useAdminPricing(userId);
 
   if (isLoading) {
     return <div>Loading...</div>;
+  }
+
+  if (isPricingError) {
+    throw pricingError;
   }
 
   return (

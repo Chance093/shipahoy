@@ -5,7 +5,13 @@ import { initialPricingState } from "~/lib/lists";
 import { api } from "~/trpc/react";
 
 export default function useAdminPricing(userId: string) {
-  const { data: pricing, refetch: refetchPricing, isLoading } = api.pricing.getPricingByUserId.useQuery(userId, { enabled: false });
+  const {
+    data: pricing,
+    refetch: refetchPricing,
+    isLoading,
+    isError: isPricingError,
+    error: pricingError,
+  } = api.pricing.getPricingByUserId.useQuery(userId, { enabled: false });
   const [pricingInputs, setPricingInputs] = useState<Pricing>(initialPricingState);
 
   useEffect(() => {
@@ -25,6 +31,9 @@ export default function useAdminPricing(userId: string) {
     onSuccess: async () => {
       await refetchPricing();
     },
+    onError: (err) => {
+      throw err;
+    },
   });
 
   const handleChange = (fields: Partial<typeof pricingInputs>) => {
@@ -34,7 +43,7 @@ export default function useAdminPricing(userId: string) {
   };
 
   function addPricing() {
-    if (!pricing) return;
+    if (!pricing) throw new Error("Could not get pricing for user");
     updatePricing.mutate({
       zeroToFour: pricingInputs.zeroToFour,
       fourToEight: pricingInputs.fourToEight,
@@ -48,5 +57,5 @@ export default function useAdminPricing(userId: string) {
     });
   }
 
-  return { pricingInputs, handleChange, addPricing, isLoading };
+  return { pricingInputs, handleChange, addPricing, isLoading, isPricingError, pricingError };
 }
