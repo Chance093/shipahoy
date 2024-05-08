@@ -41,32 +41,37 @@ export default function useHandleCSV() {
     return fileContents;
   }
 
-  function prepCsvContents(fileContents: string): [Map<string, number>, string[][]] | void {
+  // * Take the fileContents and split into headers(map) and values(2D array)
+  function prepCsvContents(fileContents: string): [Map<string, number>, string[][]] | undefined {
     const rows: string[] = fileContents?.split("\r\n");
-    // const [columnHeaders, ...rowsOfValues]: string[][] = rows.map((row) => row.split(","));
     const csvValues = rows.map((row) => row.split(","));
     const headerData = csvValues.shift();
 
-    // ! TODO: Create an error modal for an empty CSV file.
+    // Check if CSV is empty
     if (headerData === undefined) {
-      newCheckpoint("prepCsvContents() → Column headers are not extracted from CSV.");
-      return;
+      newCheckpoint("prepCsvContents() → CSV is empty.");
+      return undefined;
     }
 
+    // Initialize headers map that stores header name as key and column index as value
     const headers = new Map<string, number>();
     for (let x = 0; x < headerData.length; ++x) {
-      const header = headerData[x];
-      if (header === undefined) {
+      const headerName = headerData[x];
+      if (headerName === undefined) {
         newCheckpoint(`prepCsvContents() → Missing header at index ${x}.`);
         continue;
       }
       const column = x;
-      headers.set(header, column);
+      headers.set(headerName, column);
+    }
+
+    if (!headers || !csvValues) {
+      newCheckpoint("prepCsvContents() → Column headers and rows of values are not extracted from CSV.");
+      return undefined;
     }
 
     newCheckpoint("prepCsvContents() → Column headers and rows of values are extracted from CSV.");
-    if (headers && csvValues) return [headers, csvValues];
-    newCheckpoint("prepCsvContents() → Column headers and rows of values are not extracted from CSV.");
+    return [headers, csvValues];
   }
 
   function transformCsvContents([headers, csvValues]: [Map<string, number>, string[][]]): Map<string, string[]> {
@@ -208,7 +213,7 @@ export default function useHandleCSV() {
     reader.onload = (readerEvent: ProgressEvent<FileReader>) => {
       newCheckpoint("csvHandlingHelper() → ProgressEvent<FileReader> loaded.");
       const fileContents = getFileContents(readerEvent);
-      const preppedCsvContents = prepCsvContents(fileContents as string) as [Map<string, number>, string[][]];
+      const preppedCsvContents = prepCsvContents(fileContents as string)!;
       const [validationCheckpoints, errorFlags]: [string[], string[]] = handleValidation(preppedCsvContents);
       for (const checkpoint of validationCheckpoints) newCheckpoint(checkpoint);
 
