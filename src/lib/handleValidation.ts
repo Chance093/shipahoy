@@ -1,26 +1,23 @@
 import { EXPECTED_COLUMN_HEADERS } from "./lists";
-import { type ErrorFlagDetails } from "./definitions";
 
 const getErrorFlagMessage = (
   errorFlagType: string,
   newValidationCheckpoint: (checkpoint: string) => number,
-  ...errorFlagDetails: ErrorFlagDetails
+  columnHeader: string | undefined,
+  invalidIndexes: Map<string, number[]> | undefined,
 ) => {
-  newValidationCheckpoint(`getErrorFlagMessage() → New error flag: '${errorFlagType}', ${JSON.stringify(errorFlagDetails)}`);
+  newValidationCheckpoint(`getErrorFlagMessage() → New error flag: '${errorFlagType}'`);
   const errorFlagMessage: string[] = [];
   switch (errorFlagType) {
-    case "column header length":
-      errorFlagMessage.push("Your CSV's column headers do not match those of our template.");
+    case "column header missing":
+      errorFlagMessage.push(`Column ${columnHeader} is missing`);
       return errorFlagMessage;
-    case "column header value":
-      const [columnNumber, invalidColumnHeader, expectedColumnHeader] = errorFlagDetails as [number, string, string];
-      errorFlagMessage.push(`Column ${columnNumber}'s header is ${invalidColumnHeader}; it should be ${expectedColumnHeader}.`);
+    case "column should not be included":
+      errorFlagMessage.push(`Column ${columnHeader} should not be included`);
       return errorFlagMessage;
     case "one or more empty values":
-      const invalidIndexes = errorFlagDetails[0] as Map<string, number[]>;
-      for (const [key, value] of invalidIndexes) {
-        const columnNumbers = value.join(", ");
-        errorFlagMessage.push(`${key} has empty values in column(s): ${columnNumbers}.`);
+      for (const [headerName, rows] of invalidIndexes!) {
+        errorFlagMessage.push(`${headerName} has empty values in row(s): ${rows.length > 1 ? rows.join(", ") : rows[0]}`);
       }
       return errorFlagMessage;
     default:
