@@ -28,20 +28,31 @@ const getErrorFlagMessage = (
   }
 };
 
-const validateColumnHeaders = (columnHeaders: string[], errorFlags: string[], newValidationCheckpoint: (checkpoint: string) => number) => {
-  if (columnHeaders.length !== EXPECTED_COLUMN_HEADERS.length) {
+const validateColumnHeaders = (headers: Map<string, number>, errorFlags: string[], newValidationCheckpoint: (checkpoint: string) => number) => {
+
+  if (headers.size !== EXPECTED_COLUMN_HEADERS.length) {
     const errorFlagType = "column header length";
     const errorFlagMessage: string[] = getErrorFlagMessage(errorFlagType, newValidationCheckpoint);
     errorFlags.push(...errorFlagMessage);
   }
+
   for (let x = 0; x < EXPECTED_COLUMN_HEADERS.length; ++x) {
-    if (columnHeaders[x] === EXPECTED_COLUMN_HEADERS[x]) continue;
+    const header = EXPECTED_COLUMN_HEADERS[x]!;
+
+    if (headers.has(header)) continue;
+
     const errorFlagType = "column header value";
+
+    /*
+      ! TODO: Edit the error message such that there is no comparison
+      ! i.e. what was previously "Column 4's header is 'Address line 1'; it should be 'Full Name'."
+      ! should be "Column header 'Full name' is missing"
+    */
     const errorFlagMessage: string[] = getErrorFlagMessage(
       errorFlagType,
       newValidationCheckpoint,
       x + 1,
-      columnHeaders[x],
+      header,
       EXPECTED_COLUMN_HEADERS[x],
     );
     errorFlags.push(...errorFlagMessage);
@@ -56,6 +67,7 @@ const validateRowValues = (
   newValidationCheckpoint: (checkpoint: string) => number,
 ) => {
   const invalidIndexes = new Map<string, number[]>();
+
   const regexToIgnoreAddressLine2 = /Street2|Company/;
   for (let x = 0; x < rowsOfValues.length; ++x) {
     if (!rowsOfValues[x]) continue;
@@ -79,14 +91,14 @@ const validateRowValues = (
   newValidationCheckpoint(`validateRowValues() → Validation for row values done, there were ${errorFlags.length} errors flagged`);
 };
 
-function handleValidation([columnHeaders, rowsOfValues]: [string[], string[][]]): [string[], string[]] {
+function handleValidation([headers, csvValues]: [Map<string, number>, string[][]]): [string[], string[]] {
   const errorFlags: string[] = [];
   const validationCheckpoints: string[] = [];
   const newValidationCheckpoint = (checkpoint: string) => validationCheckpoints.push(checkpoint);
 
   newValidationCheckpoint("useValidation → Array to store error flags is initialized.");
 
-  validateColumnHeaders(columnHeaders, errorFlags, newValidationCheckpoint);
+  validateColumnHeaders(headers, errorFlags, newValidationCheckpoint);
   validateRowValues(columnHeaders, rowsOfValues, errorFlags, newValidationCheckpoint);
 
   newValidationCheckpoint(
