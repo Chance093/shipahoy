@@ -75,12 +75,18 @@ const validateRowValues = (
   newValidationCheckpoint(`validateRowValues() → Validation for row values done, there were ${errorFlags.length} errors flagged`);
 };
 
-function handleValidation([headers, csvValues]: [Map<string, number>, string[][]]): [string[], string[]] {
+function handleValidation(preppedCsvContents: [Map<string, number>, string[][]] | undefined): [string[], string[]] {
   const errorFlags: string[] = [];
   const validationCheckpoints: string[] = [];
   const newValidationCheckpoint = (checkpoint: string) => validationCheckpoints.push(checkpoint);
 
   newValidationCheckpoint("useValidation → Array to store error flags is initialized.");
+  if (preppedCsvContents === undefined) {
+    errorFlags.push("CSV is empty");
+    return [validationCheckpoints, errorFlags];
+  }
+
+  const [headers, csvValues] = preppedCsvContents;
 
   validateColumnHeaders(headers, errorFlags, newValidationCheckpoint);
   validateRowValues(headers, csvValues, errorFlags, newValidationCheckpoint);

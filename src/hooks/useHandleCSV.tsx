@@ -64,9 +64,14 @@ export default function useHandleCSV() {
       const column = x;
       headers.set(headerName, column);
     }
-
+    console.log(JSON.stringify(csvValues));
     if (!headers || !csvValues) {
       newCheckpoint("prepCsvContents() → Column headers and rows of values are not extracted from CSV.");
+      return undefined;
+    }
+
+    if (csvValues[0]!.length <= 1) {
+      newCheckpoint("prepCsvContents() → No CSV Values");
       return undefined;
     }
 
@@ -213,11 +218,11 @@ export default function useHandleCSV() {
     reader.onload = (readerEvent: ProgressEvent<FileReader>) => {
       newCheckpoint("csvHandlingHelper() → ProgressEvent<FileReader> loaded.");
       const fileContents = getFileContents(readerEvent);
-      const preppedCsvContents = prepCsvContents(fileContents as string)!;
+      const preppedCsvContents = prepCsvContents(fileContents as string);
       const [validationCheckpoints, errorFlags]: [string[], string[]] = handleValidation(preppedCsvContents);
       for (const checkpoint of validationCheckpoints) newCheckpoint(checkpoint);
 
-      if (errorFlags.length) {
+      if (errorFlags.length || preppedCsvContents === undefined) {
         setRenderableErrorFlags(errorFlags);
         newCheckpoint("csvHandlingHelper() → Error flags detected, modal will be shown.");
         setShowErrorModal(true);
