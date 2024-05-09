@@ -15,6 +15,9 @@ const getErrorFlagMessage = (
     case "column should not be included":
       errorFlagMessage.push(`Column ${columnHeader} should not be included`);
       return errorFlagMessage;
+    case "invalid weight":
+      errorFlagMessage.push(`Invalid weight values: should be 1-70`);
+      return errorFlagMessage;
     case "one or more empty values":
       for (const [headerName, rows] of invalidIndexes!) {
         errorFlagMessage.push(`${headerName} has empty values in row(s): ${rows.length > 1 ? rows.join(", ") : rows[0]}`);
@@ -59,6 +62,14 @@ const validateRowValues = (
     const columnValues = csvValues.map((row) => row[column]!);
     for (let x = 0; x < columnValues.length; ++x) {
       const value = columnValues[x]!;
+      if (headerName === "Weight") {
+        if (value === "") console.log("");
+        else if (Number(value) <= 0 || Number(value) > 70) {
+          const errorFlagType = "invalid weight";
+          const errorFlagMessage: string[] = getErrorFlagMessage(errorFlagType, newValidationCheckpoint, headerName, undefined);
+          errorFlags.push(...errorFlagMessage);
+        }
+      }
       if (value.length > 0) continue;
       const row = x + 2;
       if (invalidIndexes.has(headerName)) {

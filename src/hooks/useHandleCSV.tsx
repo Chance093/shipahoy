@@ -198,7 +198,6 @@ export default function useHandleCSV() {
           break;
         }
         default: {
-          // ! TODO: throw an error modal for this
           throw new Error("Weight is out of range");
         }
       }
@@ -233,7 +232,6 @@ export default function useHandleCSV() {
       const payloadSize: number = getPayloadSize(transformedCsvContents);
       const payload = createPayload(transformedCsvContents, payloadSize);
       const weights = payload.map((order) => order.Weight ?? "0");
-      // console.log(weights);
       const price = calculateTotalPrice(weights);
       setPayload(payload);
       setTotalPrice(price);
