@@ -46,7 +46,7 @@ export default function BulkLabelCreation() {
       >
         <div className="flex flex-col">
           {renderableErrorFlags.map((errorFlag, index) => (
-            <div key={index} className="text-warning">
+            <div key={index} className="pb-4 text-warning">
               {errorFlag}
             </div>
           ))}
