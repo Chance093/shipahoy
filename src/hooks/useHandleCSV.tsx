@@ -209,6 +209,7 @@ export default function useHandleCSV() {
   function csvHandlingHelper(event: React.ChangeEvent<HTMLInputElement>): void {
     setShowErrorModal(false);
     setPayload([]);
+    setRenderableErrorFlags([]);
     newCheckpoint("csvHandlingHelper() → Checkpoints enabled.");
     const [file, reader]: [File | null, FileReader] = getFileAndInitNewReader(event);
     const fileName: string = file?.name ?? "No file selected.";
