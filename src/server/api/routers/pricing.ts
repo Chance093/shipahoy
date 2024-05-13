@@ -1,5 +1,7 @@
 import { z } from "zod";
+
 import { adminProcedure, createTRPCRouter, protectedProcedure } from "../trpc";
+
 import { pricing } from "~/server/db/schema";
 import { eq } from "drizzle-orm";
 
@@ -36,9 +38,10 @@ export const pricingRouter = createTRPCRouter({
       },
     });
   }),
-  update: protectedProcedure
+  updatePricingByUserId: protectedProcedure
     .input(
       z.object({
+        userId: z.string(),
         zeroToFour: z.string(),
         fourToEight: z.string(),
         eightToFifteen: z.string(),
@@ -64,6 +67,6 @@ export const pricingRouter = createTRPCRouter({
           fiftyFiveToSixtyFive: input.fiftyFiveToSixtyFive,
           sixtyFiveToSeventy: input.sixtyFiveToSeventy,
         })
-        .where(eq(pricing.userId, ctx.auth.userId));
+        .where(eq(pricing.userId, input.userId));
     }),
 });
