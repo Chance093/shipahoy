@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { adminProcedure, createTRPCRouter, protectedProcedure } from "../trpc";
 import { labelGroup } from "~/server/db/schema";
 import { z } from "zod";
 
@@ -26,7 +26,7 @@ export const shippingHistoryRouter = createTRPCRouter({
     });
   }),
 
-  getShippingHistoryByUserId: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
+  getShippingHistoryByUserId: adminProcedure.input(z.string()).query(({ ctx, input }) => {
     return ctx.db.query.labelGroup.findMany({
       where: eq(labelGroup.userId, input),
       columns: {
