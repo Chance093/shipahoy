@@ -15,9 +15,13 @@ export default function useHandleCSV() {
   const [totalPrice, setTotalPrice] = useState("0.00");
   const checkpoints: string[] = [];
   const { createLabels, storeData } = useCreateLabels();
-  const balance = api.balance.getAmount.useQuery();
-  const updateBalance = api.balance.update.useMutation();
-  const userPricing = api.pricing.getPricing.useQuery();
+  const { data: balance, isError: isBalanceError, error: balanceError } = api.balance.getAmount.useQuery();
+  const updateBalance = api.balance.update.useMutation({
+    onError: (err) => {
+      throw err;
+    },
+  });
+  const { data: userPricing, isError: isUserPricingError, error: userPricingError } = api.pricing.getPricing.useQuery();
   const router = useRouter();
 
   function newCheckpoint(checkpoint: string): void {
@@ -91,53 +95,52 @@ export default function useHandleCSV() {
   // TODO: Refactor to implement with other weight checking function
   // TODO: Write test case for this
   function calculateTotalPrice(data: string[]) {
-    const userPricingData = userPricing.data;
     const weights = data.map((x) => +x);
     const prices: number[] = [];
     weights.map((weight) => {
       switch (true) {
         case 0 < weight && weight <= 3.99: {
-          const price = userPricingData?.zeroToFour;
+          const price = userPricing?.zeroToFour;
           prices.push(Number(price));
           break;
         }
         case 4 <= weight && weight <= 7.99: {
-          const price = userPricingData?.fourToEight;
+          const price = userPricing?.fourToEight;
           prices.push(Number(price));
           break;
         }
         case 8 <= weight && weight <= 14.99: {
-          const price = userPricingData?.eightToFifteen;
+          const price = userPricing?.eightToFifteen;
           prices.push(Number(price));
           break;
         }
         case 15 <= weight && weight <= 24.99: {
-          const price = userPricingData?.fifteenToTwentyFive;
+          const price = userPricing?.fifteenToTwentyFive;
           prices.push(Number(price));
           break;
         }
         case 25 <= weight && weight <= 34.99: {
-          const price = userPricingData?.twentyFiveToThirtyFive;
+          const price = userPricing?.twentyFiveToThirtyFive;
           prices.push(Number(price));
           break;
         }
         case 35 <= weight && weight <= 44.99: {
-          const price = userPricingData?.thirtyFiveToFortyFive;
+          const price = userPricing?.thirtyFiveToFortyFive;
           prices.push(Number(price));
           break;
         }
         case 45 <= weight && weight <= 54.99: {
-          const price = userPricingData?.fortyFiveToFiftyFive;
+          const price = userPricing?.fortyFiveToFiftyFive;
           prices.push(Number(price));
           break;
         }
         case 55 <= weight && weight <= 64.99: {
-          const price = userPricingData?.fiftyFiveToSixtyFive;
+          const price = userPricing?.fiftyFiveToSixtyFive;
           prices.push(Number(price));
           break;
         }
         case 65 <= weight && weight <= 70: {
-          const price = userPricingData?.sixtyFiveToSeventy;
+          const price = userPricing?.sixtyFiveToSeventy;
           prices.push(Number(price));
           break;
         }
@@ -189,9 +192,9 @@ export default function useHandleCSV() {
 
   async function submitOrder(e: FormEvent) {
     e.preventDefault();
-    if (!balance.data?.amount) return;
+    if (!balance?.amount) return;
     if (parseFloat(totalPrice) === 0) return;
-    if (parseFloat(balance.data?.amount) < parseFloat(totalPrice)) {
+    if (parseFloat(balance.amount) < parseFloat(totalPrice)) {
       setRenderableErrorFlags((prev) => [...prev, "Insufficient funds. Please add more to your balance."]);
       return;
     }
@@ -204,12 +207,12 @@ export default function useHandleCSV() {
     storeData(tracking, links, payload, labelPrices);
     setTotalPrice("0.00");
     setPayload([]);
-    const newBalance = parseFloat(balance.data.amount) - parseFloat(totalPrice);
+    const newBalance = parseFloat(balance.amount) - parseFloat(totalPrice);
     updateBalance.mutate({ amount: newBalance.toString() });
     setRenderableErrorFlags([]);
     router.push("/user/dashboard");
     router.refresh();
   }
 
-  return { submitOrder, fileName, csvHandlingHelper, totalPrice, showErrorModal, renderableErrorFlags };
+  return { submitOrder, fileName, csvHandlingHelper, totalPrice, showErrorModal, renderableErrorFlags, isBalanceError, isUserPricingError, balanceError, userPricingError };
 }

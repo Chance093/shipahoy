@@ -26,7 +26,7 @@ export default async function Dashboard() {
         <Card title="Orders" body={shippingHistory.length}>
           <ClipboardDocumentListIcon className="w-6 text-purple" />
         </Card>
-        <Card title="Balance" body={`$${balance ? balance.amount : "0.00"}`}>
+        <Card title="Balance" body={`$${balance.amount}`}>
           <BanknotesIcon className="w-6 text-purple" />
         </Card>
       </section>
