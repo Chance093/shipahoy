@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { adminProcedure, createTRPCRouter, protectedProcedure } from "../trpc";
 import { pricing } from "~/server/db/schema";
 import { eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 export const pricingRouter = createTRPCRouter({
-  getPricingByUserId: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
+  getPricingByUserId: adminProcedure.input(z.string()).query(async ({ ctx, input }) => {
     const pricingTable = await ctx.db.query.pricing.findFirst({
       where: eq(pricing.userId, input),
       columns: {
@@ -26,6 +26,7 @@ export const pricingRouter = createTRPCRouter({
     }
 
     return pricingTable;
+
   }),
   getPricing: protectedProcedure.query(async ({ ctx }) => {
     const pricingTable = await ctx.db.query.pricing.findFirst({
@@ -49,9 +50,10 @@ export const pricingRouter = createTRPCRouter({
 
     return pricingTable;
   }),
-  update: protectedProcedure
+  updatePricingByUserId: protectedProcedure
     .input(
       z.object({
+        userId: z.string(),
         zeroToFour: z.string(),
         fourToEight: z.string(),
         eightToFifteen: z.string(),
@@ -77,6 +79,6 @@ export const pricingRouter = createTRPCRouter({
           fiftyFiveToSixtyFive: input.fiftyFiveToSixtyFive,
           sixtyFiveToSeventy: input.sixtyFiveToSeventy,
         })
-        .where(eq(pricing.userId, ctx.auth.userId));
+        .where(eq(pricing.userId, input.userId));
     }),
 });

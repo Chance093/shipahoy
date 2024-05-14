@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { protectedProcedure, createTRPCRouter } from "../trpc";
+import { protectedProcedure, createTRPCRouter, adminProcedure } from "../trpc";
 import { balance } from "~/server/db/schema";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
@@ -22,7 +22,7 @@ export const balanceRouter = createTRPCRouter({
     return amount;
   }),
 
-  getAmountByUserId: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
+  getAmountByUserId: adminProcedure.input(z.string()).query(({ ctx, input }) => {
     return ctx.db.query.balance.findFirst({
       where: eq(balance.userId, input),
       columns: { amount: true, id: true },
@@ -44,7 +44,7 @@ export const balanceRouter = createTRPCRouter({
         .where(eq(balance.userId, ctx.auth.userId));
     }),
 
-  updateByUserId: protectedProcedure
+  updateByUserId: adminProcedure
     .input(
       z.object({
         amount: z.string(),

@@ -27,7 +27,7 @@ export default function useAdminPricing(userId: string) {
     refetch().catch(console.error);
   }, [userId, refetchPricing]);
 
-  const updatePricing = api.pricing.update.useMutation({
+  const updatePricing = api.pricing.updatePricingByUserId.useMutation({
     onSuccess: async () => {
       await refetchPricing();
     },
@@ -45,6 +45,7 @@ export default function useAdminPricing(userId: string) {
   function addPricing() {
     if (!pricing) throw new Error("Could not get pricing for user");
     updatePricing.mutate({
+      userId: userId,
       zeroToFour: pricingInputs.zeroToFour,
       fourToEight: pricingInputs.fourToEight,
       eightToFifteen: pricingInputs.eightToFifteen,
