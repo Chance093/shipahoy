@@ -50,7 +50,7 @@ export const pricingRouter = createTRPCRouter({
 
     return pricingTable;
   }),
-  updatePricingByUserId: protectedProcedure
+  updatePricingByUserId: adminProcedure
     .input(
       z.object({
         userId: z.string(),
