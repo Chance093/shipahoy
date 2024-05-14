@@ -1,26 +1,26 @@
 import { EXPECTED_COLUMN_HEADERS } from "./lists";
-import { type ErrorFlagDetails } from "./definitions";
 
 const getErrorFlagMessage = (
   errorFlagType: string,
   newValidationCheckpoint: (checkpoint: string) => number,
-  ...errorFlagDetails: ErrorFlagDetails
+  columnHeader: string | undefined,
+  invalidIndexes: Map<string, number[]> | undefined,
 ) => {
-  newValidationCheckpoint(`getErrorFlagMessage() → New error flag: '${errorFlagType}', ${JSON.stringify(errorFlagDetails)}`);
+  newValidationCheckpoint(`getErrorFlagMessage() → New error flag: '${errorFlagType}'`);
   const errorFlagMessage: string[] = [];
   switch (errorFlagType) {
-    case "column header length":
-      errorFlagMessage.push("Your CSV's column headers do not match those of our template.");
+    case "column header missing":
+      errorFlagMessage.push(`Column ${columnHeader} is missing`);
       return errorFlagMessage;
-    case "column header value":
-      const [columnNumber, invalidColumnHeader, expectedColumnHeader] = errorFlagDetails as [number, string, string];
-      errorFlagMessage.push(`Column ${columnNumber}'s header is ${invalidColumnHeader}; it should be ${expectedColumnHeader}.`);
+    case "column should not be included":
+      errorFlagMessage.push(`Column ${columnHeader} should not be included`);
+      return errorFlagMessage;
+    case "invalid weight":
+      errorFlagMessage.push(`Invalid weight values: should be 1-70`);
       return errorFlagMessage;
     case "one or more empty values":
-      const invalidIndexes = errorFlagDetails[0] as Map<string, number[]>;
-      for (const [key, value] of invalidIndexes) {
-        const columnNumbers = value.join(", ");
-        errorFlagMessage.push(`${key} has empty values in column(s): ${columnNumbers}.`);
+      for (const [headerName, rows] of invalidIndexes!) {
+        errorFlagMessage.push(`${headerName} has empty values in row(s): ${rows.length > 1 ? rows.join(", ") : rows[0]}`);
       }
       return errorFlagMessage;
     default:
@@ -28,66 +28,79 @@ const getErrorFlagMessage = (
   }
 };
 
-const validateColumnHeaders = (columnHeaders: string[], errorFlags: string[], newValidationCheckpoint: (checkpoint: string) => number) => {
-  if (columnHeaders.length !== EXPECTED_COLUMN_HEADERS.length) {
-    const errorFlagType = "column header length";
-    const errorFlagMessage: string[] = getErrorFlagMessage(errorFlagType, newValidationCheckpoint);
+const validateColumnHeaders = (headers: Map<string, number>, errorFlags: string[], newValidationCheckpoint: (checkpoint: string) => number) => {
+  // Check for missing column headers
+  for (const expectedHeader of EXPECTED_COLUMN_HEADERS) {
+    if (headers.has(expectedHeader)) continue;
+    const errorFlagType = "column header missing";
+    const errorFlagMessage: string[] = getErrorFlagMessage(errorFlagType, newValidationCheckpoint, expectedHeader, undefined);
     errorFlags.push(...errorFlagMessage);
   }
-  for (let x = 0; x < EXPECTED_COLUMN_HEADERS.length; ++x) {
-    if (columnHeaders[x] === EXPECTED_COLUMN_HEADERS[x]) continue;
-    const errorFlagType = "column header value";
-    const errorFlagMessage: string[] = getErrorFlagMessage(
-      errorFlagType,
-      newValidationCheckpoint,
-      x + 1,
-      columnHeaders[x],
-      EXPECTED_COLUMN_HEADERS[x],
-    );
+
+  // Check for column headers that shouldn't be included
+  headers.forEach((_value, key) => {
+    if (EXPECTED_COLUMN_HEADERS.includes(key)) return;
+    const errorFlagType = "column should not be included";
+    const errorFlagMessage: string[] = getErrorFlagMessage(errorFlagType, newValidationCheckpoint, key, undefined);
     errorFlags.push(...errorFlagMessage);
-  }
+  });
+
   newValidationCheckpoint(`validateColumnHeaders() → Validation for column headers done, there were ${errorFlags.length} errors flagged`);
 };
 
 const validateRowValues = (
-  columnHeaders: string[],
-  rowsOfValues: string[][],
+  headers: Map<string, number>,
+  csvValues: string[][],
   errorFlags: string[],
   newValidationCheckpoint: (checkpoint: string) => number,
 ) => {
   const invalidIndexes = new Map<string, number[]>();
-  const regexToIgnoreAddressLine2 = /Street2|Company/;
-  for (let x = 0; x < rowsOfValues.length; ++x) {
-    if (!rowsOfValues[x]) continue;
-    for (let y = 0; y < rowsOfValues[x]!.length; ++y) {
-      const value = rowsOfValues[x]![y]!;
-      if (regexToIgnoreAddressLine2.test(columnHeaders[y]!)) continue;
+  const regexToIgnore = /Street2|Company|Phone/;
+  for (const [headerName, column] of headers) {
+    if (regexToIgnore.test(headerName)) continue;
+    if (!EXPECTED_COLUMN_HEADERS.includes(headerName)) continue;
+    const columnValues = csvValues.map((row) => row[column]!);
+    for (let x = 0; x < columnValues.length; ++x) {
+      const value = columnValues[x]!;
+      if (headerName === "Weight") {
+        if (value === "") console.log("");
+        else if (Number(value) <= 0 || Number(value) > 70) {
+          const errorFlagType = "invalid weight";
+          const errorFlagMessage: string[] = getErrorFlagMessage(errorFlagType, newValidationCheckpoint, headerName, undefined);
+          errorFlags.push(...errorFlagMessage);
+        }
+      }
       if (value.length > 0) continue;
-      const keyName = `Row: ${x + 1}`;
-      const columnNumber: number = y + 1;
-      if (invalidIndexes.has(keyName)) {
-        invalidIndexes.get(keyName)!.push(columnNumber);
+      const row = x + 2;
+      if (invalidIndexes.has(headerName)) {
+        invalidIndexes.get(headerName)?.push(row);
         continue;
       }
-      invalidIndexes.set(keyName, [columnNumber]);
+      invalidIndexes.set(headerName, [row]);
     }
   }
   if (!invalidIndexes.size) return;
   const errorFlagType = "one or more empty values";
-  const errorFlagMessage: string[] = getErrorFlagMessage(errorFlagType, newValidationCheckpoint, invalidIndexes);
+  const errorFlagMessage: string[] = getErrorFlagMessage(errorFlagType, newValidationCheckpoint, undefined, invalidIndexes);
   errorFlags.push(...errorFlagMessage);
   newValidationCheckpoint(`validateRowValues() → Validation for row values done, there were ${errorFlags.length} errors flagged`);
 };
 
-function handleValidation([columnHeaders, rowsOfValues]: [string[], string[][]]): [string[], string[]] {
+function handleValidation(preppedCsvContents: [Map<string, number>, string[][]] | undefined): [string[], string[]] {
   const errorFlags: string[] = [];
   const validationCheckpoints: string[] = [];
   const newValidationCheckpoint = (checkpoint: string) => validationCheckpoints.push(checkpoint);
 
   newValidationCheckpoint("useValidation → Array to store error flags is initialized.");
+  if (preppedCsvContents === undefined) {
+    errorFlags.push("CSV is empty");
+    return [validationCheckpoints, errorFlags];
+  }
 
-  validateColumnHeaders(columnHeaders, errorFlags, newValidationCheckpoint);
-  validateRowValues(columnHeaders, rowsOfValues, errorFlags, newValidationCheckpoint);
+  const [headers, csvValues] = preppedCsvContents;
+
+  validateColumnHeaders(headers, errorFlags, newValidationCheckpoint);
+  validateRowValues(headers, csvValues, errorFlags, newValidationCheckpoint);
 
   newValidationCheckpoint(
     `validateCsvContents() → Validation for column headers and row values done. Is the CSV valid: ${!errorFlags.length ? "Yes" : "No"}`,
