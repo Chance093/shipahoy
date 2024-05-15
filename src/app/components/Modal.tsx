@@ -26,17 +26,17 @@ export default function Modal({ showModal, title, onClose, children }: ModalProp
 
   const modal: JSX.Element | null = true ? (
     <dialog ref={modalRef} className="border-none bg-transparent outline-none backdrop:bg-gray-800/50">
-      <div className="flex items-center justify-center rounded-lg bg-gradient-to-b from-warning">
-        <div className="before-thing flex flex-col rounded-lg bg-[#1a1a1b]">
-          <div className="subheading flex justify-between">
-            <h2 className="ml-4 mt-4">{title}</h2>
-            <button onClick={closeModal} className="mr-4 mt-4 border-none outline-none">
+      <section className="min-w-[25vw] max-w-[50vw] overflow-hidden rounded-2xl bg-linear-gradient">
+        <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] translate-x-[1.5px] translate-y-[1.5px] flex-col gap-8 rounded-2xl bg-radial-gradient p-8">
+          <div className="flex justify-between text-xl">
+            <h2 className="text-white">{title}</h2>
+            <button onClick={closeModal} className="border-none text-white outline-none">
               ✕
             </button>
           </div>
-          <div className="paragraph m-4">{children}</div>
+          <div>{children}</div>
         </div>
-      </div>
+      </section>
     </dialog>
   ) : null;
 

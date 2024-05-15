@@ -12,8 +12,14 @@ export default function Admin() {
     userId,
     setUserId,
     orders,
+    isOrdersError,
+    ordersError,
     invoices,
+    isInvoicesError,
+    invoicesError,
     amount,
+    isAmountError,
+    amountError,
     fetchUser,
     addBalance,
     addedBalance,
@@ -21,6 +27,10 @@ export default function Admin() {
     paymentMethod,
     setPaymentMethod,
   } = useAdmin();
+
+  if (isOrdersError) throw ordersError;
+  if (isInvoicesError) throw invoicesError;
+  if (isAmountError) throw amountError;
 
   if (isLoaded) {
     if (!userMemberships.data) return <p>Something went wrong!</p>;

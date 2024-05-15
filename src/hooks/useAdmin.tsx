@@ -9,20 +9,41 @@ export default function useAdmin() {
   const [addedBalance, setAddedBalance] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
 
-  const { data: orders, refetch: refetchOrders } = api.shippingHistory.getShippingHistoryByUserId.useQuery(userId, { enabled: false });
-  const { data: invoices, refetch: refetchInvoices } = api.invoice.getInvoicesByUserId.useQuery(userId, { enabled: false });
-  const { data: amount, refetch: refetchBalance } = api.balance.getAmountByUserId.useQuery(userId, { enabled: false });
+  const {
+    data: orders,
+    refetch: refetchOrders,
+    isError: isOrdersError,
+    error: ordersError,
+  } = api.shippingHistory.getShippingHistoryByUserId.useQuery(userId, { enabled: false });
+  const {
+    data: invoices,
+    refetch: refetchInvoices,
+    isError: isInvoicesError,
+    error: invoicesError,
+  } = api.invoice.getInvoicesByUserId.useQuery(userId, { enabled: false });
+  const {
+    data: amount,
+    refetch: refetchBalance,
+    isError: isAmountError,
+    error: amountError,
+  } = api.balance.getAmountByUserId.useQuery(userId, { enabled: false });
 
   const updateBalance = api.balance.updateByUserId.useMutation({
     onSuccess: async () => {
       setAddedBalance("");
       await refetchBalance();
     },
+    onError: (err) => {
+      throw err;
+    },
   });
   const updateInvoice = api.invoice.addByUserId.useMutation({
     onSuccess: async () => {
       setPaymentMethod("");
       await refetchInvoices();
+    },
+    onError: (err) => {
+      throw err;
     },
   });
 
@@ -46,8 +67,14 @@ export default function useAdmin() {
     userId,
     setUserId,
     orders,
+    isOrdersError,
+    ordersError,
     invoices,
+    isInvoicesError,
+    invoicesError,
     amount,
+    isAmountError,
+    amountError,
     fetchUser,
     addBalance,
     addedBalance,

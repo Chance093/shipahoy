@@ -17,7 +17,7 @@ export default async function Accounting() {
 
   return (
     <>
-      <Card title="Balance" body={`$${balance ? balance.amount : "0.00"}`}>
+      <Card title="Balance" body={`$${balance.amount}`}>
         <BanknotesIcon className="w-6 text-purple" />
       </Card>
 

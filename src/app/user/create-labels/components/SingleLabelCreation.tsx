@@ -5,7 +5,21 @@ import AddressForm from "./AddressForm";
 import PackageDimensionForm from "./PackageDimensionForm";
 
 export default function SingleLabelCreation() {
-  const { formData, price, errorMessage, handleChange, updateWeight, onFormSubmit } = useFormValidation();
+  const {
+    formData,
+    price,
+    errorMessage,
+    handleChange,
+    updateWeight,
+    onFormSubmit,
+    isBalanceError,
+    isUserPricingError,
+    balanceError,
+    userPricingError,
+  } = useFormValidation();
+
+  if (isBalanceError) throw balanceError;
+  if (isUserPricingError) throw userPricingError;
 
   return (
     <>

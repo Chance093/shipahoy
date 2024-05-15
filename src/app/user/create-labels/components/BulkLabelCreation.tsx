@@ -3,7 +3,26 @@ import Modal from "~/app/components/Modal";
 import useHandleCSV from "~/hooks/useHandleCSV";
 
 export default function BulkLabelCreation() {
-  const { submitOrder, fileName, csvHandlingHelper, totalPrice, showErrorModal, renderableErrorFlags } = useHandleCSV();
+  const {
+    submitOrder,
+    fileName,
+    csvHandlingHelper,
+    totalPrice,
+    showErrorModal,
+    renderableErrorFlags,
+    isBalanceError,
+    isUserPricingError,
+    balanceError,
+    userPricingError,
+  } = useHandleCSV();
+
+  if (isUserPricingError) {
+    throw userPricingError;
+  }
+
+  if (isBalanceError) {
+    throw balanceError;
+  }
 
   return (
     <>
@@ -46,7 +65,7 @@ export default function BulkLabelCreation() {
       >
         <div className="flex flex-col">
           {renderableErrorFlags.map((errorFlag, index) => (
-            <div key={index} className="text-warning">
+            <div key={index} className="pb-4 text-warning">
               {errorFlag}
             </div>
           ))}

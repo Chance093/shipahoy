@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { protectedProcedure, createTRPCRouter } from "../trpc";
+import { protectedProcedure, createTRPCRouter, adminProcedure } from "../trpc";
 import { invoice } from "~/server/db/schema";
 import { z } from "zod";
 
@@ -23,7 +23,7 @@ export const invoiceRouter = createTRPCRouter({
     });
   }),
 
-  getInvoicesByUserId: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
+  getInvoicesByUserId: adminProcedure.input(z.string()).query(({ ctx, input }) => {
     return ctx.db.query.invoice.findMany({
       where: eq(invoice.userId, input),
       columns: {
@@ -61,7 +61,7 @@ export const invoiceRouter = createTRPCRouter({
       });
     }),
 
-  addByUserId: protectedProcedure
+  addByUserId: adminProcedure
     .input(
       z.object({
         userId: z.string(),
