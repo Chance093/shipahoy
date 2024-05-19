@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default async function Dashboard() {
   const balance = await api.balance.getAmount.query();
-  const shippingHistory = await api.shippingHistory.getShippingHistory.query();
+  const shippingHistory = await api.shippingHistory.getShippingHistoryByPage.query(1);
   let labelCount = 0;
   shippingHistory.forEach((item) => (labelCount += item.labelCount));
 
