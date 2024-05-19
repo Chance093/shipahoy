@@ -31,7 +31,7 @@ export default async function Dashboard() {
         </Card>
       </section>
 
-      <ShippingHistoryTable shippingHistory={shippingHistory} />
+      <ShippingHistoryTable type="user" userId={undefined} />
     </>
   );
 }
