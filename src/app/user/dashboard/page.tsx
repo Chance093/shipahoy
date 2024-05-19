@@ -13,17 +13,14 @@ export const metadata: Metadata = {
 
 export default async function Dashboard() {
   const balance = await api.balance.getAmount.query();
-  const shippingHistory = await api.shippingHistory.getShippingHistoryByPage.query(1);
-  let labelCount = 0;
-  shippingHistory.forEach((item) => (labelCount += item.labelCount));
 
   return (
     <>
       <section className="flex gap-8">
-        <Card title="Labels" body={labelCount}>
+        <Card title="Labels" body={0}>
           <DocumentPlusIcon className="w-6 text-purple" />
         </Card>
-        <Card title="Orders" body={shippingHistory.length}>
+        <Card title="Orders" body={0}>
           <ClipboardDocumentListIcon className="w-6 text-purple" />
         </Card>
         <Card title="Balance" body={`$${balance.amount}`}>

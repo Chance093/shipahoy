@@ -113,7 +113,7 @@ export default function Admin() {
               </section>
               {amount === undefined ? null : <PricingTable userId={userId} />}
               {!invoices ? null : <InvoiceTable invoices={invoices} />}
-              {!orders ? null : <ShippingHistoryTable shippingHistory={orders} />}
+              {!orders ? null : <ShippingHistoryTable type="admin" userId={userId} />}
             </section>
           </main>
         );

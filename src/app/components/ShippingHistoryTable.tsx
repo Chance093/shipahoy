@@ -35,12 +35,25 @@ export default function ShippingHistoryTable({ type, userId }: { type: "user" | 
     );
   }
 
-  return (
-    <section className="flex flex-1 flex-col rounded-2xl bg-linear-gradient">
-      <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] flex-1 translate-x-[1.5px] translate-y-[1.5px] flex-col gap-2 rounded-2xl bg-radial-gradient p-5">
-        <h2 className="p-2 text-2xl">Shipping History</h2>
-        <Orders shippingHistory={shippingHistory} />
-      </div>
-    </section>
-  );
+  if (type === "admin") {
+    if (!userId) return;
+    const {
+      data: shippingHistory,
+      isError: isShippingHistoryError,
+      error: shippingHistoryError,
+      isLoading: isShippingHistoryLoading,
+    } = api.shippingHistory.getShippingHistoryByUserAndPage.useQuery({ page, userId });
+    if (isShippingHistoryLoading) return null;
+    if (isShippingHistoryError) throw shippingHistoryError;
+    if (shippingHistory === undefined) throw new Error("Could not find shipping history");
+
+    return (
+      <section className="flex flex-1 flex-col rounded-2xl bg-linear-gradient">
+        <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] flex-1 translate-x-[1.5px] translate-y-[1.5px] flex-col gap-2 rounded-2xl bg-radial-gradient p-5">
+          <h2 className="p-2 text-2xl">Shipping History</h2>
+          <Orders shippingHistory={shippingHistory} />
+        </div>
+      </section>
+    );
+  }
 }
