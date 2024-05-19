@@ -73,4 +73,37 @@ export const shippingHistoryRouter = createTRPCRouter({
       },
     });
   }),
+
+  getShippingHistoryByUserAndPage: protectedProcedure
+    .input(
+      z.object({
+        page: z.number(),
+        userId: z.string(),
+      }),
+    )
+    .query(({ ctx, input }) => {
+      const offset = (input.page - 1) * 10;
+      const limit = 10;
+      return ctx.db.query.labelGroup.findMany({
+        where: eq(labelGroup.userId, input.userId),
+        limit,
+        offset,
+        columns: {
+          id: true,
+          totalPrice: true,
+          labelCount: true,
+          pdfLink: true,
+          csvLink: true,
+          zipLink: true,
+          createdAt: true,
+        },
+        with: {
+          shippingService: {
+            columns: {
+              service: true,
+            },
+          },
+        },
+      });
+    }),
 });
