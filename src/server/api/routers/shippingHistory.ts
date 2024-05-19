@@ -4,7 +4,7 @@ import { labelGroup } from "~/server/db/schema";
 import { z } from "zod";
 
 export const shippingHistoryRouter = createTRPCRouter({
-  getShippingHistory: protectedProcedure.query(({ ctx }) => {
+  getAllShippingHistory: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.labelGroup.findMany({
       where: eq(labelGroup.userId, ctx.auth.userId),
       columns: {
@@ -26,7 +26,7 @@ export const shippingHistoryRouter = createTRPCRouter({
     });
   }),
 
-  getShippingHistoryByUserId: adminProcedure.input(z.string()).query(({ ctx, input }) => {
+  getAllShippingHistoryByUserId: adminProcedure.input(z.string()).query(({ ctx, input }) => {
     return ctx.db.query.labelGroup.findMany({
       where: eq(labelGroup.userId, input),
       columns: {
@@ -48,7 +48,7 @@ export const shippingHistoryRouter = createTRPCRouter({
     });
   }),
 
-  getShippingHistoryByPage: protectedProcedure.input(z.number()).query(({ ctx, input }) => {
+  getShippingHistory: protectedProcedure.input(z.number()).query(({ ctx, input }) => {
     const offset = (input - 1) * 10;
     const limit = 10;
     return ctx.db.query.labelGroup.findMany({
@@ -74,7 +74,7 @@ export const shippingHistoryRouter = createTRPCRouter({
     });
   }),
 
-  getShippingHistoryByUserAndPage: protectedProcedure
+  getShippingHistoryByUserId: protectedProcedure
     .input(
       z.object({
         page: z.number(),

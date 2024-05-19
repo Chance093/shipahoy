@@ -10,17 +10,12 @@ export default function useAdmin() {
   const [paymentMethod, setPaymentMethod] = useState("");
 
   const {
-    data: orders,
-    refetch: refetchOrders,
-    isError: isOrdersError,
-    error: ordersError,
-  } = api.shippingHistory.getShippingHistoryByUserId.useQuery(userId, { enabled: false });
-  const {
     data: invoices,
     refetch: refetchInvoices,
     isError: isInvoicesError,
     error: invoicesError,
   } = api.invoice.getInvoicesByUserId.useQuery(userId, { enabled: false });
+
   const {
     data: amount,
     refetch: refetchBalance,
@@ -48,7 +43,6 @@ export default function useAdmin() {
   });
 
   async function fetchUser() {
-    await refetchOrders();
     await refetchInvoices();
     await refetchBalance();
   }
@@ -66,9 +60,6 @@ export default function useAdmin() {
     isLoaded,
     userId,
     setUserId,
-    orders,
-    isOrdersError,
-    ordersError,
     invoices,
     isInvoicesError,
     invoicesError,

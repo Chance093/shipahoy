@@ -20,7 +20,7 @@ export default function ShippingHistoryTable({ type, userId }: { type: "user" | 
       isError: isShippingHistoryError,
       error: shippingHistoryError,
       isLoading: isShippingHistoryLoading,
-    } = api.shippingHistory.getShippingHistoryByPage.useQuery(page);
+    } = api.shippingHistory.getShippingHistory.useQuery(page);
     if (isShippingHistoryLoading) return null;
     if (isShippingHistoryError) throw shippingHistoryError;
     if (shippingHistory === undefined) throw new Error("Could not find shipping history");
@@ -42,7 +42,7 @@ export default function ShippingHistoryTable({ type, userId }: { type: "user" | 
       isError: isShippingHistoryError,
       error: shippingHistoryError,
       isLoading: isShippingHistoryLoading,
-    } = api.shippingHistory.getShippingHistoryByUserAndPage.useQuery({ page, userId });
+    } = api.shippingHistory.getShippingHistoryByUserId.useQuery({ page, userId });
     if (isShippingHistoryLoading) return null;
     if (isShippingHistoryError) throw shippingHistoryError;
     if (shippingHistory === undefined) throw new Error("Could not find shipping history");

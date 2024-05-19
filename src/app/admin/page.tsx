@@ -11,9 +11,6 @@ export default function Admin() {
     isLoaded,
     userId,
     setUserId,
-    orders,
-    isOrdersError,
-    ordersError,
     invoices,
     isInvoicesError,
     invoicesError,
@@ -28,7 +25,6 @@ export default function Admin() {
     setPaymentMethod,
   } = useAdmin();
 
-  if (isOrdersError) throw ordersError;
   if (isInvoicesError) throw invoicesError;
   if (isAmountError) throw amountError;
 
@@ -113,7 +109,7 @@ export default function Admin() {
               </section>
               {amount === undefined ? null : <PricingTable userId={userId} />}
               {!invoices ? null : <InvoiceTable invoices={invoices} />}
-              {!orders ? null : <ShippingHistoryTable type="admin" userId={userId} />}
+              {amount === undefined ? null : <ShippingHistoryTable type="admin" userId={userId} />}
             </section>
           </main>
         );
