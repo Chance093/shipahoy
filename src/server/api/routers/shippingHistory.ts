@@ -74,7 +74,7 @@ export const shippingHistoryRouter = createTRPCRouter({
     });
   }),
 
-  getShippingHistoryByUserId: protectedProcedure
+  getShippingHistoryByUserId: adminProcedure
     .input(
       z.object({
         page: z.number(),
