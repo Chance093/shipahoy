@@ -31,6 +31,8 @@ export default function ShippingHistoryTable({ type, userId }: { type: "user" | 
         <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] flex-1 translate-x-[1.5px] translate-y-[1.5px] flex-col gap-2 rounded-2xl bg-radial-gradient p-5">
           <h2 className="p-2 text-2xl">Shipping History</h2>
           <Orders shippingHistory={shippingHistory} />
+          <div className="flex-1"></div>
+
           <Pagination page={page} decrementPage={decrementPage} incrementPage={incrementPage} />
         </div>
       </section>
@@ -54,6 +56,8 @@ export default function ShippingHistoryTable({ type, userId }: { type: "user" | 
         <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] flex-1 translate-x-[1.5px] translate-y-[1.5px] flex-col gap-2 rounded-2xl bg-radial-gradient p-5">
           <h2 className="p-2 text-2xl">Shipping History</h2>
           <Orders shippingHistory={shippingHistory} />
+          <div className="flex-1"></div>
+          <Pagination page={page} decrementPage={decrementPage} incrementPage={incrementPage} />
         </div>
       </section>
     );
