@@ -2,6 +2,7 @@
 import { api } from "~/trpc/react";
 import Orders from "./Orders";
 import { useState } from "react";
+import Pagination from "./Pagination";
 
 export default function ShippingHistoryTable({ type, userId }: { type: "user" | "admin"; userId: string | undefined }) {
   const [page, setPage] = useState(1);
@@ -30,6 +31,7 @@ export default function ShippingHistoryTable({ type, userId }: { type: "user" | 
         <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] flex-1 translate-x-[1.5px] translate-y-[1.5px] flex-col gap-2 rounded-2xl bg-radial-gradient p-5">
           <h2 className="p-2 text-2xl">Shipping History</h2>
           <Orders shippingHistory={shippingHistory} />
+          <Pagination page={page} decrementPage={decrementPage} incrementPage={incrementPage} />
         </div>
       </section>
     );
