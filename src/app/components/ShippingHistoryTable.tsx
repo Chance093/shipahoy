@@ -12,6 +12,7 @@ export default function ShippingHistoryTable({ type, userId }: { type: "user" | 
   };
 
   const decrementPage = () => {
+    if (page === 1) return;
     setPage((prev) => prev - 1);
   };
 
