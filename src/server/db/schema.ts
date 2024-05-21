@@ -204,3 +204,11 @@ export const labelGroupRelations = relations(labelGroup, ({ one, many }) => ({
   }),
   label: many(label),
 }));
+
+export const userData = mysqlTable("user_data", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id", { length: 200 }).notNull(),
+  orderCount: int("order_count").notNull(),
+  labelCount: int("label_count").notNull(),
+  invoiceCount: int("invoice_count").notNull(),
+});
