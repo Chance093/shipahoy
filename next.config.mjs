@@ -6,7 +6,17 @@ import { withSentryConfig } from "@sentry/nextjs";
 await import("./src/env.mjs");
 
 // @type {import("next").NextConfig}
-const config = {};
+const config = {
+  redirects() {
+    return [
+      {
+        source: "/user",
+        destination: "/user/dashboard",
+        permanent: true,
+      },
+    ];
+  },
+};
 
 export default withSentryConfig(config, {
   // For all available options, see:
