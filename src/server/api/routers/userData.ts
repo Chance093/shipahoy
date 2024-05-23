@@ -70,6 +70,19 @@ export const userDataRouter = createTRPCRouter({
     return allUserData;
   }),
 
+  getUserDataByUserId: adminProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    const allUserData = await ctx.db.query.userData.findFirst({
+      where: eq(userData.userId, input),
+      columns: { invoiceCount: true, orderCount: true, labelCount: true },
+    });
+
+    if (allUserData === undefined) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "There is no user data associated with your account" });
+    }
+
+    return allUserData;
+  }),
+
   updateOrderCount: protectedProcedure
     .input(
       z.object({
