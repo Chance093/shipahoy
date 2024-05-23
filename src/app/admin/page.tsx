@@ -11,9 +11,6 @@ export default function Admin() {
     isLoaded,
     userId,
     setUserId,
-    invoices,
-    isInvoicesError,
-    invoicesError,
     amount,
     isAmountError,
     amountError,
@@ -28,7 +25,6 @@ export default function Admin() {
     countsError,
   } = useAdmin();
 
-  if (isInvoicesError) throw invoicesError;
   if (isAmountError) throw amountError;
   if (isCountsError) throw countsError;
 
@@ -112,7 +108,7 @@ export default function Admin() {
                 ) : null}
               </section>
               {amount === undefined ? null : <PricingTable userId={userId} />}
-              {!invoices ? null : <InvoiceTable invoices={invoices} />}
+              {counts?.invoiceCount === undefined ? null : <InvoiceTable type="admin" userId={userId} invoiceCount={counts?.invoiceCount} />}
               {counts?.orderCount === undefined ? null : <ShippingHistoryTable type="admin" userId={userId} orderCount={counts?.orderCount} />}
             </section>
           </main>

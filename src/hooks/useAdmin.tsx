@@ -10,13 +10,6 @@ export default function useAdmin() {
   const [paymentMethod, setPaymentMethod] = useState("");
 
   const {
-    data: invoices,
-    refetch: refetchInvoices,
-    isError: isInvoicesError,
-    error: invoicesError,
-  } = api.invoice.getInvoicesByUserId.useQuery(userId, { enabled: false });
-
-  const {
     data: amount,
     refetch: refetchBalance,
     isError: isAmountError,
@@ -40,9 +33,8 @@ export default function useAdmin() {
     },
   });
   const updateInvoice = api.invoice.addByUserId.useMutation({
-    onSuccess: async () => {
+    onSuccess: () => {
       setPaymentMethod("");
-      await refetchInvoices();
     },
     onError: (err) => {
       throw err;
@@ -50,7 +42,6 @@ export default function useAdmin() {
   });
 
   async function fetchUser() {
-    await refetchInvoices();
     await refetchBalance();
     await refetchCounts();
   }
@@ -68,9 +59,6 @@ export default function useAdmin() {
     isLoaded,
     userId,
     setUserId,
-    invoices,
-    isInvoicesError,
-    invoicesError,
     amount,
     isAmountError,
     amountError,

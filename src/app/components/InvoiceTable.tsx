@@ -1,48 +1,72 @@
-import { format } from "date-fns";
+"use client";
+import { api } from "~/trpc/react";
+import Invoices from "./Invoices";
+import { useState } from "react";
+import Pagination from "./Pagination";
 
-type Invoices = {
-  id: number;
-  amount: string;
-  paymentMethod: string;
-  createdAt: Date | null;
-  paymentStatus: {
-    status: string | null;
+export default function InvoiceTable({ type, userId, invoiceCount }: { type: "user" | "admin"; userId: string | undefined; invoiceCount: number }) {
+  const [page, setPage] = useState(1);
+  const totalPages = Math.ceil(invoiceCount / 10);
+
+  const incrementPage = () => {
+    if (page >= totalPages) return;
+    setPage((prev) => prev + 1);
   };
-}[];
 
-export default function InvoiceTable({ invoices }: { invoices: Invoices }) {
-  return (
-    <section className="flex flex-1 flex-col rounded-2xl bg-linear-gradient">
-      <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] flex-1 translate-x-[1.5px] translate-y-[1.5px] flex-col gap-2 rounded-2xl bg-radial-gradient p-5">
-        <h2 className="p-2 text-2xl">Invoices</h2>
-        {invoices.length === 0 ? (
-          <div className="flex flex-1 items-center justify-center pb-8">
-            <p className="text-2xl">You have no invoices!</p>
-          </div>
-        ) : (
-          <table className="w-full text-left">
-            <thead className="text-custom-gray ">
-              <tr className="border-b border-gray-600/50">
-                <th className="p-4 pb-6 font-normal">Date</th>
-                <th className="p-4 pb-6 font-normal">Amount</th>
-                <th className="p-4 pb-6 font-normal">Payment Method</th>
-                <th className="p-4 pb-6 font-normal">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {invoices.length === 0 && <p>You have no invoices!</p>}
-              {invoices?.map((invoice) => (
-                <tr key={invoice.id} className="border-b border-gray-600/50">
-                  <td className="p-4 py-6">{invoice.createdAt ? format(invoice.createdAt, "MM-dd-yyyy") : ""}</td>
-                  <td className="p-4 py-6">{invoice.amount}</td>
-                  <td className="p-4 py-6">{invoice.paymentMethod}</td>
-                  <td className="p-4 py-6">{invoice.paymentStatus.status}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-    </section>
-  );
+  const decrementPage = () => {
+    if (page === 1) return;
+    setPage((prev) => prev - 1);
+  };
+
+  if (type === "user") {
+    const { data: invoices, isError: isInvoicesError, error: invoicesError, isLoading: isInvoicesLoading } = api.invoice.getInvoices.useQuery(page);
+    const {
+      data: invoiceCount,
+      isError: isInvoiceCountError,
+      error: invoiceCountError,
+      isLoading: isInvoiceCountLoading,
+    } = api.userData.getInvoiceCount.useQuery();
+    if (isInvoicesLoading || isInvoiceCountLoading) return null;
+    if (isInvoicesError) throw invoicesError;
+    if (isInvoiceCountError) throw invoiceCountError;
+    if (invoices === undefined) throw new Error("Could not find shipping history");
+    if (invoiceCount === undefined) throw new Error("Could not get order count");
+
+    return (
+      <section className="flex flex-1 flex-col rounded-2xl bg-linear-gradient">
+        <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] flex-1 translate-x-[1.5px] translate-y-[1.5px] flex-col gap-2 rounded-2xl bg-radial-gradient p-5">
+          <h2 className="p-2 text-2xl">Invoices</h2>
+          <Invoices invoices={invoices} />
+          <div className="flex-1"></div>
+
+          <Pagination page={page} decrementPage={decrementPage} incrementPage={incrementPage} totalPages={totalPages} />
+        </div>
+      </section>
+    );
+  }
+
+  if (type === "admin") {
+    if (!userId) return;
+    const {
+      data: invoices,
+      isError: isInvoicesError,
+      error: invoicesError,
+      isLoading: isInvoicesLoading,
+    } = api.invoice.getInvoicesByUserId.useQuery({ page, userId });
+    if (isInvoicesLoading) return null;
+    if (isInvoicesError) throw invoicesError;
+    if (invoices === undefined) throw new Error("Could not find shipping history");
+
+    return (
+      <section className="flex flex-1 flex-col rounded-2xl bg-linear-gradient">
+        <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] flex-1 translate-x-[1.5px] translate-y-[1.5px] flex-col gap-2 rounded-2xl bg-radial-gradient p-5">
+          <h2 className="p-2 text-2xl">Invoices</h2>
+          <Invoices invoices={invoices} />
+          <div className="flex-1"></div>
+
+          <Pagination page={page} decrementPage={decrementPage} incrementPage={incrementPage} totalPages={totalPages} />
+        </div>
+      </section>
+    );
+  }
 }
