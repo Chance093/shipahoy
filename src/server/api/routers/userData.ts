@@ -1,5 +1,5 @@
-import { eq } from "drizzle-orm";
-import { protectedProcedure, createTRPCRouter } from "../trpc";
+import { eq, sql } from "drizzle-orm";
+import { protectedProcedure, createTRPCRouter, adminProcedure } from "../trpc";
 import { userData } from "~/server/db/schema";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
@@ -69,4 +69,86 @@ export const userDataRouter = createTRPCRouter({
 
     return allUserData;
   }),
+
+  updateOrderCount: protectedProcedure
+    .input(
+      z.object({
+        incrementValue: z.number().positive().int(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(userData)
+        .set({
+          orderCount: sql`${userData.orderCount} + ${input.incrementValue}`,
+        })
+        .where(eq(userData.userId, ctx.auth.userId));
+    }),
+
+  updateLabelCount: protectedProcedure
+    .input(
+      z.object({
+        incrementValue: z.number().positive().int(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(userData)
+        .set({
+          labelCount: sql`${userData.labelCount} + ${input.incrementValue}`,
+        })
+        .where(eq(userData.userId, ctx.auth.userId));
+    }),
+
+  updateOrderAndLabelCount: protectedProcedure
+    .input(
+      z.object({
+        incrementOrderValue: z.number().positive().int(),
+        incrementLabelValue: z.number().positive().int(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(userData)
+        .set({
+          orderCount: sql`${userData.orderCount} + ${input.incrementOrderValue}`,
+          labelCount: sql`${userData.labelCount} + ${input.incrementLabelValue}`,
+        })
+        .where(eq(userData.userId, ctx.auth.userId));
+    }),
+
+  updateInvoiceCount: protectedProcedure
+    .input(
+      z.object({
+        incrementValue: z.number().positive().int(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(userData)
+        .set({
+          invoiceCount: sql`${userData.invoiceCount} + ${input.incrementValue}`,
+        })
+        .where(eq(userData.userId, ctx.auth.userId));
+    }),
+
+  updateUserDataByUserId: adminProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        orderCount: z.number().positive().int(),
+        labelCount: z.number().positive().int(),
+        invoiceCount: z.number().positive().int(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(userData)
+        .set({
+          orderCount: input.orderCount,
+          labelCount: input.labelCount,
+          invoiceCount: input.invoiceCount,
+        })
+        .where(eq(userData.userId, input.userId));
+    }),
 });
