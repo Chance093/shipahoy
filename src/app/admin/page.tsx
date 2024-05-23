@@ -23,10 +23,14 @@ export default function Admin() {
     setAddedBalance,
     paymentMethod,
     setPaymentMethod,
+    counts,
+    isCountsError,
+    countsError,
   } = useAdmin();
 
   if (isInvoicesError) throw invoicesError;
   if (isAmountError) throw amountError;
+  if (isCountsError) throw countsError;
 
   if (isLoaded) {
     if (!userMemberships.data) return <p>Something went wrong!</p>;
@@ -109,7 +113,7 @@ export default function Admin() {
               </section>
               {amount === undefined ? null : <PricingTable userId={userId} />}
               {!invoices ? null : <InvoiceTable invoices={invoices} />}
-              {amount === undefined ? null : <ShippingHistoryTable type="admin" userId={userId} />}
+              {counts?.orderCount === undefined ? null : <ShippingHistoryTable type="admin" userId={userId} orderCount={counts?.orderCount} />}
             </section>
           </main>
         );

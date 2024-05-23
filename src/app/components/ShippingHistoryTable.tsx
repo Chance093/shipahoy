@@ -4,10 +4,20 @@ import Orders from "./Orders";
 import { useState } from "react";
 import Pagination from "./Pagination";
 
-export default function ShippingHistoryTable({ type, userId }: { type: "user" | "admin"; userId: string | undefined }) {
+export default function ShippingHistoryTable({
+  type,
+  userId,
+  orderCount,
+}: {
+  type: "user" | "admin";
+  userId: string | undefined;
+  orderCount: number;
+}) {
   const [page, setPage] = useState(1);
+  const totalPages = Math.ceil(orderCount / 10);
 
   const incrementPage = () => {
+    if (page >= totalPages) return;
     setPage((prev) => prev + 1);
   };
 
@@ -23,9 +33,17 @@ export default function ShippingHistoryTable({ type, userId }: { type: "user" | 
       error: shippingHistoryError,
       isLoading: isShippingHistoryLoading,
     } = api.shippingHistory.getShippingHistory.useQuery(page);
-    if (isShippingHistoryLoading) return null;
+    const {
+      data: orderCount,
+      isError: isOrderCountError,
+      error: orderCountError,
+      isLoading: isOrderCountLoading,
+    } = api.userData.getOrderCount.useQuery();
+    if (isShippingHistoryLoading || isOrderCountLoading) return null;
     if (isShippingHistoryError) throw shippingHistoryError;
+    if (isOrderCountError) throw orderCountError;
     if (shippingHistory === undefined) throw new Error("Could not find shipping history");
+    if (orderCount === undefined) throw new Error("Could not get order count");
 
     return (
       <section className="flex flex-1 flex-col rounded-2xl bg-linear-gradient">
@@ -34,7 +52,7 @@ export default function ShippingHistoryTable({ type, userId }: { type: "user" | 
           <Orders shippingHistory={shippingHistory} />
           <div className="flex-1"></div>
 
-          <Pagination page={page} decrementPage={decrementPage} incrementPage={incrementPage} />
+          <Pagination page={page} decrementPage={decrementPage} incrementPage={incrementPage} totalPages={totalPages} />
         </div>
       </section>
     );
@@ -58,7 +76,7 @@ export default function ShippingHistoryTable({ type, userId }: { type: "user" | 
           <h2 className="p-2 text-2xl">Shipping History</h2>
           <Orders shippingHistory={shippingHistory} />
           <div className="flex-1"></div>
-          <Pagination page={page} decrementPage={decrementPage} incrementPage={incrementPage} />
+          <Pagination page={page} decrementPage={decrementPage} incrementPage={incrementPage} totalPages={totalPages} />
         </div>
       </section>
     );

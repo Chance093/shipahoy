@@ -13,14 +13,15 @@ export const metadata: Metadata = {
 
 export default async function Dashboard() {
   const balance = await api.balance.getAmount.query();
+  const { labelCount, orderCount } = await api.userData.getLabelAndOrderCount.query();
 
   return (
     <>
       <section className="flex gap-8">
-        <Card title="Labels" body={0}>
+        <Card title="Labels" body={labelCount}>
           <DocumentPlusIcon className="w-6 text-purple" />
         </Card>
-        <Card title="Orders" body={0}>
+        <Card title="Orders" body={orderCount}>
           <ClipboardDocumentListIcon className="w-6 text-purple" />
         </Card>
         <Card title="Balance" body={`$${balance.amount}`}>
@@ -28,7 +29,7 @@ export default async function Dashboard() {
         </Card>
       </section>
 
-      <ShippingHistoryTable type="user" userId={undefined} />
+      <ShippingHistoryTable type="user" userId={undefined} orderCount={orderCount} />
     </>
   );
 }

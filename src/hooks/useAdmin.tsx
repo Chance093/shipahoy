@@ -23,6 +23,13 @@ export default function useAdmin() {
     error: amountError,
   } = api.balance.getAmountByUserId.useQuery(userId, { enabled: false });
 
+  const {
+    data: counts,
+    refetch: refetchCounts,
+    isError: isCountsError,
+    error: countsError,
+  } = api.userData.getUserDataByUserId.useQuery(userId, { enabled: false });
+
   const updateBalance = api.balance.updateByUserId.useMutation({
     onSuccess: async () => {
       setAddedBalance("");
@@ -45,6 +52,7 @@ export default function useAdmin() {
   async function fetchUser() {
     await refetchInvoices();
     await refetchBalance();
+    await refetchCounts();
   }
 
   function addBalance() {
@@ -72,5 +80,8 @@ export default function useAdmin() {
     setAddedBalance,
     paymentMethod,
     setPaymentMethod,
+    counts,
+    isCountsError,
+    countsError,
   };
 }
