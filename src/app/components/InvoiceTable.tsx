@@ -1,23 +1,12 @@
 "use client";
 import { api } from "~/trpc/react";
 import Invoices from "./Invoices";
-import { useState } from "react";
 import Pagination from "./Pagination";
 import TableLoadingSkeleton from "./TableLoadingSkeleton";
+import usePagination from "~/hooks/usePagination";
 
 export default function InvoiceTable({ type, userId, invoiceCount }: { type: "user" | "admin"; userId: string | undefined; invoiceCount: number }) {
-  const [page, setPage] = useState(1);
-  const totalPages = Math.ceil(invoiceCount / 10);
-
-  const incrementPage = () => {
-    if (page >= totalPages) return;
-    setPage((prev) => prev + 1);
-  };
-
-  const decrementPage = () => {
-    if (page === 1) return;
-    setPage((prev) => prev - 1);
-  };
+  const { page, totalPages, incrementPage, decrementPage } = usePagination(invoiceCount);
 
   if (type === "user") {
     const { data: invoices, isError: isInvoicesError, error: invoicesError, isLoading: isInvoicesLoading } = api.invoice.getInvoices.useQuery(page);

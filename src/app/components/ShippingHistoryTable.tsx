@@ -1,9 +1,9 @@
 "use client";
 import { api } from "~/trpc/react";
 import Orders from "./Orders";
-import { useState } from "react";
 import Pagination from "./Pagination";
 import TableLoadingSkeleton from "./TableLoadingSkeleton";
+import usePagination from "~/hooks/usePagination";
 
 export default function ShippingHistoryTable({
   type,
@@ -14,18 +14,7 @@ export default function ShippingHistoryTable({
   userId: string | undefined;
   orderCount: number;
 }) {
-  const [page, setPage] = useState(1);
-  const totalPages = Math.ceil(orderCount / 10);
-
-  const incrementPage = () => {
-    if (page >= totalPages) return;
-    setPage((prev) => prev + 1);
-  };
-
-  const decrementPage = () => {
-    if (page === 1) return;
-    setPage((prev) => prev - 1);
-  };
+  const { page, totalPages, incrementPage, decrementPage } = usePagination(orderCount);
 
   if (type === "user") {
     const {
