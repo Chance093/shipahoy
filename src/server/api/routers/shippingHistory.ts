@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { adminProcedure, createTRPCRouter, protectedProcedure } from "../trpc";
 import { labelGroup } from "~/server/db/schema";
 import { z } from "zod";
@@ -55,6 +55,7 @@ export const shippingHistoryRouter = createTRPCRouter({
       where: eq(labelGroup.userId, ctx.auth.userId),
       limit,
       offset,
+      orderBy: [desc(labelGroup.id)],
       columns: {
         id: true,
         totalPrice: true,
@@ -88,6 +89,7 @@ export const shippingHistoryRouter = createTRPCRouter({
         where: eq(labelGroup.userId, input.userId),
         limit,
         offset,
+        orderBy: [desc(labelGroup.id)],
         columns: {
           id: true,
           totalPrice: true,

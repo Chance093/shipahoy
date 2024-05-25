@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { protectedProcedure, createTRPCRouter, adminProcedure } from "../trpc";
 import { invoice } from "~/server/db/schema";
 import { z } from "zod";
@@ -49,6 +49,7 @@ export const invoiceRouter = createTRPCRouter({
       where: eq(invoice.userId, ctx.auth.userId),
       limit,
       offset,
+      orderBy: [desc(invoice.id)],
       columns: {
         id: true,
         amount: true,
@@ -79,6 +80,7 @@ export const invoiceRouter = createTRPCRouter({
         where: eq(invoice.userId, input.userId),
         limit,
         offset,
+        orderBy: [desc(invoice.id)],
         columns: {
           id: true,
           amount: true,
