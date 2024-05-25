@@ -49,7 +49,7 @@ export type ShippingHistory = {
   };
 }[];
 
-export type InvoiceHistory = {
+export type Invoices = {
   id: number;
   amount: string;
   paymentMethod: string;

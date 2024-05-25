@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default async function Accounting() {
   const balance = await api.balance.getAmount.query();
-  const invoices = await api.invoice.getInvoices.query();
+  const invoiceCount = await api.userData.getInvoiceCount.query();
 
   return (
     <>
@@ -21,7 +21,7 @@ export default async function Accounting() {
         <BanknotesIcon className="w-6 text-purple" />
       </Card>
 
-      <InvoiceTable invoices={invoices} />
+      <InvoiceTable type="user" userId={undefined} invoiceCount={invoiceCount} />
     </>
   );
 }

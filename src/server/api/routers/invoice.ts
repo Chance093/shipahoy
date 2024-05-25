@@ -1,10 +1,10 @@
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { protectedProcedure, createTRPCRouter, adminProcedure } from "../trpc";
 import { invoice } from "~/server/db/schema";
 import { z } from "zod";
 
 export const invoiceRouter = createTRPCRouter({
-  getInvoices: protectedProcedure.query(({ ctx }) => {
+  getAllInvoices: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.invoice.findMany({
       where: eq(invoice.userId, ctx.auth.userId),
       columns: {
@@ -23,7 +23,7 @@ export const invoiceRouter = createTRPCRouter({
     });
   }),
 
-  getInvoicesByUserId: adminProcedure.input(z.string()).query(({ ctx, input }) => {
+  getAllInvoicesByUserId: adminProcedure.input(z.string()).query(({ ctx, input }) => {
     return ctx.db.query.invoice.findMany({
       where: eq(invoice.userId, input),
       columns: {
@@ -41,6 +41,61 @@ export const invoiceRouter = createTRPCRouter({
       },
     });
   }),
+
+  getInvoices: protectedProcedure.input(z.number()).query(({ ctx, input }) => {
+    const offset = (input - 1) * 10;
+    const limit = 10;
+    return ctx.db.query.invoice.findMany({
+      where: eq(invoice.userId, ctx.auth.userId),
+      limit,
+      offset,
+      orderBy: [desc(invoice.id)],
+      columns: {
+        id: true,
+        amount: true,
+        paymentMethod: true,
+        createdAt: true,
+      },
+      with: {
+        paymentStatus: {
+          columns: {
+            status: true,
+          },
+        },
+      },
+    });
+  }),
+
+  getInvoicesByUserId: adminProcedure
+    .input(
+      z.object({
+        page: z.number(),
+        userId: z.string(),
+      }),
+    )
+    .query(({ ctx, input }) => {
+      const offset = (input.page - 1) * 10;
+      const limit = 10;
+      return ctx.db.query.invoice.findMany({
+        where: eq(invoice.userId, input.userId),
+        limit,
+        offset,
+        orderBy: [desc(invoice.id)],
+        columns: {
+          id: true,
+          amount: true,
+          paymentMethod: true,
+          createdAt: true,
+        },
+        with: {
+          paymentStatus: {
+            columns: {
+              status: true,
+            },
+          },
+        },
+      });
+    }),
 
   add: protectedProcedure
     .input(
