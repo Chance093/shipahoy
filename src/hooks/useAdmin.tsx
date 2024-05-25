@@ -32,7 +32,7 @@ export default function useAdmin() {
       throw err;
     },
   });
-  const updateInvoice = api.invoice.addByUserId.useMutation({
+  const addInvoice = api.invoice.addByUserId.useMutation({
     onSuccess: () => {
       setPaymentMethod("");
     },
@@ -40,6 +40,7 @@ export default function useAdmin() {
       throw err;
     },
   });
+  const incrementInvoiceCount = api.userData.updateInvoiceCount.useMutation();
 
   async function fetchUser() {
     await refetchBalance();
@@ -51,7 +52,8 @@ export default function useAdmin() {
     if (!amount?.id) return;
     if (!addedBalance) return;
     updateBalance.mutate({ amount: (Number(amount.amount) + Number(addedBalance)).toString(), userId: userId });
-    updateInvoice.mutate({ userId: userId, balanceId: Number(amount.id), amount: addedBalance, paymentMethod: paymentMethod, paymentStatusId: 1 });
+    addInvoice.mutate({ userId: userId, balanceId: Number(amount.id), amount: addedBalance, paymentMethod: paymentMethod, paymentStatusId: 1 });
+    incrementInvoiceCount.mutate({ incrementValue: 1 });
   }
 
   return {
