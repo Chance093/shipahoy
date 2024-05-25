@@ -17,14 +17,14 @@ export default function Pagination({
 
   return (
     <div className="m-4 mr-12 flex items-center gap-4 self-end justify-self-end rounded-lg border border-purple">
-      <div className={`rounded-l-lg ${leftButtonDisabled} bg-purple p-2`}>
-        <ArrowLeftIcon className="w-6 " onClick={decrementPage} />
+      <div className={`rounded-l-lg ${leftButtonDisabled} bg-purple p-2`} onClick={decrementPage}>
+        <ArrowLeftIcon className="w-6" />
       </div>
       <div className="text-xl">
         {page} of {totalPages}
       </div>
-      <div className={`rounded-l-lg ${rightButtonDisabled} bg-purple p-2`}>
-        <ArrowRightIcon className="w-6 " onClick={incrementPage} />
+      <div className={`rounded-l-lg ${rightButtonDisabled} bg-purple p-2`} onClick={incrementPage}>
+        <ArrowRightIcon className="w-6" />
       </div>
     </div>
   );
