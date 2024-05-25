@@ -34,17 +34,9 @@ export default function ShippingHistoryTable({
       error: shippingHistoryError,
       isLoading: isShippingHistoryLoading,
     } = api.shippingHistory.getShippingHistory.useQuery(page);
-    const {
-      data: orderCount,
-      isError: isOrderCountError,
-      error: orderCountError,
-      isLoading: isOrderCountLoading,
-    } = api.userData.getOrderCount.useQuery();
-    if (isShippingHistoryLoading || isOrderCountLoading) return <TableLoadingSkeleton title="Shipping History" />;
+    if (isShippingHistoryLoading) return <TableLoadingSkeleton title="Shipping History" />;
     if (isShippingHistoryError) throw shippingHistoryError;
-    if (isOrderCountError) throw orderCountError;
     if (shippingHistory === undefined) throw new Error("Could not find shipping history");
-    if (orderCount === undefined) throw new Error("Could not get order count");
 
     return (
       <section className="flex flex-1 flex-col rounded-2xl bg-linear-gradient">

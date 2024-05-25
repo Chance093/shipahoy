@@ -21,17 +21,9 @@ export default function InvoiceTable({ type, userId, invoiceCount }: { type: "us
 
   if (type === "user") {
     const { data: invoices, isError: isInvoicesError, error: invoicesError, isLoading: isInvoicesLoading } = api.invoice.getInvoices.useQuery(page);
-    const {
-      data: invoiceCount,
-      isError: isInvoiceCountError,
-      error: invoiceCountError,
-      isLoading: isInvoiceCountLoading,
-    } = api.userData.getInvoiceCount.useQuery();
-    if (isInvoicesLoading || isInvoiceCountLoading) return <TableLoadingSkeleton title="Invoices" />;
+    if (isInvoicesLoading) return <TableLoadingSkeleton title="Invoices" />;
     if (isInvoicesError) throw invoicesError;
-    if (isInvoiceCountError) throw invoiceCountError;
     if (invoices === undefined) throw new Error("Could not find shipping history");
-    if (invoiceCount === undefined) throw new Error("Could not get order count");
 
     return (
       <section className="flex flex-1 flex-col rounded-2xl bg-linear-gradient">
