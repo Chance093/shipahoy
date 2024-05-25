@@ -3,6 +3,7 @@ import { api } from "~/trpc/react";
 import Orders from "./Orders";
 import { useState } from "react";
 import Pagination from "./Pagination";
+import TableLoadingSkeleton from "./TableLoadingSkeleton";
 
 export default function ShippingHistoryTable({
   type,
@@ -39,7 +40,7 @@ export default function ShippingHistoryTable({
       error: orderCountError,
       isLoading: isOrderCountLoading,
     } = api.userData.getOrderCount.useQuery();
-    if (isShippingHistoryLoading || isOrderCountLoading) return null;
+    if (isShippingHistoryLoading || isOrderCountLoading) return <TableLoadingSkeleton title="Shipping History" />;
     if (isShippingHistoryError) throw shippingHistoryError;
     if (isOrderCountError) throw orderCountError;
     if (shippingHistory === undefined) throw new Error("Could not find shipping history");
@@ -49,9 +50,9 @@ export default function ShippingHistoryTable({
       <section className="flex flex-1 flex-col rounded-2xl bg-linear-gradient">
         <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] flex-1 translate-x-[1.5px] translate-y-[1.5px] flex-col gap-2 rounded-2xl bg-radial-gradient p-5">
           <h2 className="p-2 text-2xl">Shipping History</h2>
+
           <Orders shippingHistory={shippingHistory} />
           <div className="flex-1"></div>
-
           <Pagination page={page} decrementPage={decrementPage} incrementPage={incrementPage} totalPages={totalPages} />
         </div>
       </section>
@@ -66,7 +67,7 @@ export default function ShippingHistoryTable({
       error: shippingHistoryError,
       isLoading: isShippingHistoryLoading,
     } = api.shippingHistory.getShippingHistoryByUserId.useQuery({ page, userId });
-    if (isShippingHistoryLoading) return null;
+    if (isShippingHistoryLoading) return <TableLoadingSkeleton title="Shipping History" />;
     if (isShippingHistoryError) throw shippingHistoryError;
     if (shippingHistory === undefined) throw new Error("Could not find shipping history");
 

@@ -3,6 +3,7 @@ import { api } from "~/trpc/react";
 import Invoices from "./Invoices";
 import { useState } from "react";
 import Pagination from "./Pagination";
+import TableLoadingSkeleton from "./TableLoadingSkeleton";
 
 export default function InvoiceTable({ type, userId, invoiceCount }: { type: "user" | "admin"; userId: string | undefined; invoiceCount: number }) {
   const [page, setPage] = useState(1);
@@ -26,7 +27,7 @@ export default function InvoiceTable({ type, userId, invoiceCount }: { type: "us
       error: invoiceCountError,
       isLoading: isInvoiceCountLoading,
     } = api.userData.getInvoiceCount.useQuery();
-    if (isInvoicesLoading || isInvoiceCountLoading) return null;
+    if (isInvoicesLoading || isInvoiceCountLoading) return <TableLoadingSkeleton title="Invoices" />;
     if (isInvoicesError) throw invoicesError;
     if (isInvoiceCountError) throw invoiceCountError;
     if (invoices === undefined) throw new Error("Could not find shipping history");
@@ -53,7 +54,7 @@ export default function InvoiceTable({ type, userId, invoiceCount }: { type: "us
       error: invoicesError,
       isLoading: isInvoicesLoading,
     } = api.invoice.getInvoicesByUserId.useQuery({ page, userId });
-    if (isInvoicesLoading) return null;
+    if (isInvoicesLoading) return <TableLoadingSkeleton title="Invoices" />;
     if (isInvoicesError) throw invoicesError;
     if (invoices === undefined) throw new Error("Could not find shipping history");
 
