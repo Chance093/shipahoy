@@ -51,7 +51,7 @@ export default function ShippingHistoryTable({
         <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] flex-1 translate-x-[1.5px] translate-y-[1.5px] flex-col gap-2 rounded-2xl bg-radial-gradient p-5">
           <h2 className="p-2 text-2xl">Shipping History</h2>
 
-          <Orders shippingHistory={shippingHistory} />
+          <Orders shippingHistory={shippingHistory} page={page} orderCount={orderCount} />
           <div className="flex-1"></div>
           <Pagination page={page} decrementPage={decrementPage} incrementPage={incrementPage} totalPages={totalPages} />
         </div>
@@ -75,7 +75,7 @@ export default function ShippingHistoryTable({
       <section className="flex flex-1 flex-col rounded-2xl bg-linear-gradient">
         <div className="flex h-[calc(100%-3px)] w-[calc(100%-3px)] flex-1 translate-x-[1.5px] translate-y-[1.5px] flex-col gap-2 rounded-2xl bg-radial-gradient p-5">
           <h2 className="p-2 text-2xl">Shipping History</h2>
-          <Orders shippingHistory={shippingHistory} />
+          <Orders shippingHistory={shippingHistory} page={page} orderCount={orderCount} />
           <div className="flex-1"></div>
           <Pagination page={page} decrementPage={decrementPage} incrementPage={incrementPage} totalPages={totalPages} />
         </div>

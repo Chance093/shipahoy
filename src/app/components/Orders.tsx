@@ -2,7 +2,11 @@ import { type ShippingHistory } from "~/lib/definitions";
 import DownloadButton from "./DownloadButton";
 import { format } from "date-fns";
 
-export default function Orders({ shippingHistory }: { shippingHistory: ShippingHistory }) {
+export default function Orders({ shippingHistory, page, orderCount }: { shippingHistory: ShippingHistory; page: number; orderCount: number }) {
+  // * Initialize an order index depending on page number
+  const subractValue = page * 10 - 10;
+  let orderIndex = orderCount - subractValue + 1;
+
   return (
     <>
       {shippingHistory.length === 0 ? (
@@ -30,24 +34,27 @@ export default function Orders({ shippingHistory }: { shippingHistory: ShippingH
             </tr>
           </thead>
           <tbody>
-            {shippingHistory?.map((group, idx) => (
-              <tr key={group.id} className="border-b border-gray-600/50">
-                <td className="p-4 py-6">{idx + 1}</td>
-                <td className="p-4 py-6">{group.createdAt ? format(group.createdAt, "MM-dd-yyyy") : ""}</td>
-                <td className="p-4 py-6">{group.labelCount}</td>
-                <td className="p-4 py-6">{group.shippingService.service}</td>
-                <td className="p-4 py-6">${group.totalPrice}</td>
-                <td className="py-6">
-                  <DownloadButton fileLink={group.pdfLink} />
-                </td>
-                <td className="py-6">
-                  <DownloadButton fileLink={group.csvLink} />
-                </td>
-                <td className="py-6">
-                  <DownloadButton fileLink={group.zipLink} />
-                </td>
-              </tr>
-            ))}
+            {shippingHistory?.map((group) => {
+              orderIndex -= 1;
+              return (
+                <tr key={group.id} className="border-b border-gray-600/50">
+                  <td className="p-4 py-6">{orderIndex}</td>
+                  <td className="p-4 py-6">{group.createdAt ? format(group.createdAt, "MM-dd-yyyy") : ""}</td>
+                  <td className="p-4 py-6">{group.labelCount}</td>
+                  <td className="p-4 py-6">{group.shippingService.service}</td>
+                  <td className="p-4 py-6">${group.totalPrice}</td>
+                  <td className="py-6">
+                    <DownloadButton fileLink={group.pdfLink} />
+                  </td>
+                  <td className="py-6">
+                    <DownloadButton fileLink={group.csvLink} />
+                  </td>
+                  <td className="py-6">
+                    <DownloadButton fileLink={group.zipLink} />
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}
