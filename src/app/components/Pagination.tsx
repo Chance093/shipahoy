@@ -23,7 +23,7 @@ export default function Pagination({
       <div className="text-xl">
         {page} of {totalPages}
       </div>
-      <div className={`rounded-l-lg ${rightButtonDisabled} bg-purple p-2`} onClick={incrementPage}>
+      <div className={`rounded-r-lg ${rightButtonDisabled} bg-purple p-2`} onClick={incrementPage}>
         <ArrowRightIcon className="w-6" />
       </div>
     </div>
