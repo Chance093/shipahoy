@@ -1,22 +1,24 @@
 import axios from "axios";
 import { env } from "~/env.mjs";
-import { type FormattedAddress, type ParsedAddressResponse } from "./definitions";
+import { type ParsedAddressResponse } from "./definitions";
+import { AddressParsingError } from "./customErrors";
 
-export default async function getParsedAddress(address: string): Promise<FormattedAddress | undefined> {
+export default async function getParsedAddress(address: string) {
   const baseUrl = "https://us-street.api.smarty.com/street-address";
-  try {
-    const response: ParsedAddressResponse = await axios.get(`${baseUrl}?key=${env.NEXT_PUBLIC_SMARTY_KEY}&license=us-core-cloud&street='${address}'`);
-    const formattedAddress = formatResponseAddress(response);
 
-    return formattedAddress;
-  } catch (err) {
-    throw err;
+  if (address === "") {
+    throw new AddressParsingError("Please fill in the above field");
   }
+
+  const response: ParsedAddressResponse = await axios.get(`${baseUrl}?key=${env.NEXT_PUBLIC_SMARTY_KEY}&license=us-core-cloud&street='${address}'`);
+  const formattedAddress = formatResponseAddress(response);
+
+  return formattedAddress;
 }
 
 function formatResponseAddress(response: ParsedAddressResponse) {
   if (response.data.length == 0 || response.data[0]?.components === undefined) {
-    throw new Error("Could not parse address");
+    throw new AddressParsingError("Could not parse address");
   }
 
   const parsedAddress = response.data[0].components;

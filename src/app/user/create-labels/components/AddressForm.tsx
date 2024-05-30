@@ -2,17 +2,16 @@ import { formInputs, statesList } from "~/lib/lists";
 import { type FormData, type HandleChange } from "~/lib/definitions";
 import { useState } from "react";
 import getParsedAddress from "~/lib/parseAddress";
+import { AddressParsingError } from "~/lib/customErrors";
+import * as Sentry from "@sentry/nextjs";
 
 export default function AddressForm({ formData, handleChange, label }: { formData: FormData; handleChange: HandleChange; label: string }) {
   const [pastedAddress, setPastedAddress] = useState("");
+  const [parsingErrorMessage, setParsingErrorMessage] = useState("");
 
   const parseAddress = async (address: string) => {
     try {
       const formattedAddress = await getParsedAddress(address);
-
-      if (formattedAddress === undefined) {
-        throw new Error("Could not parse address");
-      }
 
       if (label === "From") {
         handleChange({
@@ -33,8 +32,18 @@ export default function AddressForm({ formData, handleChange, label }: { formDat
       }
 
       setPastedAddress("");
+      setParsingErrorMessage("");
     } catch (err) {
-      throw err;
+      /**
+       * * If error originated from bad request to smarty API, forward to sentry
+       * * Otherwise just show the user a parsing error
+       */
+      if (err instanceof AddressParsingError) {
+        setParsingErrorMessage(err.message);
+      } else {
+        Sentry.captureException(err);
+        setParsingErrorMessage("Could not parse address");
+      }
     }
   };
 
@@ -52,6 +61,7 @@ export default function AddressForm({ formData, handleChange, label }: { formDat
             className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
             autoComplete="off"
           />
+          {parsingErrorMessage !== "" ? <p className="text-red-400">{parsingErrorMessage}</p> : null}
         </div>
         <button
           onClick={() => parseAddress(pastedAddress)}
