@@ -120,3 +120,31 @@ interface LabelType {
 }
 
 export type ErrorFlagDetails = Array<string | number | Map<string, number[]> | undefined>;
+
+export type ParsedAddressResponse = {
+  data: {
+    components: {
+      city_name: string;
+      default_city_name: string;
+      delivery_point: string;
+      delivery_point_check_digit: string;
+      plus4_code: string;
+      primary_number: string;
+      secondary_designator: string | undefined;
+      secondary_number: string | undefined;
+      state_abbreviation: string;
+      street_name: string;
+      street_predirection: string | undefined;
+      street_suffix: string;
+      zipcode: string;
+    };
+  }[];
+};
+
+export type FormattedAddress = {
+  address: string;
+  addressTwo: string;
+  zipcode: string;
+  city: string;
+  state: string;
+};
