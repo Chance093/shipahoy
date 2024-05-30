@@ -79,7 +79,12 @@ export default function AddressForm({ formData, handleChange, label }: { formDat
                 >
                   {statesList.map((state, idx) => {
                     return (
-                      <option value={state.abbreviation} key={idx} className="border-gray-600/50 bg-[#1a1a1b]">
+                      <option
+                        value={state.abbreviation}
+                        selected={formData[input.property] === state.abbreviation}
+                        key={idx}
+                        className="border-gray-600/50 bg-[#1a1a1b]"
+                      >
                         {state.name}
                       </option>
                     );
