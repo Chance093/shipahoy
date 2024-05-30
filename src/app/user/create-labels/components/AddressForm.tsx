@@ -1,9 +1,42 @@
 import { formInputs, statesList } from "~/lib/lists";
 import { type FormData, type HandleChange } from "~/lib/definitions";
 import { useState } from "react";
+import getParsedAddress from "~/lib/parseAddress";
 
 export default function AddressForm({ formData, handleChange, label }: { formData: FormData; handleChange: HandleChange; label: string }) {
   const [pastedAddress, setPastedAddress] = useState("");
+
+  const parseAddress = async (address: string) => {
+    try {
+      const formattedAddress = await getParsedAddress(address);
+
+      if (formattedAddress === undefined) {
+        throw new Error("Could not parse address");
+      }
+
+      if (label === "From") {
+        handleChange({
+          FromStreet: formattedAddress.address,
+          FromAddress: formattedAddress.addressTwo === " " ? "" : formattedAddress.addressTwo,
+          FromCity: formattedAddress.city,
+          FromState: formattedAddress.state,
+          FromZip: formattedAddress.zipcode,
+        });
+      } else if (label === "To") {
+        handleChange({
+          ToStreet: formattedAddress.address,
+          ToAddress: formattedAddress.addressTwo === " " ? "" : formattedAddress.addressTwo,
+          ToCity: formattedAddress.city,
+          ToState: formattedAddress.state,
+          ToZip: formattedAddress.zipcode,
+        });
+      }
+
+      setPastedAddress("");
+    } catch (err) {
+      throw err;
+    }
+  };
 
   return (
     <section className="rounded-2xl bg-linear-gradient">
@@ -20,7 +53,10 @@ export default function AddressForm({ formData, handleChange, label }: { formDat
             autoComplete="off"
           />
         </div>
-        <button className="w-40 cursor-pointer self-start rounded-md bg-[#b4a3d8] p-4 text-center text-black disabled:opacity-50">
+        <button
+          onClick={() => parseAddress(pastedAddress)}
+          className="w-40 cursor-pointer self-start rounded-md bg-[#b4a3d8] p-4 text-center text-black disabled:opacity-50"
+        >
           Parse Address
         </button>
 
