@@ -26,8 +26,12 @@ export default function ShippingHistoryTable({
         <h2 className="p-2 text-2xl">Shipping History</h2>
 
         <Orders shippingHistory={shippingHistory} page={page} orderCount={orderCount} />
-        <div className="flex-1"></div>
-        <Pagination page={page} decrementPage={decrementPage} incrementPage={incrementPage} totalPages={totalPages} />
+        {orderCount !== 0 ? (
+          <>
+            <div className="flex-1"></div>
+            <Pagination page={page} decrementPage={decrementPage} incrementPage={incrementPage} totalPages={totalPages} />
+          </>
+        ) : null}
       </div>
     </section>
   );
