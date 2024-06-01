@@ -20,7 +20,7 @@ export default function Pagination({
       <div className={`rounded-l-lg ${leftButtonDisabled} bg-purple p-2`} onClick={decrementPage}>
         <ArrowLeftIcon className="w-6" />
       </div>
-      <div className="text-xl">
+      <div className="select-none text-xl">
         {page} of {totalPages}
       </div>
       <div className={`rounded-r-lg ${rightButtonDisabled} bg-purple p-2`} onClick={incrementPage}>
