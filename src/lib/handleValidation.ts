@@ -1,4 +1,5 @@
 import { EXPECTED_COLUMN_HEADERS } from "./lists";
+import { zipCodeRegex } from "./regex";
 
 const getErrorFlagMessage = (
   errorFlagType: string,
@@ -17,6 +18,9 @@ const getErrorFlagMessage = (
       return errorFlagMessage;
     case "invalid weight":
       errorFlagMessage.push(`Invalid weight values: should be 1-70`);
+      return errorFlagMessage;
+    case "invalid zipcode":
+      errorFlagMessage.push(`Invalid zipcode values: should be in format 12345 or 12345-1234`);
       return errorFlagMessage;
     case "one or more empty values":
       for (const [headerName, rows] of invalidIndexes!) {
@@ -66,6 +70,15 @@ const validateRowValues = (
         if (value === "") console.log("");
         else if (Number(value) <= 0 || Number(value) > 70) {
           const errorFlagType = "invalid weight";
+          const errorFlagMessage: string[] = getErrorFlagMessage(errorFlagType, newValidationCheckpoint, headerName, undefined);
+          errorFlags.push(...errorFlagMessage);
+        }
+      }
+      if (headerName === "FromZip" || headerName === "ToZip") {
+        // * If zipcode doesn't pass regex validation
+        if (!zipCodeRegex.test(value)) {
+          console.log("here:", value);
+          const errorFlagType = "invalid zipcode";
           const errorFlagMessage: string[] = getErrorFlagMessage(errorFlagType, newValidationCheckpoint, headerName, undefined);
           errorFlags.push(...errorFlagMessage);
         }

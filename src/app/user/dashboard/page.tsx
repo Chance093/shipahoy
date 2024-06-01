@@ -13,9 +13,7 @@ export const metadata: Metadata = {
 
 export default async function Dashboard() {
   const balance = await api.balance.getAmount.query();
-  const shippingHistory = await api.shippingHistory.getShippingHistory.query();
-  let labelCount = 0;
-  shippingHistory.forEach((item) => (labelCount += item.labelCount));
+  const { labelCount, orderCount } = await api.userData.getLabelAndOrderCount.query();
 
   return (
     <>
@@ -23,7 +21,7 @@ export default async function Dashboard() {
         <Card title="Labels" body={labelCount}>
           <DocumentPlusIcon className="w-6 text-purple" />
         </Card>
-        <Card title="Orders" body={shippingHistory.length}>
+        <Card title="Orders" body={orderCount}>
           <ClipboardDocumentListIcon className="w-6 text-purple" />
         </Card>
         <Card title="Balance" body={`$${balance.amount}`}>
@@ -31,7 +29,7 @@ export default async function Dashboard() {
         </Card>
       </section>
 
-      <ShippingHistoryTable shippingHistory={shippingHistory} />
+      <ShippingHistoryTable type="user" userId={undefined} orderCount={orderCount} />
     </>
   );
 }

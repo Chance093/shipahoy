@@ -104,7 +104,7 @@ export const labelAddress = mysqlTable("label_address", {
   labelId: int("label_id").notNull(),
   isSender: boolean("is_sender").notNull(),
   name: varchar("name", { length: 100 }).notNull(),
-  company: varchar("company", { length: 100 }).notNull(),
+  company: varchar("company", { length: 100 }),
   streetOne: varchar("street_one", { length: 100 }).notNull(),
   streetTwo: varchar("street_two", { length: 100 }).notNull(),
   city: varchar("city", { length: 100 }).notNull(),
@@ -204,3 +204,11 @@ export const labelGroupRelations = relations(labelGroup, ({ one, many }) => ({
   }),
   label: many(label),
 }));
+
+export const userData = mysqlTable("user_data", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id", { length: 200 }).notNull(),
+  orderCount: int("order_count").notNull(),
+  labelCount: int("label_count").notNull(),
+  invoiceCount: int("invoice_count").notNull(),
+});

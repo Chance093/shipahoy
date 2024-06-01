@@ -49,10 +49,12 @@ export default function useCreateLabels() {
   }
 
   const createLabelGroup = api.label.createLabel.useMutation();
+  const setCounts = api.userData.updateOrderAndLabelCount.useMutation();
 
   const storeData = (tracking: string[], links: Links, payload: FormData[], price: string[]) => {
     if (!links || !tracking) return;
     createLabelGroup.mutate({ orders: payload, links: links, tracking: tracking, labelPrices: price });
+    setCounts.mutate({ incrementOrderValue: 1, incrementLabelValue: payload.length });
   };
 
   return { createLabels, storeData };

@@ -10,23 +10,18 @@ export default function useAdmin() {
   const [paymentMethod, setPaymentMethod] = useState("");
 
   const {
-    data: orders,
-    refetch: refetchOrders,
-    isError: isOrdersError,
-    error: ordersError,
-  } = api.shippingHistory.getShippingHistoryByUserId.useQuery(userId, { enabled: false });
-  const {
-    data: invoices,
-    refetch: refetchInvoices,
-    isError: isInvoicesError,
-    error: invoicesError,
-  } = api.invoice.getInvoicesByUserId.useQuery(userId, { enabled: false });
-  const {
     data: amount,
     refetch: refetchBalance,
     isError: isAmountError,
     error: amountError,
   } = api.balance.getAmountByUserId.useQuery(userId, { enabled: false });
+
+  const {
+    data: counts,
+    refetch: refetchCounts,
+    isError: isCountsError,
+    error: countsError,
+  } = api.userData.getUserDataByUserId.useQuery(userId, { enabled: false });
 
   const updateBalance = api.balance.updateByUserId.useMutation({
     onSuccess: async () => {
@@ -37,20 +32,19 @@ export default function useAdmin() {
       throw err;
     },
   });
-  const updateInvoice = api.invoice.addByUserId.useMutation({
-    onSuccess: async () => {
+  const addInvoice = api.invoice.addByUserId.useMutation({
+    onSuccess: () => {
       setPaymentMethod("");
-      await refetchInvoices();
     },
     onError: (err) => {
       throw err;
     },
   });
+  const incrementInvoiceCount = api.userData.updateInvoiceCount.useMutation();
 
   async function fetchUser() {
-    await refetchOrders();
-    await refetchInvoices();
     await refetchBalance();
+    await refetchCounts();
   }
 
   function addBalance() {
@@ -58,7 +52,8 @@ export default function useAdmin() {
     if (!amount?.id) return;
     if (!addedBalance) return;
     updateBalance.mutate({ amount: (Number(amount.amount) + Number(addedBalance)).toString(), userId: userId });
-    updateInvoice.mutate({ userId: userId, balanceId: Number(amount.id), amount: addedBalance, paymentMethod: paymentMethod, paymentStatusId: 1 });
+    addInvoice.mutate({ userId: userId, balanceId: Number(amount.id), amount: addedBalance, paymentMethod: paymentMethod, paymentStatusId: 1 });
+    incrementInvoiceCount.mutate({ incrementValue: 1 });
   }
 
   return {
@@ -66,12 +61,6 @@ export default function useAdmin() {
     isLoaded,
     userId,
     setUserId,
-    orders,
-    isOrdersError,
-    ordersError,
-    invoices,
-    isInvoicesError,
-    invoicesError,
     amount,
     isAmountError,
     amountError,
@@ -81,5 +70,8 @@ export default function useAdmin() {
     setAddedBalance,
     paymentMethod,
     setPaymentMethod,
+    counts,
+    isCountsError,
+    countsError,
   };
 }

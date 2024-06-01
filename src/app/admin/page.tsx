@@ -11,12 +11,6 @@ export default function Admin() {
     isLoaded,
     userId,
     setUserId,
-    orders,
-    isOrdersError,
-    ordersError,
-    invoices,
-    isInvoicesError,
-    invoicesError,
     amount,
     isAmountError,
     amountError,
@@ -26,11 +20,13 @@ export default function Admin() {
     setAddedBalance,
     paymentMethod,
     setPaymentMethod,
+    counts,
+    isCountsError,
+    countsError,
   } = useAdmin();
 
-  if (isOrdersError) throw ordersError;
-  if (isInvoicesError) throw invoicesError;
   if (isAmountError) throw amountError;
+  if (isCountsError) throw countsError;
 
   if (isLoaded) {
     if (!userMemberships.data) return <p>Something went wrong!</p>;
@@ -112,8 +108,8 @@ export default function Admin() {
                 ) : null}
               </section>
               {amount === undefined ? null : <PricingTable userId={userId} />}
-              {!invoices ? null : <InvoiceTable invoices={invoices} />}
-              {!orders ? null : <ShippingHistoryTable shippingHistory={orders} />}
+              {counts?.invoiceCount === undefined ? null : <InvoiceTable type="admin" userId={userId} invoiceCount={counts?.invoiceCount} />}
+              {counts?.orderCount === undefined ? null : <ShippingHistoryTable type="admin" userId={userId} orderCount={counts?.orderCount} />}
             </section>
           </main>
         );

@@ -2,7 +2,7 @@ import { zipCodeRegex, phoneNumberRegex } from "~/lib/regex";
 
 export const formInputs = [
   { id: 31, label: "Name", property: "FromName", required: true },
-  { id: 32, label: "Company Name", property: "FromCompany", required: true },
+  { id: 32, label: "Company Name (Optional)", property: "FromCompany", required: false },
   { id: 33, label: "Address", property: "FromStreet", required: true },
   { id: 34, label: "Address 2 (Optional)", property: "FromStreet2", required: false },
   { id: 35, label: "Zip Code", property: "FromZip", required: true, regEx: zipCodeRegex.toString().slice(1, -1) },
@@ -11,7 +11,7 @@ export const formInputs = [
   { id: 38, label: "Country", property: "FromCountry", required: true, readOnly: true },
   { id: 39, label: "Phone Number (Optional)", property: "FromPhone", required: false, regEx: phoneNumberRegex.toString().slice(1, -1) },
   { id: 41, label: "Name", property: "ToName", required: true },
-  { id: 42, label: "Company Name", property: "ToCompany", required: true },
+  { id: 42, label: "Company Name (Optional)", property: "ToCompany", required: false },
   { id: 43, label: "Address", property: "ToStreet", required: true },
   { id: 44, label: "Address 2 (Optional)", property: "ToStreet2", required: false },
   { id: 45, label: "Zip Code", property: "ToZip", required: true, regEx: zipCodeRegex.toString().slice(1, -1) },

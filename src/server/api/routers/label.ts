@@ -11,7 +11,7 @@ export const labelRouter = createTRPCRouter({
           .object({
             FromCountry: z.string().trim(),
             FromName: z.string().trim(),
-            FromCompany: z.string().trim(),
+            FromCompany: z.string().trim().optional(),
             FromPhone: z
               .string()
               .trim()
@@ -23,7 +23,7 @@ export const labelRouter = createTRPCRouter({
             FromState: z.string().trim(),
             ToCountry: z.string().trim(),
             ToName: z.string().trim(),
-            ToCompany: z.string().trim(),
+            ToCompany: z.string().trim().optional(),
             ToPhone: z
               .string()
               .trim()
