@@ -64,7 +64,10 @@ export default function AddressForm({ formData, handleChange, label }: { formDat
           {parsingErrorMessage !== "" ? <p className="text-red-400">{parsingErrorMessage}</p> : null}
         </div>
         <button
-          onClick={() => parseAddress(pastedAddress)}
+          onClick={async (e) => {
+            e.preventDefault();
+            await parseAddress(pastedAddress);
+          }}
           className="w-40 cursor-pointer self-start rounded-md bg-[#b4a3d8] p-4 text-center text-black disabled:opacity-50"
         >
           Parse Address
@@ -86,15 +89,11 @@ export default function AddressForm({ formData, handleChange, label }: { formDat
                   onChange={(e) => handleChange({ [input.property]: e.target.value })}
                   className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
                   required={input.required}
+                  value={formData[input.property]}
                 >
                   {statesList.map((state, idx) => {
                     return (
-                      <option
-                        value={state.abbreviation}
-                        selected={formData[input.property] === state.abbreviation}
-                        key={idx}
-                        className="border-gray-600/50 bg-[#1a1a1b]"
-                      >
+                      <option value={state.abbreviation} key={idx} className="border-gray-600/50 bg-[#1a1a1b]">
                         {state.name}
                       </option>
                     );
