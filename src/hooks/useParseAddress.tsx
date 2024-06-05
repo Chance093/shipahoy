@@ -12,11 +12,12 @@ export default function useParseAddress(handleChange: HandleChange, label: "From
   const parseAddress = async (address: string) => {
     try {
       const formattedAddress = await getParsedAddress(address);
+      console.log(formattedAddress);
 
       if (label === "From") {
         handleChange({
           FromStreet: formattedAddress.address,
-          FromAddress: formattedAddress.addressTwo === " " ? "" : formattedAddress.addressTwo,
+          FromStreet2: formattedAddress.addressTwo === " " ? "" : formattedAddress.addressTwo,
           FromCity: formattedAddress.city,
           FromState: formattedAddress.state,
           FromZip: formattedAddress.zipcode,
@@ -24,7 +25,7 @@ export default function useParseAddress(handleChange: HandleChange, label: "From
       } else if (label === "To") {
         handleChange({
           ToStreet: formattedAddress.address,
-          ToAddress: formattedAddress.addressTwo === " " ? "" : formattedAddress.addressTwo,
+          ToStreet2: formattedAddress.addressTwo === " " ? "" : formattedAddress.addressTwo,
           ToCity: formattedAddress.city,
           ToState: formattedAddress.state,
           ToZip: formattedAddress.zipcode,
