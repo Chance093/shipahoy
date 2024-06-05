@@ -165,3 +165,19 @@ export type duoplaneResponseData = {
     country: string;
   };
 }[];
+
+export type duoplaneResponseData = {
+  public_reference: string;
+  shipping_address: {
+    first_name: string;
+    last_name: string;
+    company_name: string;
+    address_1: string;
+    address_2: string | null;
+    city: string;
+    province: string;
+    province_iso: string;
+    post_code: string;
+    country: string;
+  };
+}[];
