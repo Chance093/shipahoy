@@ -135,6 +135,7 @@ export type ParsedAddressResponse = {
       state_abbreviation: string;
       street_name: string;
       street_predirection: string | undefined;
+      street_postdirection: string | undefined;
       street_suffix: string;
       zipcode: string;
     };
