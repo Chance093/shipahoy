@@ -26,6 +26,7 @@ function formatResponseAddress(response: ParsedAddressResponse) {
   const parsedAddress = response.data[0].components;
   const primaryNumber = parsedAddress.primary_number ? parsedAddress.primary_number + " " : "";
   const streetPredirection = parsedAddress.street_predirection ? parsedAddress.street_predirection + " " : "";
+  const streetPostdirection = parsedAddress.street_postdirection ? parsedAddress.street_postdirection + " " : "";
   const streetName = parsedAddress.street_name ? parsedAddress.street_name + " " : "";
   const streetSuffix = parsedAddress.street_suffix ? parsedAddress.street_suffix + " " : "";
   const secondaryDesignator = parsedAddress.secondary_designator ? parsedAddress.secondary_designator + " " : "";
@@ -35,7 +36,7 @@ function formatResponseAddress(response: ParsedAddressResponse) {
   const stateAbbreviation = parsedAddress.state_abbreviation ? parsedAddress.state_abbreviation : "";
 
   const formattedAddress = {
-    address: `${primaryNumber}${streetPredirection}${streetName}${streetSuffix}`,
+    address: `${primaryNumber}${streetPredirection}${streetName}${streetSuffix}${streetPostdirection}`,
     addressTwo: `${secondaryDesignator}${secondaryNumber}`,
     zipcode: zipCode,
     city: cityName,
