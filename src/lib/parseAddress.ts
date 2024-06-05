@@ -21,8 +21,6 @@ function formatResponseAddress(response: ParsedAddressResponse) {
     throw new AddressParsingError("Could not parse address");
   }
 
-  console.log(response.data[0].components);
-
   const parsedAddress = response.data[0].components;
   const primaryNumber = parsedAddress.primary_number ? parsedAddress.primary_number + " " : "";
   const streetPredirection = parsedAddress.street_predirection ? parsedAddress.street_predirection + " " : "";
