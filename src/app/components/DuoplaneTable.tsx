@@ -1,25 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { type Shipments, type duoplaneResponseData } from "~/lib/definitions";
+import { type PartialShipment, type Shipments, type duoplaneResponseData } from "~/lib/definitions";
 
 export default function DuoplaneTable({ data }: { data: duoplaneResponseData }) {
   const duoplaneData = data.map((data) => ({ ...data, active: false }));
   const [duoplaneState, setDuoplaneState] = useState(duoplaneData);
   const [shipments, setShipments] = useState<Shipments>([]);
   const handleClick = (id: string, buyer: string, address: string) => {
-    const newPO = {
-      id,
-      buyer,
-      address,
-      partialShipments: [
-        {
-          weight: "",
-          qty: 0,
-        },
-      ],
+    // Check if PO is already is shipments
+    // If it is, add new partial shipment to existing state
+    // If not, initialize new shipment
+    const shipIds = shipments.map((ship) => ship!.id);
+    const newPartialShipment = {
+      id: Math.random() * 100000,
+      weight: "",
+      qty: 0,
     };
-    setShipments((prev) => [...prev, newPO]);
+    if (shipIds.includes(id)) {
+      const newPartialShipments = shipments.map((ship) => {
+        if (ship === undefined) throw new Error("undefined");
+        if (ship.id === id) return { ...ship, partialShipments: [...ship.partialShipments, newPartialShipment] };
+        return ship;
+      });
+      setShipments(newPartialShipments);
+    } else {
+      const newPO = {
+        id,
+        buyer,
+        address,
+        partialShipments: [newPartialShipment],
+      };
+      setShipments((prev) => [...prev, newPO]);
+    }
   };
 
   const dropDown = (id: string) => {
@@ -33,6 +46,23 @@ export default function DuoplaneTable({ data }: { data: duoplaneResponseData }) 
 
     setDuoplaneState(updatedDuoplaneState);
   };
+
+  const handleChange = (fields: Partial<PartialShipment>, poId: string, partShipId: number) => {
+    const updatedShipments = shipments.map((po) => {
+      if (po === undefined) throw new Error("PO is undefined");
+      if (po.id === poId) {
+        const partialShip = po?.partialShipments.map((partialShip) => {
+          if (partialShip.id === partShipId) return { ...partialShip, ...fields };
+          return partialShip;
+        });
+        return { ...po, partialShipments: partialShip };
+      }
+      return po;
+    });
+
+    setShipments(updatedShipments);
+  };
+
   return (
     <>
       {duoplaneState.length === 0 ? (
@@ -67,16 +97,26 @@ export default function DuoplaneTable({ data }: { data: duoplaneResponseData }) 
                     {shipments.map((shipment) => {
                       if (shipment?.id === po.public_reference)
                         return (
-                          <tr key={shipment.id} className="flex justify-between">
+                          <tr key={shipment.id} className="flex flex-col justify-between">
                             {shipment.partialShipments.map((partialShipment) => (
                               <>
-                                <div>
+                                <div className="flex gap-4">
                                   <label htmlFor="">weight</label>
-                                  <input className="text-black" type="text" value={partialShipment.weight} />
+                                  <input
+                                    onChange={(e) => handleChange({ weight: e.target.value }, shipment.id, partialShipment.id)}
+                                    className="text-black"
+                                    type="text"
+                                    value={partialShipment.weight}
+                                  />
                                 </div>
-                                <div>
+                                <div className="flex gap-4">
                                   <label htmlFor="">qty</label>
-                                  <input className="text-black" type="text" value={partialShipment.qty} />
+                                  <input
+                                    onChange={(e) => handleChange({ qty: Number(e.target.value) }, shipment.id, partialShipment.id)}
+                                    className="text-black"
+                                    type="text"
+                                    value={partialShipment.qty}
+                                  />
                                 </div>
                               </>
                             ))}
