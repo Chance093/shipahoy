@@ -63,6 +63,18 @@ export default function DuoplaneTable({ data }: { data: duoplaneResponseData }) 
     setShipments(updatedShipments);
   };
 
+  const deletePartialShipment = (poId: string, partialShipmentId: number) => {
+    const updatedShipments = shipments.map((po) => {
+      if (po === undefined) throw new Error("PO is undefined");
+      if (po.id === poId) {
+        const partialShipment = po.partialShipments.filter((partialShipment) => partialShipment.id !== partialShipmentId);
+        return { ...po, partialShipments: partialShipment };
+      }
+      return po;
+    });
+    setShipments(updatedShipments);
+  };
+
   return (
     <>
       {duoplaneState.length === 0 ? (
@@ -118,6 +130,9 @@ export default function DuoplaneTable({ data }: { data: duoplaneResponseData }) 
                                     value={partialShipment.qty}
                                   />
                                 </div>
+                                <button onClick={() => deletePartialShipment(po.public_reference, partialShipment.id)}>
+                                  Delete Partial Shipment
+                                </button>
                               </>
                             ))}
                           </tr>
