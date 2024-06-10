@@ -179,4 +179,4 @@ export type PO = {
   partialShipments: PartialShipment[];
 };
 
-export type Shipments = (PO | undefined)[];
+export type Shipments = PO[];

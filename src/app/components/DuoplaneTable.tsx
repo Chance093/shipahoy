@@ -1,79 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { type PartialShipment, type Shipments, type duoplaneResponseData } from "~/lib/definitions";
+import useDuoplane from "~/hooks/useDuoplane";
+import { type duoplaneResponseData } from "~/lib/definitions";
 
 export default function DuoplaneTable({ data }: { data: duoplaneResponseData }) {
-  const duoplaneData = data.map((data) => ({ ...data, active: false }));
-  const [duoplaneState, setDuoplaneState] = useState(duoplaneData);
-  const [shipments, setShipments] = useState<Shipments>([]);
-  const handleClick = (id: string, buyer: string, address: string) => {
-    // Check if PO is already is shipments
-    // If it is, add new partial shipment to existing state
-    // If not, initialize new shipment
-    const shipIds = shipments.map((ship) => ship!.id);
-    const newPartialShipment = {
-      id: Math.random() * 100000,
-      weight: "",
-      qty: 0,
-    };
-    if (shipIds.includes(id)) {
-      const newPartialShipments = shipments.map((ship) => {
-        if (ship === undefined) throw new Error("undefined");
-        if (ship.id === id) return { ...ship, partialShipments: [...ship.partialShipments, newPartialShipment] };
-        return ship;
-      });
-      setShipments(newPartialShipments);
-    } else {
-      const newPO = {
-        id,
-        buyer,
-        address,
-        partialShipments: [newPartialShipment],
-      };
-      setShipments((prev) => [...prev, newPO]);
-    }
-  };
-
-  const dropDown = (id: string) => {
-    const updatedDuoplaneState = duoplaneState.map((state) => {
-      if (state.public_reference === id) {
-        if (state.active === true) return { ...state, active: false };
-        return { ...state, active: true };
-      }
-      return state;
-    });
-
-    setDuoplaneState(updatedDuoplaneState);
-  };
-
-  const handleChange = (fields: Partial<PartialShipment>, poId: string, partShipId: number) => {
-    const updatedShipments = shipments.map((po) => {
-      if (po === undefined) throw new Error("PO is undefined");
-      if (po.id === poId) {
-        const partialShip = po?.partialShipments.map((partialShip) => {
-          if (partialShip.id === partShipId) return { ...partialShip, ...fields };
-          return partialShip;
-        });
-        return { ...po, partialShipments: partialShip };
-      }
-      return po;
-    });
-
-    setShipments(updatedShipments);
-  };
-
-  const deletePartialShipment = (poId: string, partialShipmentId: number) => {
-    const updatedShipments = shipments.map((po) => {
-      if (po === undefined) throw new Error("PO is undefined");
-      if (po.id === poId) {
-        const partialShipment = po.partialShipments.filter((partialShipment) => partialShipment.id !== partialShipmentId);
-        return { ...po, partialShipments: partialShipment };
-      }
-      return po;
-    });
-    setShipments(updatedShipments);
-  };
+  const { duoplaneState, shipments, addPartialShipment, deletePartialShipment, showPartialShipments, handlePartialShipmentInputChange } =
+    useDuoplane(data);
 
   return (
     <>
@@ -96,7 +28,7 @@ export default function DuoplaneTable({ data }: { data: duoplaneResponseData }) 
               <>
                 <tr key={po.public_reference} className="border-b border-gray-600/50">
                   <td className="p-4 py-6">
-                    <button onClick={() => dropDown(po.public_reference)}>v</button>
+                    <button onClick={() => showPartialShipments(po.public_reference)}>v</button>
                   </td>
                   <td className="p-4 py-6">{po.public_reference}</td>
                   <td className="p-4 py-6">
@@ -115,7 +47,7 @@ export default function DuoplaneTable({ data }: { data: duoplaneResponseData }) 
                                 <div className="flex gap-4">
                                   <label htmlFor="">weight</label>
                                   <input
-                                    onChange={(e) => handleChange({ weight: e.target.value }, shipment.id, partialShipment.id)}
+                                    onChange={(e) => handlePartialShipmentInputChange({ weight: e.target.value }, shipment.id, partialShipment.id)}
                                     className="text-black"
                                     type="text"
                                     value={partialShipment.weight}
@@ -124,7 +56,9 @@ export default function DuoplaneTable({ data }: { data: duoplaneResponseData }) 
                                 <div className="flex gap-4">
                                   <label htmlFor="">qty</label>
                                   <input
-                                    onChange={(e) => handleChange({ qty: Number(e.target.value) }, shipment.id, partialShipment.id)}
+                                    onChange={(e) =>
+                                      handlePartialShipmentInputChange({ qty: Number(e.target.value) }, shipment.id, partialShipment.id)
+                                    }
                                     className="text-black"
                                     type="text"
                                     value={partialShipment.qty}
@@ -138,7 +72,7 @@ export default function DuoplaneTable({ data }: { data: duoplaneResponseData }) 
                           </tr>
                         );
                     })}
-                    <button onClick={() => handleClick(po.public_reference, po.shipping_address.first_name, po.shipping_address.address_1)}>
+                    <button onClick={() => addPartialShipment(po.public_reference, po.shipping_address.first_name, po.shipping_address.address_1)}>
                       Add Shipment
                     </button>
                   </>
