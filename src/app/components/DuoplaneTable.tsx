@@ -14,73 +14,69 @@ export default function DuoplaneTable({ data }: { data: duoplaneResponseData }) 
           <p className="text-2xl">You have no orders!</p>
         </div>
       ) : (
-        <table className="w-full text-left">
-          <thead className="text-custom-gray ">
-            <tr className="border-b border-gray-600/50">
-              <th className="p-4 pb-6 font-normal"></th>
-              <th className="p-4 pb-6 font-normal">PO ID</th>
-              <th className="p-4 pb-6 font-normal">Buyer</th>
-              <th className="p-4 pb-6 font-normal">Address</th>
-            </tr>
-          </thead>
-          <tbody>
-            {duoplaneState.map((po) => (
-              <>
-                <tr key={po.public_reference} className="border-b border-gray-600/50">
-                  <td className="p-4 py-6">
-                    <button onClick={() => showPartialShipments(po.public_reference)}>v</button>
-                  </td>
-                  <td className="p-4 py-6">{po.public_reference}</td>
-                  <td className="p-4 py-6">
-                    {po.shipping_address.first_name} {po.shipping_address.last_name}
-                  </td>
-                  <td className="p-4 py-6">{po.shipping_address.address_1}</td>
-                </tr>
-                {po.active ? (
-                  <>
-                    {shipments.map((shipment) => {
-                      if (shipment?.id === po.public_reference)
-                        return (
-                          <tr key={shipment.id} className="flex flex-col justify-between">
-                            {shipment.partialShipments.map((partialShipment) => (
-                              <>
-                                <div className="flex gap-4">
-                                  <label htmlFor="">weight</label>
-                                  <input
-                                    onChange={(e) => handlePartialShipmentInputChange({ weight: e.target.value }, shipment.id, partialShipment.id)}
-                                    className="text-black"
-                                    type="text"
-                                    value={partialShipment.weight}
-                                  />
-                                </div>
-                                <div className="flex gap-4">
-                                  <label htmlFor="">qty</label>
-                                  <input
-                                    onChange={(e) =>
-                                      handlePartialShipmentInputChange({ qty: Number(e.target.value) }, shipment.id, partialShipment.id)
-                                    }
-                                    className="text-black"
-                                    type="text"
-                                    value={partialShipment.qty}
-                                  />
-                                </div>
-                                <button onClick={() => deletePartialShipment(po.public_reference, partialShipment.id)}>
-                                  Delete Partial Shipment
-                                </button>
-                              </>
-                            ))}
-                          </tr>
-                        );
-                    })}
-                    <button onClick={() => addPartialShipment(po.public_reference, po.shipping_address.first_name, po.shipping_address.address_1)}>
-                      Add Shipment
-                    </button>
-                  </>
-                ) : null}
-              </>
-            ))}
-          </tbody>
-        </table>
+        <section className="grid-cols-[20px / auto/ auto/ auto] grid w-full text-left">
+          <h3 className="p-4 pb-6 font-normal"></h3>
+          <h3 className="p-4 pb-6 font-normal">PO ID</h3>
+          <h3 className="p-4 pb-6 font-normal">Buyer</h3>
+          <h3 className="p-4 pb-6 font-normal">Address</h3>
+          {duoplaneState.map((po) => (
+            <>
+              <button key={po.public_reference + "1"} onClick={() => showPartialShipments(po.public_reference)}>
+                v
+              </button>
+              <p key={po.public_reference + "2"} className="p-4 py-6">
+                {po.public_reference}
+              </p>
+              <p key={po.public_reference + "3"} className="p-4 py-6">
+                {po.shipping_address.first_name} {po.shipping_address.last_name}
+              </p>
+              <p key={po.public_reference + "4"} className="p-4 py-6">
+                {po.shipping_address.address_1}
+              </p>
+              {po.active ? (
+                <>
+                  {shipments.map((shipment) => {
+                    if (shipment.id === po.public_reference) {
+                      return shipment.partialShipments.map((partialShipment) => (
+                        <>
+                          <div key={shipment.id + 1}></div>
+                          <div key={shipment.id + 2} className="cols-start-2 col-span-3 flex justify-between">
+                            <div className="flex gap-4">
+                              <label htmlFor="">weight</label>
+                              <input
+                                onChange={(e) => handlePartialShipmentInputChange({ weight: e.target.value }, shipment.id, partialShipment.id)}
+                                className="text-black"
+                                type="text"
+                                value={partialShipment.weight}
+                              />
+                            </div>
+                            <div className="flex gap-4">
+                              <label htmlFor="">qty</label>
+                              <input
+                                onChange={(e) => handlePartialShipmentInputChange({ qty: Number(e.target.value) }, shipment.id, partialShipment.id)}
+                                className="text-black"
+                                type="text"
+                                value={partialShipment.qty}
+                              />
+                            </div>
+                            <button onClick={() => deletePartialShipment(po.public_reference, partialShipment.id)}>Delete Partial Shipment</button>
+                          </div>
+                        </>
+                      ));
+                    }
+                  })}
+                  <button
+                    key={po.public_reference + "5"}
+                    className="col-span-4"
+                    onClick={() => addPartialShipment(po.public_reference, po.shipping_address.first_name, po.shipping_address.address_1)}
+                  >
+                    Add Shipment
+                  </button>
+                </>
+              ) : null}
+            </>
+          ))}
+        </section>
       )}
     </>
   );
