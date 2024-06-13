@@ -12,7 +12,7 @@ export default function useDuoplane(data: duoplaneResponseData) {
     const INITIALIZED_PARTIAL_SHIPMENT = {
       id: Math.random() * 100000,
       weight: "",
-      qty: 0,
+      qty: "",
     };
 
     const shipmentIds = shipments.map((ship) => ship.id);
