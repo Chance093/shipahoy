@@ -40,6 +40,7 @@ export default function useDuoplane(data: duoplaneResponseData) {
     }
   };
 
+  // TODO: if last partial shipment is deleted, delete the PO from shipments state
   const deletePartialShipment = (poId: string, partialShipmentId: number) => {
     const updatedShipments = shipments.map((po) => {
       if (po.id === poId) {
