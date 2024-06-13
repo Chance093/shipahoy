@@ -2,7 +2,7 @@
 
 import useDuoplane from "~/hooks/useDuoplane";
 import { type DuoplanePO, type Shipments, type PartialShipment, type duoplaneResponseData } from "~/lib/definitions";
-import { ChevronDownIcon, ArrowUturnUpIcon } from "@heroicons/react/24/solid";
+import { ChevronDownIcon, ChevronUpIcon, ArrowUturnUpIcon } from "@heroicons/react/24/solid";
 import usePagination from "~/hooks/usePagination";
 import Pagination from "./Pagination";
 
@@ -61,7 +61,7 @@ function PO({
   return (
     <>
       <div className="border-t border-gray-600/50 p-4 py-6" onClick={() => showPartialShipments(po.public_reference)}>
-        <ChevronDownIcon className="w-8" />
+        {po.active ? <ChevronUpIcon className="w-8 cursor-pointer" /> : <ChevronDownIcon className="w-8 cursor-pointer" />}
       </div>
       <p className="border-t border-gray-600/50 p-4 py-6">{po.public_reference}</p>
       <p className="border-t border-gray-600/50 p-4 py-6">
