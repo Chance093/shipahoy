@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
-import { type Shipments, type duoplaneResponseData, type PartialShipment } from "~/lib/definitions";
+import { type Shipments, type DuoplaneResponseData, type PartialShipment } from "~/lib/definitions";
 
-export default function useDuoplane(data: duoplaneResponseData) {
+export default function useDuoplane(data: DuoplaneResponseData) {
   const duoplaneData = data.map((data) => ({ ...data, active: false }));
 
   const [duoplaneState, setDuoplaneState] = useState(duoplaneData);

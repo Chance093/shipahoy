@@ -1,12 +1,12 @@
 "use client";
 
 import useDuoplane from "~/hooks/useDuoplane";
-import { type DuoplanePO, type Shipments, type PartialShipment, type duoplaneResponseData } from "~/lib/definitions";
+import { type DuoplanePO, type Shipments, type PartialShipment, type DuoplaneResponseData } from "~/lib/definitions";
 import { ChevronDownIcon, ChevronUpIcon, ArrowUturnUpIcon } from "@heroicons/react/24/solid";
 import usePagination from "~/hooks/usePagination";
 import Pagination from "./Pagination";
 
-export default function DuoplaneTable({ data }: { data: duoplaneResponseData }) {
+export default function DuoplaneTable({ data }: { data: DuoplaneResponseData }) {
   const { duoplaneState, shipments, addPartialShipment, deletePartialShipment, showPartialShipments, handlePartialShipmentInputChange } =
     useDuoplane(data);
   const { page, totalPages, incrementPage, decrementPage } = usePagination(3);
