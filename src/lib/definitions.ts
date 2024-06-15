@@ -169,7 +169,6 @@ export type DuoplaneResponseData = {
 export type PartialShipment = {
   id: number;
   weight: string;
-  qty: string;
 };
 
 export type PO = {

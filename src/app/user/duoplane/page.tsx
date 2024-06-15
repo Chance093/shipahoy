@@ -1,10 +1,10 @@
 import DuoplaneTable from "~/app/components/DuoplaneTable";
 import { fetchDuoplaneData } from "~/lib/duoplane";
-import { type duoplaneResponseData } from "~/lib/definitions";
+import { type DuoplaneResponseData } from "~/lib/definitions";
 
 export default async function Duoplane() {
   const response = await fetchDuoplaneData();
-  const duoplaneData = response.data as duoplaneResponseData;
+  const duoplaneData = response.data as DuoplaneResponseData;
 
   return (
     <section className="flex flex-1 flex-col rounded-2xl bg-linear-gradient">

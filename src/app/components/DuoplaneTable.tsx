@@ -114,7 +114,7 @@ function PartialShipment({
       <div></div>
       <div className="cols-start-2 col-span-3 flex items-end justify-start gap-8 pb-8">
         <div>
-          <ArrowUturnUpIcon className="w-6 rotate-90 text-gray-600" />
+          <ArrowUturnUpIcon className="w-6 rotate-90 pb-4 text-gray-600" />
         </div>
         <input
           onChange={(e) => handleChange({ weight: e.target.value }, shipmentId, partialShipment.id)}
@@ -122,13 +122,6 @@ function PartialShipment({
           type="text"
           value={partialShipment.weight}
           placeholder="weight (lbs)"
-        />
-        <input
-          onChange={(e) => handleChange({ qty: e.target.value }, shipmentId, partialShipment.id)}
-          className="border-b border-gray-600/50 bg-black bg-opacity-0 p-2 placeholder:italic focus:outline-none"
-          type="text"
-          value={partialShipment.qty}
-          placeholder="qty"
         />
         <div className="cursor-pointer" onClick={() => deletePartialShipment(poId, partialShipment.id)}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 w-8">
