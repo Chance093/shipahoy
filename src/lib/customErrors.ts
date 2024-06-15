@@ -11,3 +11,10 @@ export class DuoplaneError extends Error {
     this.name = "DuoplaneError";
   }
 }
+
+export class CostCalculationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "CostCalculationError";
+  }
+}
