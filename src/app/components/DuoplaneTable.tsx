@@ -11,6 +11,19 @@ export default function DuoplaneTable({ data }: { data: DuoplaneResponseData }) 
     useDuoplane(data);
   const { page, totalPages, incrementPage, decrementPage } = usePagination(3);
 
+  const submitDuoplane = () => {
+    // Set loading state of button to true
+    // Check shipments state
+    // If a weight string is empty, open up po dropdown and don't allow submission, display error message
+    // If a weight is below 0 or above 70, display error message
+    // If no shipments have been made, display error message
+    // If weight is not an integer, display error message
+    // If any weight is NaN, display error message
+    // Calculate cost and set to state
+    // Set loading state of button to false
+    // Change displayed component to confirmation page
+  };
+
   return (
     <>
       {duoplaneState.length === 0 ? (
@@ -19,7 +32,7 @@ export default function DuoplaneTable({ data }: { data: DuoplaneResponseData }) 
         </div>
       ) : (
         <>
-          <section className="grid w-full grid-cols-[80px_auto_auto_auto] text-left">
+          <form id="duoplane-form" className="grid w-full grid-cols-[80px_auto_auto_auto] text-left">
             <h3 className="col-start-1 p-4 pb-6 font-normal"></h3>
             <h3 className="col-start-2 p-4 pb-6 font-normal">PO ID</h3>
             <h3 className="col-start-3 p-4 pb-6 font-normal">Buyer</h3>
@@ -35,8 +48,16 @@ export default function DuoplaneTable({ data }: { data: DuoplaneResponseData }) 
                 addPartialShipment={addPartialShipment}
               />
             ))}
+          </form>
+          <section className="mt-auto flex justify-between">
+            <input
+              type="submit"
+              form="duoplane-form"
+              className="m-4 h-14 w-52 cursor-pointer rounded-md bg-purple p-4 text-center disabled:opacity-50"
+            />
+
+            <Pagination page={page} totalPages={totalPages} incrementPage={incrementPage} decrementPage={decrementPage} />
           </section>
-          <Pagination page={page} totalPages={totalPages} incrementPage={incrementPage} decrementPage={decrementPage} />
         </>
       )}
     </>
@@ -87,6 +108,7 @@ function PO({
           <button
             className="col-span-4 mb-6 ml-20 w-40 cursor-pointer rounded-md bg-[#b4a3d8] p-1 text-black"
             onClick={() => addPartialShipment(po.public_reference, po.shipping_address.first_name, po.shipping_address.address_1)}
+            type="button"
           >
             Add Shipment
           </button>
@@ -122,6 +144,7 @@ function PartialShipment({
           type="text"
           value={partialShipment.weight}
           placeholder="weight (lbs)"
+          required
         />
         <div className="cursor-pointer" onClick={() => deletePartialShipment(poId, partialShipment.id)}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 w-8">
