@@ -5,23 +5,46 @@ import { type DuoplanePO, type Shipments, type PartialShipment, type DuoplaneRes
 import { ChevronDownIcon, ChevronUpIcon, ArrowUturnUpIcon } from "@heroicons/react/24/solid";
 import usePagination from "~/hooks/usePagination";
 import Pagination from "./Pagination";
+import { type FormEvent, useState } from "react";
+import { DuoplaneError } from "~/lib/customErrors";
 
 export default function DuoplaneTable({ data }: { data: DuoplaneResponseData }) {
   const { duoplaneState, shipments, addPartialShipment, deletePartialShipment, showPartialShipments, handlePartialShipmentInputChange } =
     useDuoplane(data);
   const { page, totalPages, incrementPage, decrementPage } = usePagination(3);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const submitDuoplane = () => {
-    // Set loading state of button to true
-    // Check shipments state
-    // If a weight string is empty, open up po dropdown and don't allow submission, display error message
-    // If a weight is below 0 or above 70, display error message
-    // If no shipments have been made, display error message
-    // If weight is not an integer, display error message
-    // If any weight is NaN, display error message
+  const submitDuoplane = (e: FormEvent) => {
+    e.preventDefault();
+    try {
+      setErrorMessage("");
+      validateShipments(shipments);
+    } catch (err) {
+      if (err instanceof DuoplaneError) {
+        setErrorMessage(err.message);
+      } else {
+        throw err;
+      }
+    }
     // Calculate cost and set to state
     // Set loading state of button to false
     // Change displayed component to confirmation page
+  };
+
+  const validateShipments = (shipments: Shipments) => {
+    if (shipments.length === 0) throw new DuoplaneError("Please add a shipment.");
+
+    shipments.forEach((shipment) => {
+      shipment.partialShipments.forEach((partialShipment) => {
+        if (partialShipment.weight === "") throw new DuoplaneError(`PO ${shipment.id}: Empty weight fields must be filled out or deleted.`);
+
+        if (!Number.isInteger(Number(partialShipment.weight)) || Number.isNaN(Number(partialShipment.weight)))
+          throw new DuoplaneError(`PO ${shipment.id}: All weight fields must be whole numbers`);
+
+        if (Number(partialShipment.weight) <= 0 || Number(partialShipment.weight) > 70)
+          throw new DuoplaneError(`PO ${shipment.id}: All weight fields must be between 0 - 70 lbs.`);
+      });
+    });
   };
 
   return (
@@ -32,7 +55,7 @@ export default function DuoplaneTable({ data }: { data: DuoplaneResponseData }) 
         </div>
       ) : (
         <>
-          <form id="duoplane-form" className="grid w-full grid-cols-[80px_auto_auto_auto] text-left">
+          <form id="duoplane-form" className="grid w-full grid-cols-[80px_auto_auto_auto] text-left" onSubmit={submitDuoplane}>
             <h3 className="col-start-1 p-4 pb-6 font-normal"></h3>
             <h3 className="col-start-2 p-4 pb-6 font-normal">PO ID</h3>
             <h3 className="col-start-3 p-4 pb-6 font-normal">Buyer</h3>
@@ -49,6 +72,7 @@ export default function DuoplaneTable({ data }: { data: DuoplaneResponseData }) 
               />
             ))}
           </form>
+          <div className="ml-4 text-red-400">{errorMessage}</div>
           <section className="mt-auto flex justify-between">
             <input
               type="submit"

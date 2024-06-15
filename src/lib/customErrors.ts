@@ -4,3 +4,10 @@ export class AddressParsingError extends Error {
     this.name = "AddressParsingError";
   }
 }
+
+export class DuoplaneError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "DuoplaneError";
+  }
+}
