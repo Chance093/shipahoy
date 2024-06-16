@@ -5,7 +5,7 @@ import { type DuoplanePO, type Shipments, type PartialShipment, type DuoplaneRes
 import { ChevronDownIcon, ChevronUpIcon, ArrowUturnUpIcon } from "@heroicons/react/24/solid";
 import usePagination from "~/hooks/usePagination";
 import Pagination from "./Pagination";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useState, type Dispatch, type SetStateAction } from "react";
 import { CostCalculationError, DuoplaneError } from "~/lib/customErrors";
 
 export default function DuoplaneTable({ data, pricing }: { data: DuoplaneResponseData; pricing: Pricing }) {
@@ -13,6 +13,8 @@ export default function DuoplaneTable({ data, pricing }: { data: DuoplaneRespons
     useDuoplane(data);
   const { page, totalPages, incrementPage, decrementPage } = usePagination(3);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isConfirmationDisplayed, setIsConfirmationDisplayed] = useState(false);
+  const [labelPrices, setLabelPrices] = useState<string[]>([]);
 
   const submitDuoplane = (e: FormEvent) => {
     e.preventDefault();
@@ -20,10 +22,14 @@ export default function DuoplaneTable({ data, pricing }: { data: DuoplaneRespons
 
     try {
       validateShipments(shipments);
+
       const weights: string[] = [];
       shipments.forEach((shipment) => shipment.partialShipments.forEach((partial) => weights.push(partial.weight)));
+
       const prices = calculateDuoplaneCost(weights, pricing);
-      console.log(prices);
+      setLabelPrices(prices);
+
+      setIsConfirmationDisplayed(true);
     } catch (err) {
       if (err instanceof DuoplaneError) {
         setErrorMessage(err.message);
@@ -31,7 +37,6 @@ export default function DuoplaneTable({ data, pricing }: { data: DuoplaneRespons
         throw err;
       }
     }
-    // Change displayed component to confirmation page
   };
 
   const validateShipments = (shipments: Shipments) => {
@@ -90,6 +95,8 @@ export default function DuoplaneTable({ data, pricing }: { data: DuoplaneRespons
         <div className="flex flex-1 items-center justify-center pb-8">
           <p className="text-2xl">You have no orders!</p>
         </div>
+      ) : isConfirmationDisplayed ? (
+        <ShipmentConfirmation shipments={shipments} labelPrices={labelPrices} setIsConfirmationDisplayed={setIsConfirmationDisplayed} />
       ) : (
         <>
           <form id="duoplane-form" className="grid w-full grid-cols-[80px_auto_auto_auto] text-left" onSubmit={submitDuoplane}>
@@ -213,6 +220,51 @@ function PartialShipment({
           </svg>
         </div>
       </div>
+    </>
+  );
+}
+
+function ShipmentConfirmation({
+  shipments,
+  labelPrices,
+  setIsConfirmationDisplayed,
+}: {
+  shipments: Shipments;
+  labelPrices: string[];
+  setIsConfirmationDisplayed: Dispatch<SetStateAction<boolean>>;
+}) {
+  let labelPriceIdx = -1;
+  return (
+    <>
+      <section className="grid w-full grid-cols-[auto_auto_auto] text-left">
+        <h3 className="p-4 pb-6 font-normal">PO ID</h3>
+        <h3 className="p-4 pb-6 font-normal">Buyer</h3>
+        <h3 className="p-4 pb-6 font-normal">Address</h3>
+        {shipments.map((shipment) => (
+          <>
+            <p className="border-t border-gray-600/50 p-4 py-6">{shipment.id}</p>
+            <p className="border-t border-gray-600/50 p-4 py-6">{shipment.buyer}</p>
+            <p className="border-t border-gray-600/50 p-4 py-6">{shipment.address}</p>
+            {shipment.partialShipments.map((partialShipment) => {
+              labelPriceIdx += 1;
+              return (
+                <div key={partialShipment.id} className="col-span-3 ml-8 flex items-end justify-start gap-8 pb-8">
+                  <div>
+                    <ArrowUturnUpIcon className="w-6 rotate-90 pb-4 text-gray-600" />
+                  </div>
+                  <p>
+                    {partialShipment.weight} lb shipment - ${labelPrices[labelPriceIdx]}
+                  </p>
+                </div>
+              );
+            })}
+          </>
+        ))}
+      </section>
+      <section className="flex justify-between">
+        <button onClick={() => setIsConfirmationDisplayed(false)}>Edit Orders</button>
+        <button>${labelPrices.reduce((a, b) => Number(a) + Number(b), 0)}</button>
+      </section>
     </>
   );
 }
