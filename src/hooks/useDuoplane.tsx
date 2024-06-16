@@ -40,17 +40,25 @@ export default function useDuoplane(data: DuoplaneResponseData) {
     }
   };
 
-  // TODO: if last partial shipment is deleted, delete the PO from shipments state
   const deletePartialShipment = (poId: string, partialShipmentId: number) => {
-    const updatedShipments = shipments.map((po) => {
-      if (po.id === poId) {
-        const partialShipment = po.partialShipments.filter((partialShipment) => partialShipment.id !== partialShipmentId);
-        return { ...po, partialShipments: partialShipment };
-      }
-      return po;
-    });
+    // * If last partial shipment is deleted, delete the whole PO
+    if (shipments.find((shipment) => shipment.id === poId)?.partialShipments.length === 1) {
+      const updatedShipments = shipments.filter((shipment) => shipment.id !== poId);
+      setShipments(updatedShipments);
+    }
 
-    setShipments(updatedShipments);
+    // * Else, delete just the partial shipment
+    else {
+      const updatedShipments = shipments.map((po) => {
+        if (po.id === poId) {
+          const partialShipment = po.partialShipments.filter((partialShipment) => partialShipment.id !== partialShipmentId);
+          return { ...po, partialShipments: partialShipment };
+        }
+        return po;
+      });
+
+      setShipments(updatedShipments);
+    }
   };
 
   const showPartialShipments = (id: string) => {
