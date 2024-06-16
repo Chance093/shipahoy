@@ -2,7 +2,7 @@
 
 import useDuoplane from "~/hooks/useDuoplane";
 import { type DuoplanePO, type Shipments, type PartialShipment, type DuoplaneResponseData, type Pricing } from "~/lib/definitions";
-import { ChevronDownIcon, ChevronUpIcon, ArrowUturnUpIcon } from "@heroicons/react/24/solid";
+import { ChevronDownIcon, ChevronUpIcon, ArrowUturnUpIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
 import usePagination from "~/hooks/usePagination";
 import Pagination from "./Pagination";
 import { type FormEvent, useState, type Dispatch, type SetStateAction } from "react";
@@ -118,13 +118,13 @@ export default function DuoplaneTable({ data, pricing }: { data: DuoplaneRespons
           </form>
           <div className="ml-4 text-red-400">{errorMessage}</div>
           <section className="mt-auto flex justify-between">
+            <Pagination page={page} totalPages={totalPages} incrementPage={incrementPage} decrementPage={decrementPage} />
             <input
               type="submit"
               form="duoplane-form"
               className="m-4 h-14 w-52 cursor-pointer rounded-md bg-purple p-4 text-center disabled:opacity-50"
+              value="Checkout"
             />
-
-            <Pagination page={page} totalPages={totalPages} incrementPage={incrementPage} decrementPage={decrementPage} />
           </section>
         </>
       )}
@@ -175,7 +175,15 @@ function PO({
           })}
           <button
             className="col-span-4 mb-6 ml-20 w-40 cursor-pointer rounded-md bg-[#b4a3d8] p-1 text-black"
-            onClick={() => addPartialShipment(po.public_reference, po.shipping_address.first_name, po.shipping_address.address_1)}
+            onClick={() =>
+              addPartialShipment(
+                po.public_reference,
+                `${po.shipping_address.first_name} ${po.shipping_address.last_name}`,
+                `${po.shipping_address.address_1}${po.shipping_address.address_2 ? ", " + po.shipping_address.address_2 : ""}, ${
+                  po.shipping_address.city
+                }, ${po.shipping_address.province} ${po.shipping_address.post_code}`,
+              )
+            }
             type="button"
           >
             Add Shipment
@@ -248,9 +256,9 @@ function ShipmentConfirmation({
             {shipment.partialShipments.map((partialShipment) => {
               labelPriceIdx += 1;
               return (
-                <div key={partialShipment.id} className="col-span-3 ml-8 flex items-end justify-start gap-8 pb-8">
+                <div key={partialShipment.id} className="col-span-3 ml-12 flex items-end justify-start gap-8 pb-8">
                   <div>
-                    <ArrowUturnUpIcon className="w-6 rotate-90 pb-4 text-gray-600" />
+                    <ArrowUturnUpIcon className="w-6 rotate-90 pb-2 text-gray-600" />
                   </div>
                   <p>
                     {partialShipment.weight} lb shipment - ${labelPrices[labelPriceIdx]}
@@ -261,9 +269,17 @@ function ShipmentConfirmation({
           </>
         ))}
       </section>
-      <section className="flex justify-between">
-        <button onClick={() => setIsConfirmationDisplayed(false)}>Edit Orders</button>
-        <button>${labelPrices.reduce((a, b) => Number(a) + Number(b), 0)}</button>
+      <section className="m-4 mt-auto flex justify-between">
+        <div
+          className="flex cursor-pointer items-center gap-4 border-b border-transparent px-2 text-xl hover:border-[#b4a3d8]"
+          onClick={() => setIsConfirmationDisplayed(false)}
+        >
+          <ArrowLeftIcon className="w-6" />
+          Edit Orders
+        </div>
+        <button className="w-52 cursor-pointer items-start rounded-md bg-purple p-4 text-center disabled:opacity-50">
+          Purchase ${labelPrices.reduce((a, b) => Number(a) + Number(b), 0).toFixed(2)}
+        </button>
       </section>
     </>
   );
