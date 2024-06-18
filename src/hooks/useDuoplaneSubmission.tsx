@@ -1,9 +1,9 @@
 "use client";
 import { type FormEvent, useState } from "react";
 import { CostCalculationError, DuoplaneError } from "~/lib/customErrors";
-import { type Pricing, type Shipments } from "~/lib/definitions";
+import { type Pricing, type PoOrders } from "~/lib/definitions";
 
-export default function useDuoplaneSubmission(shipments: Shipments, pricing: Pricing) {
+export default function useDuoplaneSubmission(poOrders: PoOrders, pricing: Pricing) {
   const [errorMessage, setErrorMessage] = useState("");
   const [isConfirmationDisplayed, setIsConfirmationDisplayed] = useState(false);
   const [labelPrices, setLabelPrices] = useState<string[]>([]);
@@ -13,10 +13,10 @@ export default function useDuoplaneSubmission(shipments: Shipments, pricing: Pri
     setErrorMessage("");
 
     try {
-      validateShipments(shipments);
+      validateShipments(poOrders);
 
       const weights: string[] = [];
-      shipments.forEach((shipment) => shipment.partialShipments.forEach((partial) => weights.push(partial.weight)));
+      poOrders.forEach((poOrder) => poOrder.shipments.forEach((shipment) => weights.push(shipment.weight)));
 
       const prices = calculateDuoplaneCost(weights, pricing);
       setLabelPrices(prices);
@@ -31,17 +31,17 @@ export default function useDuoplaneSubmission(shipments: Shipments, pricing: Pri
     }
   };
 
-  const validateShipments = (shipments: Shipments) => {
-    if (shipments.length === 0) throw new DuoplaneError("Please add a shipment.");
+  const validateShipments = (poOrders: PoOrders) => {
+    if (poOrders.length === 0) throw new DuoplaneError("Please add a shipment.");
 
-    shipments.forEach((shipment) => {
-      shipment.partialShipments.forEach((partialShipment) => {
-        if (partialShipment.weight === "") throw new DuoplaneError(`PO ${shipment.id}: Empty weight fields must be filled out or deleted.`);
-        if (!Number.isInteger(Number(partialShipment.weight)) || Number.isNaN(Number(partialShipment.weight)))
-          throw new DuoplaneError(`PO ${shipment.id}: All weight fields must be whole numbers`);
+    poOrders.forEach((poOrder) => {
+      poOrder.shipments.forEach((shipment) => {
+        if (shipment.weight === "") throw new DuoplaneError(`PO ${poOrder.id}: Empty weight fields must be filled out or deleted.`);
+        if (!Number.isInteger(Number(shipment.weight)) || Number.isNaN(Number(shipment.weight)))
+          throw new DuoplaneError(`PO ${poOrder.id}: All weight fields must be whole numbers`);
 
-        if (Number(partialShipment.weight) <= 0 || Number(partialShipment.weight) > 70)
-          throw new DuoplaneError(`PO ${shipment.id}: All weight fields must be between 0 - 70 lbs.`);
+        if (Number(shipment.weight) <= 0 || Number(shipment.weight) > 70)
+          throw new DuoplaneError(`PO ${poOrder.id}: All weight fields must be between 0 - 70 lbs.`);
       });
     });
   };

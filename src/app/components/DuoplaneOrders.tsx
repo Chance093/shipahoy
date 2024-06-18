@@ -1,15 +1,15 @@
 import { ArrowUturnUpIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
-import { type DuoplanePO, type Shipments, type PartialShipment } from "~/lib/definitions";
+import { type DuoplaneState, type PoOrders, type Shipment } from "~/lib/definitions";
 import Pagination from "./Pagination";
 import { type FormEvent } from "react";
 
 export default function DuoplaneOrders({
   duoplaneState,
-  shipments,
-  handlePartialShipmentInputChange,
-  showPartialShipments,
-  addPartialShipment,
-  deletePartialShipment,
+  poOrders,
+  handleWeightChange,
+  showShipments,
+  addShipment,
+  deleteShipment,
   submitDuoplane,
   errorMessage,
   page,
@@ -17,12 +17,12 @@ export default function DuoplaneOrders({
   incrementPage,
   decrementPage,
 }: {
-  duoplaneState: DuoplanePO[];
-  shipments: Shipments;
-  handlePartialShipmentInputChange: (field: Partial<PartialShipment>, poId: string, partShipId: number) => void;
-  showPartialShipments: (id: string) => void;
-  addPartialShipment: (id: string, buyer: string, address: string) => void;
-  deletePartialShipment: (poId: string, partialShipmentId: number) => void;
+  duoplaneState: DuoplaneState[];
+  poOrders: PoOrders;
+  handleWeightChange: (field: Partial<Shipment>, poOrderId: string, shipmentId: number) => void;
+  showShipments: (id: string) => void;
+  addShipment: (id: string, buyer: string, address: string) => void;
+  deleteShipment: (poOrderId: string, shipmentId: number) => void;
   submitDuoplane: (e: FormEvent<Element>) => void;
   errorMessage: string;
   page: number;
@@ -32,6 +32,7 @@ export default function DuoplaneOrders({
 }) {
   return (
     <>
+      <h2 className="p-2 text-2xl">Duoplane Orders</h2>
       <form id="duoplane-form" className="grid w-full grid-cols-[80px_auto_auto_auto] text-left" onSubmit={submitDuoplane}>
         <h3 className="col-start-1 p-4 pb-6 font-normal"></h3>
         <h3 className="col-start-2 p-4 pb-6 font-normal">PO ID</h3>
@@ -41,11 +42,11 @@ export default function DuoplaneOrders({
           <PO
             key={po.public_reference}
             po={po}
-            shipments={shipments}
-            handleChange={handlePartialShipmentInputChange}
-            showPartialShipments={showPartialShipments}
-            deletePartialShipment={deletePartialShipment}
-            addPartialShipment={addPartialShipment}
+            poOrders={poOrders}
+            handleWeightChange={handleWeightChange}
+            showShipments={showShipments}
+            deleteShipment={deleteShipment}
+            addShipment={addShipment}
           />
         ))}
       </form>
@@ -65,22 +66,22 @@ export default function DuoplaneOrders({
 
 function PO({
   po,
-  shipments,
-  handleChange,
-  showPartialShipments,
-  deletePartialShipment,
-  addPartialShipment,
+  poOrders,
+  handleWeightChange,
+  showShipments,
+  deleteShipment,
+  addShipment,
 }: {
-  po: DuoplanePO;
-  shipments: Shipments;
-  handleChange: (field: Partial<PartialShipment>, poId: string, partShipId: number) => void;
-  showPartialShipments: (id: string) => void;
-  deletePartialShipment: (poId: string, partialShipmentId: number) => void;
-  addPartialShipment: (id: string, buyer: string, address: string) => void;
+  po: DuoplaneState;
+  poOrders: PoOrders;
+  handleWeightChange: (field: Partial<Shipment>, poOrderId: string, shipmentId: number) => void;
+  showShipments: (id: string) => void;
+  deleteShipment: (poOrderId: string, shipmentId: number) => void;
+  addShipment: (id: string, buyer: string, address: string) => void;
 }) {
   return (
     <>
-      <div className="border-t border-gray-600/50 p-4 py-6" onClick={() => showPartialShipments(po.public_reference)}>
+      <div className="border-t border-gray-600/50 p-4 py-6" onClick={() => showShipments(po.public_reference)}>
         {po.active ? <ChevronUpIcon className="w-8 cursor-pointer" /> : <ChevronDownIcon className="w-8 cursor-pointer" />}
       </div>
       <p className="border-t border-gray-600/50 p-4 py-6">{po.public_reference}</p>
@@ -90,16 +91,15 @@ function PO({
       <p className="border-t border-gray-600/50 p-4 py-6">{po.shipping_address.address_1}</p>
       {po.active && (
         <>
-          {shipments.map((shipment) => {
-            if (shipment.id === po.public_reference) {
-              return shipment.partialShipments.map((partialShipment) => (
-                <PartialShipment
-                  key={partialShipment.id}
-                  handleChange={handleChange}
-                  deletePartialShipment={deletePartialShipment}
-                  poId={po.public_reference}
-                  shipmentId={shipment.id}
-                  partialShipment={partialShipment}
+          {poOrders.map((poOrder) => {
+            if (poOrder.id === po.public_reference) {
+              return poOrder.shipments.map((shipment) => (
+                <Shipment
+                  key={shipment.id}
+                  handleWeightChange={handleWeightChange}
+                  deleteShipment={deleteShipment}
+                  poOrderId={poOrder.id}
+                  shipment={shipment}
                 />
               ));
             }
@@ -107,7 +107,7 @@ function PO({
           <button
             className="col-span-4 mb-6 ml-20 w-40 cursor-pointer rounded-md bg-[#b4a3d8] p-1 text-black"
             onClick={() =>
-              addPartialShipment(
+              addShipment(
                 po.public_reference,
                 `${po.shipping_address.first_name} ${po.shipping_address.last_name}`,
                 `${po.shipping_address.address_1}${po.shipping_address.address_2 ? ", " + po.shipping_address.address_2 : ""}, ${
@@ -125,18 +125,16 @@ function PO({
   );
 }
 
-function PartialShipment({
-  handleChange,
-  deletePartialShipment,
-  poId,
-  shipmentId,
-  partialShipment,
+function Shipment({
+  handleWeightChange,
+  deleteShipment,
+  poOrderId,
+  shipment,
 }: {
-  handleChange: (field: Partial<PartialShipment>, poId: string, partShipId: number) => void;
-  deletePartialShipment: (poId: string, partialShipmentId: number) => void;
-  poId: string;
-  shipmentId: string;
-  partialShipment: PartialShipment;
+  handleWeightChange: (field: Partial<Shipment>, poOrderId: string, shipmentId: number) => void;
+  deleteShipment: (poOrderId: string, shipmentId: number) => void;
+  poOrderId: string;
+  shipment: Shipment;
 }) {
   return (
     <>
@@ -146,14 +144,14 @@ function PartialShipment({
           <ArrowUturnUpIcon className="w-6 rotate-90 pb-4 text-gray-600" />
         </div>
         <input
-          onChange={(e) => handleChange({ weight: e.target.value }, shipmentId, partialShipment.id)}
+          onChange={(e) => handleWeightChange({ weight: e.target.value }, poOrderId, shipment.id)}
           className="border-b border-gray-600/50 bg-black bg-opacity-0 p-2 placeholder:italic focus:outline-none"
           type="text"
-          value={partialShipment.weight}
+          value={shipment.weight}
           placeholder="weight (lbs)"
           required
         />
-        <div className="cursor-pointer" onClick={() => deletePartialShipment(poId, partialShipment.id)}>
+        <div className="cursor-pointer" onClick={() => deleteShipment(poOrderId, shipment.id)}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 w-8">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
           </svg>

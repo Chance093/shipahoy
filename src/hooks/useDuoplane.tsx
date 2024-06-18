@@ -1,67 +1,68 @@
 "use client";
 import { useState } from "react";
-import { type Shipments, type DuoplaneResponseData, type PartialShipment } from "~/lib/definitions";
+import { type PoOrders, type DuoplaneResponseData, type Shipment } from "~/lib/definitions";
 
 export default function useDuoplane(data: DuoplaneResponseData) {
   const duoplaneData = data.map((data) => ({ ...data, active: false }));
 
   const [duoplaneState, setDuoplaneState] = useState(duoplaneData);
-  const [shipments, setShipments] = useState<Shipments>([]);
+  const [poOrders, setPoOrders] = useState<PoOrders>([]);
 
-  const addPartialShipment = (id: string, buyer: string, address: string) => {
-    const INITIALIZED_PARTIAL_SHIPMENT = {
+  const addShipment = (id: string, buyer: string, address: string) => {
+    const INITIALIZED_SHIPMENT = {
       id: Math.random() * 100000,
       weight: "",
       qty: "",
     };
 
-    const shipmentIds = shipments.map((ship) => ship.id);
+    const poOrderIDs = poOrders.map((poOrder) => poOrder.id);
 
-    // * If shipment is already made, append new partial shipment to existing partial shipments
-    if (shipmentIds.includes(id)) {
-      const updatedPartialShipments = shipments.map((ship) => {
-        if (ship.id === id) return { ...ship, partialShipments: [...ship.partialShipments, INITIALIZED_PARTIAL_SHIPMENT] };
-        return ship;
+    // * If PO order is already made, append new shipment to existing shipments
+    if (poOrderIDs.includes(id)) {
+      const updatedPoOrders = poOrders.map((poOrder) => {
+        if (poOrder.id === id) return { ...poOrder, shipments: [...poOrder.shipments, INITIALIZED_SHIPMENT] };
+        return poOrder;
       });
 
-      setShipments(updatedPartialShipments);
+      setPoOrders(updatedPoOrders);
     }
 
-    // * If shipment hasn't been made, initialize shipment with new partial shipment
+    // * If PO order hasn't been made, initialize PO order with new shipment
     else {
       const newPO = {
         id,
         buyer,
         address,
-        partialShipments: [INITIALIZED_PARTIAL_SHIPMENT],
+        shipments: [INITIALIZED_SHIPMENT],
       };
 
-      setShipments((prev) => [...prev, newPO]);
+      setPoOrders((prev) => [...prev, newPO]);
     }
   };
 
-  const deletePartialShipment = (poId: string, partialShipmentId: number) => {
-    // * If last partial shipment is deleted, delete the whole PO
-    if (shipments.find((shipment) => shipment.id === poId)?.partialShipments.length === 1) {
-      const updatedShipments = shipments.filter((shipment) => shipment.id !== poId);
-      setShipments(updatedShipments);
+  const deleteShipment = (poOrderId: string, shipmentId: number) => {
+    // * If last shipment is deleted from PO order, delete the whole PO order
+    if (poOrders.find((poOrder) => poOrder.id === poOrderId)?.shipments.length === 1) {
+      const updatedPoOrders = poOrders.filter((poOrder) => poOrder.id !== poOrderId);
+      setPoOrders(updatedPoOrders);
     }
 
-    // * Else, delete just the partial shipment
+    // * Else, delete just the shipment
     else {
-      const updatedShipments = shipments.map((po) => {
-        if (po.id === poId) {
-          const partialShipment = po.partialShipments.filter((partialShipment) => partialShipment.id !== partialShipmentId);
-          return { ...po, partialShipments: partialShipment };
+      const updatedPoOrders = poOrders.map((poOrder) => {
+        if (poOrder.id === poOrderId) {
+          const updatedShipments = poOrder.shipments.filter((shipment) => shipment.id !== shipmentId);
+          return { ...poOrder, shipments: updatedShipments };
         }
-        return po;
+        return poOrder;
       });
 
-      setShipments(updatedShipments);
+      setPoOrders(updatedPoOrders);
     }
   };
 
-  const showPartialShipments = (id: string) => {
+  // * On click, drop down PO orders to show all shipments
+  const showShipments = (id: string) => {
     const updatedDuoplaneState = duoplaneState.map((state) => {
       if (state.public_reference === id) {
         if (state.active === true) return { ...state, active: false };
@@ -73,20 +74,20 @@ export default function useDuoplane(data: DuoplaneResponseData) {
     setDuoplaneState(updatedDuoplaneState);
   };
 
-  const handlePartialShipmentInputChange = (field: Partial<PartialShipment>, poId: string, partShipId: number) => {
-    const updatedShipments = shipments.map((po) => {
-      if (po.id === poId) {
-        const partialShip = po.partialShipments.map((partialShip) => {
-          if (partialShip.id === partShipId) return { ...partialShip, ...field };
-          return partialShip;
+  const handleWeightChange = (field: Partial<Shipment>, poOrderId: string, shipmentId: number) => {
+    const updatedPoOrders = poOrders.map((poOrder) => {
+      if (poOrder.id === poOrderId) {
+        const updatedShipments = poOrder.shipments.map((shipment) => {
+          if (shipment.id === shipmentId) return { ...shipment, ...field };
+          return shipment;
         });
-        return { ...po, partialShipments: partialShip };
+        return { ...poOrder, shipments: updatedShipments };
       }
-      return po;
+      return poOrder;
     });
 
-    setShipments(updatedShipments);
+    setPoOrders(updatedPoOrders);
   };
 
-  return { duoplaneState, shipments, addPartialShipment, deletePartialShipment, showPartialShipments, handlePartialShipmentInputChange };
+  return { duoplaneState, poOrders, addShipment, deleteShipment, showShipments, handleWeightChange };
 }

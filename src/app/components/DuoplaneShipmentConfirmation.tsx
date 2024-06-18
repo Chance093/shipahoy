@@ -1,38 +1,39 @@
 "use client";
 import { ArrowLeftIcon, ArrowUturnUpIcon } from "@heroicons/react/24/solid";
 import { Fragment, type Dispatch, type SetStateAction } from "react";
-import { type Shipments } from "~/lib/definitions";
+import { type PoOrders } from "~/lib/definitions";
 
 export default function ShipmentConfirmation({
-  shipments,
+  poOrders,
   labelPrices,
   setIsConfirmationDisplayed,
 }: {
-  shipments: Shipments;
+  poOrders: PoOrders;
   labelPrices: string[];
   setIsConfirmationDisplayed: Dispatch<SetStateAction<boolean>>;
 }) {
   let idx = -1;
   return (
     <>
+      <h2 className="p-2 text-2xl">Order Confirmation</h2>
       <section className="grid w-full grid-cols-[auto_auto_auto] text-left">
         <h3 className="p-4 pb-6 font-normal">PO ID</h3>
         <h3 className="p-4 pb-6 font-normal">Buyer</h3>
         <h3 className="p-4 pb-6 font-normal">Address</h3>
-        {shipments.map((shipment) => (
-          <Fragment key={shipment.id}>
-            <p className="border-t border-gray-600/50 p-4 py-6">{shipment.id}</p>
-            <p className="border-t border-gray-600/50 p-4 py-6">{shipment.buyer}</p>
-            <p className="border-t border-gray-600/50 p-4 py-6">{shipment.address}</p>
-            {shipment.partialShipments.map((partialShipment) => {
+        {poOrders.map((poOrder) => (
+          <Fragment key={poOrder.id}>
+            <p className="border-t border-gray-600/50 p-4 py-6">{poOrder.id}</p>
+            <p className="border-t border-gray-600/50 p-4 py-6">{poOrder.buyer}</p>
+            <p className="border-t border-gray-600/50 p-4 py-6">{poOrder.address}</p>
+            {poOrder.shipments.map((shipment) => {
               idx += 1;
               return (
-                <div key={partialShipment.id} className="col-span-3 ml-12 flex items-end justify-start gap-8 pb-8">
+                <div key={shipment.id} className="col-span-3 ml-12 flex items-end justify-start gap-8 pb-8">
                   <div>
                     <ArrowUturnUpIcon className="w-6 rotate-90 pb-2 text-gray-600" />
                   </div>
                   <p>
-                    {partialShipment.weight} lb shipment - ${labelPrices[idx]}
+                    {shipment.weight} lb shipment - ${labelPrices[idx]}
                   </p>
                 </div>
               );

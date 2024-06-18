@@ -8,13 +8,9 @@ import ShipmentConfirmation from "./DuoplaneShipmentConfirmation";
 import DuoplaneOrders from "./DuoplaneOrders";
 
 export default function DuoplaneTable({ data, pricing }: { data: DuoplaneResponseData; pricing: Pricing }) {
-  const { duoplaneState, shipments, addPartialShipment, deletePartialShipment, showPartialShipments, handlePartialShipmentInputChange } =
-    useDuoplane(data);
+  const { duoplaneState, poOrders, addShipment, deleteShipment, showShipments, handleWeightChange } = useDuoplane(data);
 
-  const { labelPrices, errorMessage, isConfirmationDisplayed, setIsConfirmationDisplayed, submitDuoplane } = useDuoplaneSubmission(
-    shipments,
-    pricing,
-  );
+  const { labelPrices, errorMessage, isConfirmationDisplayed, setIsConfirmationDisplayed, submitDuoplane } = useDuoplaneSubmission(poOrders, pricing);
 
   const { page, totalPages, incrementPage, decrementPage } = usePagination(3);
 
@@ -24,16 +20,14 @@ export default function DuoplaneTable({ data, pricing }: { data: DuoplaneRespons
         <div className="flex flex-1 items-center justify-center pb-8">
           <p className="text-2xl">You have no orders!</p>
         </div>
-      ) : isConfirmationDisplayed ? (
-        <ShipmentConfirmation shipments={shipments} labelPrices={labelPrices} setIsConfirmationDisplayed={setIsConfirmationDisplayed} />
-      ) : (
+      ) : !isConfirmationDisplayed ? (
         <DuoplaneOrders
           duoplaneState={duoplaneState}
-          shipments={shipments}
-          handlePartialShipmentInputChange={handlePartialShipmentInputChange}
-          showPartialShipments={showPartialShipments}
-          addPartialShipment={addPartialShipment}
-          deletePartialShipment={deletePartialShipment}
+          poOrders={poOrders}
+          handleWeightChange={handleWeightChange}
+          showShipments={showShipments}
+          addShipment={addShipment}
+          deleteShipment={deleteShipment}
           submitDuoplane={submitDuoplane}
           errorMessage={errorMessage}
           page={page}
@@ -41,6 +35,8 @@ export default function DuoplaneTable({ data, pricing }: { data: DuoplaneRespons
           incrementPage={incrementPage}
           decrementPage={decrementPage}
         />
+      ) : (
+        <ShipmentConfirmation poOrders={poOrders} labelPrices={labelPrices} setIsConfirmationDisplayed={setIsConfirmationDisplayed} />
       )}
     </>
   );

@@ -166,7 +166,7 @@ export type DuoplaneResponseData = {
   };
 }[];
 
-export type PartialShipment = {
+export type Shipment = {
   id: number;
   weight: string;
 };
@@ -175,9 +175,9 @@ export type PO = {
   id: string;
   buyer: string;
   address: string;
-  partialShipments: PartialShipment[];
+  shipments: Shipment[];
 };
 
-export type Shipments = PO[];
+export type PoOrders = PO[];
 
-export type DuoplanePO = DuoplaneResponseData[number] & { active: boolean };
+export type DuoplaneState = DuoplaneResponseData[number] & { active: boolean };
