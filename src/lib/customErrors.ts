@@ -21,7 +21,7 @@ export class DuoplaneAxiosClientError extends AxiosError {
   }
 }
 
-export class DuoplaneAxiosServerError extends AxiosError {
+export class DuoplaneAxiosRedirectError extends AxiosError {
   constructor(message: string) {
     super(message);
     this.name = "DuoplaneAxiosServerError";
