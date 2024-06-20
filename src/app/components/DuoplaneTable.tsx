@@ -1,18 +1,27 @@
 "use client";
 
 import useDuoplane from "~/hooks/useDuoplane";
-import { type DuoplaneResponseData, type Pricing } from "~/lib/definitions";
+import { type Pricing } from "~/lib/definitions";
 import usePagination from "~/hooks/usePagination";
 import useDuoplaneSubmission from "~/hooks/useDuoplaneSubmission";
 import ShipmentConfirmation from "./DuoplaneShipmentConfirmation";
 import DuoplaneOrders from "./DuoplaneOrders";
+import { api } from "~/trpc/react";
 
-export default function DuoplaneTable({ data, pricing }: { data: DuoplaneResponseData; pricing: Pricing }) {
+export default function DuoplaneTable({ pricing }: { pricing: Pricing }) {
+  const { data, isLoading } = api.duoplane.getDuoplaneOrders.useQuery();
+
   const { duoplaneState, poOrders, addShipment, deleteShipment, showShipments, handleWeightChange } = useDuoplane(data);
 
   const { labelPrices, errorMessage, isConfirmationDisplayed, setIsConfirmationDisplayed, submitDuoplane } = useDuoplaneSubmission(poOrders, pricing);
 
   const { page, totalPages, incrementPage, decrementPage } = usePagination(3);
+
+  if (isLoading) {
+    return <div>loading...</div>;
+  }
+
+  if (duoplaneState === undefined) return null;
 
   return (
     <>

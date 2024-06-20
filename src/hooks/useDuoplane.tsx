@@ -1,12 +1,14 @@
 "use client";
-import { useState } from "react";
-import { type PoOrders, type DuoplaneResponseData, type Shipment } from "~/lib/definitions";
+import { useEffect, useState } from "react";
+import { type PoOrders, type Shipment, type DuoplaneState } from "~/lib/definitions";
 
-export default function useDuoplane(data: DuoplaneResponseData) {
-  const duoplaneData = data.map((data) => ({ ...data, active: false }));
-
-  const [duoplaneState, setDuoplaneState] = useState(duoplaneData);
+export default function useDuoplane(data: DuoplaneState[] | undefined) {
+  const [duoplaneState, setDuoplaneState] = useState<DuoplaneState[]>();
   const [poOrders, setPoOrders] = useState<PoOrders>([]);
+
+  useEffect(() => {
+    setDuoplaneState(data);
+  }, [data]);
 
   const addShipment = (id: string, buyer: string, address: string) => {
     const INITIALIZED_SHIPMENT = {
@@ -63,7 +65,7 @@ export default function useDuoplane(data: DuoplaneResponseData) {
 
   // * On click, drop down PO orders to show all shipments
   const showShipments = (id: string) => {
-    const updatedDuoplaneState = duoplaneState.map((state) => {
+    const updatedDuoplaneState = duoplaneState!.map((state) => {
       if (state.public_reference === id) {
         if (state.active === true) return { ...state, active: false };
         return { ...state, active: true };
