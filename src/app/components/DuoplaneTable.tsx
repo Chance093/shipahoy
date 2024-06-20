@@ -20,7 +20,19 @@ export default function DuoplaneTable({ pricing }: { pricing: Pricing }) {
   const { page, totalPages, incrementPage, decrementPage } = usePagination(3);
 
   if (isLoading) {
-    return <div>loading...</div>;
+    return (
+      <>
+        <h2 className="p-2 text-2xl">Duoplane Orders</h2>
+        <section className="flex flex-1 items-center justify-center">
+          <div className="lds-ring">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        </section>
+      </>
+    );
   }
 
   if (isError) {
