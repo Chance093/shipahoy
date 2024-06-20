@@ -7,9 +7,11 @@ import useDuoplaneSubmission from "~/hooks/useDuoplaneSubmission";
 import ShipmentConfirmation from "./DuoplaneShipmentConfirmation";
 import DuoplaneOrders from "./DuoplaneOrders";
 import { api } from "~/trpc/react";
+import * as Sentry from "@sentry/nextjs";
+import { DuoplaneAxiosRedirectError } from "~/lib/customErrors";
 
 export default function DuoplaneTable({ pricing }: { pricing: Pricing }) {
-  const { data, isLoading } = api.duoplane.getDuoplaneOrders.useQuery();
+  const { data, isLoading, isError, error } = api.duoplane.getDuoplaneOrders.useQuery(undefined, { retry: 2 });
 
   const { duoplaneState, poOrders, addShipment, deleteShipment, showShipments, handleWeightChange } = useDuoplane(data);
 
@@ -19,6 +21,25 @@ export default function DuoplaneTable({ pricing }: { pricing: Pricing }) {
 
   if (isLoading) {
     return <div>loading...</div>;
+  }
+
+  if (isError) {
+    if (error.data?.code === "UNAUTHORIZED") {
+      // * If type "UNAUTHORIZED", show the error directly on DuoplaneTable
+      Sentry.captureException(error);
+      return (
+        <>
+          <h2 className="p-2 text-2xl">Duoplane Orders</h2>
+          <div className="flex flex-1 flex-col items-center justify-center text-xl text-red-400">
+            <p>{error.message}</p>
+          </div>
+        </>
+      );
+    } else if (error.data?.code === "CONFLICT") {
+      // * If any other error type, redirect to error page
+      throw new DuoplaneAxiosRedirectError(error.message);
+    }
+    throw error;
   }
 
   if (duoplaneState === undefined) return null;
