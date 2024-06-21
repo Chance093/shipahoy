@@ -2,13 +2,14 @@ import axios, { AxiosError } from "axios";
 import { DuoplaneAxiosClientError, DuoplaneAxiosRedirectError } from "./customErrors";
 import { type DuoplaneResponseData } from "./definitions";
 
-export const fetchDuoplaneData = async () => {
+export const fetchDuoplaneData = async ({ key, password }: { key: string; password: string }) => {
   try {
+    const encodedString = btoa(`${key}:${password}`);
     const { data }: { data: DuoplaneResponseData } = await axios({
       method: "get",
       url: "https://app.duoplane.com/purchase_orders.json?search[fulfilled]=false",
       headers: {
-        Authorization: "Basic " + process.env.DUOPLANE_KEY_ENCODED,
+        Authorization: "Basic " + encodedString,
       },
     });
 

@@ -212,3 +212,10 @@ export const userData = mysqlTable("user_data", {
   labelCount: int("label_count").notNull(),
   invoiceCount: int("invoice_count").notNull(),
 });
+
+export const duoplaneKey = mysqlTable("duoplane_key", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id", { length: 200 }).notNull(),
+  key: varchar("key", { length: 200 }).notNull(),
+  password: varchar("password", { length: 200 }).notNull(),
+});

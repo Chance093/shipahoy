@@ -3,13 +3,25 @@ import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { type DuoplaneState } from "~/lib/definitions";
 import { TRPCError } from "@trpc/server";
 import { DuoplaneAxiosClientError, DuoplaneAxiosRedirectError } from "~/lib/customErrors";
+import { eq } from "drizzle-orm";
+import { duoplaneKey } from "~/server/db/schema";
 
 export const duoplaneRouter = createTRPCRouter({
-  getDuoplaneOrders: protectedProcedure.query(async () => {
-    // * Fetch duoplane key from our db, if there isn't one, return error
-
+  getDuoplaneOrders: protectedProcedure.query(async ({ ctx }) => {
     try {
-      const data: DuoplaneState[] = await fetchDuoplaneData();
+      // * Get duoplane key from db
+      const keyPass = await ctx.db.query.duoplaneKey.findFirst({
+        where: eq(duoplaneKey.userId, ctx.auth.userId),
+        columns: { key: true, password: true },
+      });
+
+      // * If user doesn't have duoplane key, throw error
+      if (keyPass === undefined) {
+        throw new Error("Missing Duoplane Key - This user does not have a key");
+      }
+
+      // * Fetch duoplane data using duoplane key
+      const data: DuoplaneState[] = await fetchDuoplaneData(keyPass);
 
       return data;
     } catch (err) {
