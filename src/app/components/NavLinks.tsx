@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import { HomeIcon, CurrencyDollarIcon, DocumentArrowUpIcon } from "@heroicons/react/24/solid";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { HomeIcon, CurrencyDollarIcon, DocumentArrowUpIcon, KeyIcon } from "@heroicons/react/24/solid";
+import { UserButton, useOrganizationList, useUser } from "@clerk/nextjs";
 
 const links = [
   {
@@ -27,6 +27,26 @@ const links = [
 export default function Sidebar() {
   const pathname = usePathname();
   const { user } = useUser();
+  const { userMemberships, isLoaded } = useOrganizationList({ userMemberships: true });
+
+  // * Render duoplane link if user is apart of duoplane org
+  const duoplaneLink = () => {
+    if (!isLoaded) return;
+    const duoplaneOrg = userMemberships.data.find((data) => data.organization.name === "duoplane");
+    if (duoplaneOrg === undefined) return;
+    return (
+      <Link
+        href="/user/duoplane"
+        key="Duoplane"
+        className={clsx("group flex cursor-pointer items-center gap-4 rounded-xl p-3 hover:bg-purple hover:text-custom-white", {
+          "bg-purple text-custom-white": pathname === "/user/duoplane",
+        })}
+      >
+        <KeyIcon className="w-6" />
+        <p>Duoplane</p>
+      </Link>
+    );
+  };
 
   return (
     <>
@@ -46,6 +66,7 @@ export default function Sidebar() {
             </Link>
           );
         })}
+        {duoplaneLink()}
       </nav>
       <div className="mx-6 flex flex-1 items-center gap-4 py-8">
         <UserButton afterSignOutUrl="/" />
