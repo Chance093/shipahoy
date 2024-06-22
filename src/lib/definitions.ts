@@ -188,3 +188,10 @@ export type DuoplaneAddress = {
   post_code: string;
   country: string;
 };
+
+export type DuoplaneResponseHeaders = {
+  "duoplane-total-count": string;
+  "duoplane-has-next-page": boolean;
+  "duoplane-requests-left": string;
+  "duoplane-retry-after-seconds": string;
+};

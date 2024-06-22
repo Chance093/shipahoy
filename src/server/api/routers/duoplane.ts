@@ -1,6 +1,6 @@
 import { fetchDuoplaneData } from "~/lib/fetchDuoplane";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { type DuoplaneState } from "~/lib/definitions";
+import { type DuoplaneResponseHeaders, type DuoplaneState } from "~/lib/definitions";
 import { TRPCError } from "@trpc/server";
 import { DuoplaneAxiosClientError, DuoplaneAxiosRedirectError } from "~/lib/customErrors";
 import { eq } from "drizzle-orm";
@@ -21,9 +21,9 @@ export const duoplaneRouter = createTRPCRouter({
       }
 
       // * Fetch duoplane data using duoplane key
-      const data: DuoplaneState[] = await fetchDuoplaneData(keyPass);
+      const response: { data: DuoplaneState[]; headers: DuoplaneResponseHeaders } = await fetchDuoplaneData(keyPass);
 
-      return data;
+      return response;
     } catch (err) {
       // * Create custom TRPC Error based on error type
       if (err instanceof DuoplaneAxiosClientError) {

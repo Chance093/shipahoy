@@ -1,11 +1,11 @@
 import axios, { AxiosError } from "axios";
 import { DuoplaneAxiosClientError, DuoplaneAxiosRedirectError } from "./customErrors";
-import { type DuoplaneResponseData } from "./definitions";
+import { type DuoplaneResponseHeaders, type DuoplaneResponseData } from "./definitions";
 
 export const fetchDuoplaneData = async ({ key, password }: { key: string; password: string }) => {
   try {
     const encodedString = btoa(`${key}:${password}`);
-    const { data }: { data: DuoplaneResponseData } = await axios({
+    const { data, headers }: { data: DuoplaneResponseData; headers: DuoplaneResponseHeaders } = await axios({
       method: "get",
       url: "https://app.duoplane.com/purchase_orders.json?search[fulfilled]=false",
       headers: {
@@ -13,7 +13,9 @@ export const fetchDuoplaneData = async ({ key, password }: { key: string; passwo
       },
     });
 
-    return data.map((data) => ({ ...data, active: false }));
+    const mappedData = data.map((data) => ({ ...data, active: false }));
+
+    return { headers: headers, data: mappedData };
   } catch (err) {
     if (err instanceof AxiosError) {
       if (err.response) {

@@ -12,12 +12,10 @@ import { DuoplaneAxiosRedirectError } from "~/lib/customErrors";
 
 export default function DuoplaneTable({ pricing }: { pricing: Pricing }) {
   const { data, isLoading, isError, error } = api.duoplane.getDuoplaneOrders.useQuery(undefined, { retry: 2 });
-
   const { duoplaneState, poOrders, addShipment, deleteShipment, showShipments, handleWeightChange } = useDuoplane(data);
-
   const { labelPrices, errorMessage, isConfirmationDisplayed, setIsConfirmationDisplayed, submitDuoplane } = useDuoplaneSubmission(poOrders, pricing);
-
-  const { page, totalPages, incrementPage, decrementPage } = usePagination(3);
+  const duoplaneTotalCount = data?.headers["duoplane-total-count"] ? Number(data.headers["duoplane-total-count"]) : 1;
+  const { page, totalPages, incrementPage, decrementPage } = usePagination(duoplaneTotalCount, 20);
 
   if (isLoading) {
     return (

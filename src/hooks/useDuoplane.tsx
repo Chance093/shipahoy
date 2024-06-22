@@ -1,13 +1,27 @@
 "use client";
 import { useEffect, useState } from "react";
-import { type PoOrders, type Shipment, type DuoplaneState, type DuoplaneAddress, type OrderItems } from "~/lib/definitions";
+import {
+  type PoOrders,
+  type Shipment,
+  type DuoplaneState,
+  type DuoplaneAddress,
+  type OrderItems,
+  type DuoplaneResponseHeaders,
+} from "~/lib/definitions";
 
-export default function useDuoplane(data: DuoplaneState[] | undefined) {
+export default function useDuoplane(
+  data:
+    | {
+        data: DuoplaneState[];
+        headers: DuoplaneResponseHeaders;
+      }
+    | undefined,
+) {
   const [duoplaneState, setDuoplaneState] = useState<DuoplaneState[]>();
   const [poOrders, setPoOrders] = useState<PoOrders>([]);
 
   useEffect(() => {
-    setDuoplaneState(data);
+    setDuoplaneState(data?.data);
   }, [data]);
 
   const addShipment = (id: string, address: DuoplaneAddress, orderItems: OrderItems) => {
