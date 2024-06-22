@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { type PoOrders, type Shipment, type DuoplaneState } from "~/lib/definitions";
+import { type PoOrders, type Shipment, type DuoplaneState, type DuoplaneAddress, type OrderItems } from "~/lib/definitions";
 
 export default function useDuoplane(data: DuoplaneState[] | undefined) {
   const [duoplaneState, setDuoplaneState] = useState<DuoplaneState[]>();
@@ -10,11 +10,10 @@ export default function useDuoplane(data: DuoplaneState[] | undefined) {
     setDuoplaneState(data);
   }, [data]);
 
-  const addShipment = (id: string, buyer: string, address: string) => {
+  const addShipment = (id: string, address: DuoplaneAddress, orderItems: OrderItems) => {
     const INITIALIZED_SHIPMENT = {
       id: Math.random() * 100000,
       weight: "",
-      qty: "",
     };
 
     const poOrderIDs = poOrders.map((poOrder) => poOrder.id);
@@ -33,9 +32,9 @@ export default function useDuoplane(data: DuoplaneState[] | undefined) {
     else {
       const newPO = {
         id,
-        buyer,
         address,
         shipments: [INITIALIZED_SHIPMENT],
+        orderItems: orderItems,
       };
 
       setPoOrders((prev) => [...prev, newPO]);

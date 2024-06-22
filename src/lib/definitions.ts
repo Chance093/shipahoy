@@ -152,18 +152,8 @@ export type FormattedAddress = {
 
 export type DuoplaneResponseData = {
   public_reference: string;
-  shipping_address: {
-    first_name: string;
-    last_name: string;
-    company_name: string;
-    address_1: string;
-    address_2: string | null;
-    city: string;
-    province: string;
-    province_iso: string;
-    post_code: string;
-    country: string;
-  };
+  shipping_address: DuoplaneAddress;
+  order_items: OrderItems;
 }[];
 
 export type Shipment = {
@@ -173,11 +163,28 @@ export type Shipment = {
 
 export type PO = {
   id: string;
-  buyer: string;
-  address: string;
+  address: DuoplaneAddress;
   shipments: Shipment[];
 };
 
 export type PoOrders = PO[];
 
 export type DuoplaneState = DuoplaneResponseData[number] & { active: boolean };
+
+export type OrderItems = {
+  id: string;
+  quantity: number;
+}[];
+
+export type DuoplaneAddress = {
+  first_name: string;
+  last_name: string;
+  company_name: string;
+  address_1: string;
+  address_2: string | null;
+  city: string;
+  province: string;
+  province_iso: string;
+  post_code: string;
+  country: string;
+};

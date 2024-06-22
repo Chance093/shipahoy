@@ -23,8 +23,14 @@ export default function ShipmentConfirmation({
         {poOrders.map((poOrder) => (
           <Fragment key={poOrder.id}>
             <p className="border-t border-gray-600/50 p-4 py-6">{poOrder.id}</p>
-            <p className="border-t border-gray-600/50 p-4 py-6">{poOrder.buyer}</p>
-            <p className="border-t border-gray-600/50 p-4 py-6">{poOrder.address}</p>
+            <p className="border-t border-gray-600/50 p-4 py-6">
+              {poOrder.address.first_name} {poOrder.address.last_name}
+            </p>
+            <p className="border-t border-gray-600/50 p-4 py-6">
+              {poOrder.address.address_1}
+              {poOrder.address.address_2 ? ", " + poOrder.address.address_2 : ""}, {poOrder.address.city}, {poOrder.address.province}{" "}
+              {poOrder.address.post_code}
+            </p>
             {poOrder.shipments.map((shipment) => {
               idx += 1;
               return (
@@ -32,7 +38,7 @@ export default function ShipmentConfirmation({
                   <div>
                     <ArrowUturnUpIcon className="w-6 rotate-90 pb-2 text-gray-600" />
                   </div>
-                  <p>
+                  <p className="italic">
                     {shipment.weight} lb shipment - ${labelPrices[idx]}
                   </p>
                 </div>

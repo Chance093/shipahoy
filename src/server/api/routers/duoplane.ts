@@ -17,7 +17,7 @@ export const duoplaneRouter = createTRPCRouter({
 
       // * If user doesn't have duoplane key, throw error
       if (keyPass === undefined) {
-        throw new Error("Missing Duoplane Key - This user does not have a key");
+        throw new DuoplaneAxiosRedirectError("Missing Duoplane Key - This user does not have a key");
       }
 
       // * Fetch duoplane data using duoplane key
