@@ -34,3 +34,24 @@ export class CostCalculationError extends Error {
     this.name = "CostCalculationError";
   }
 }
+
+export class WeShipError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "WeShipError";
+  }
+}
+
+export class LabelCreationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "LabelCreationError";
+  }
+}
+
+export class FormUIError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "FormUIError";
+  }
+}
