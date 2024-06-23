@@ -7,11 +7,28 @@ export default function ShipmentConfirmation({
   poOrders,
   labelPrices,
   setIsConfirmationDisplayed,
+  balance,
 }: {
   poOrders: PoOrders;
   labelPrices: string[];
   setIsConfirmationDisplayed: Dispatch<SetStateAction<boolean>>;
+  balance: number;
 }) {
+  const totalPrice = labelPrices.reduce((a, b) => Number(a) + Number(b), 0).toFixed(2);
+  const submitPoOrders = () => {
+    // Disable button if $0
+    // Throw error if balance isn't high enough
+    if (Number(totalPrice) > balance) throw new Error("Insufficient balance");
+    // Post to weship
+    // Post to db
+    // * Use create labels and store data functions in useCreateLabels() hook
+    // * Update error handling for functions
+    // * Create default from address
+    // Post to duoplane
+    // Update balance
+    // Redirect to home page
+  };
+
   let idx = -1;
   return (
     <>
@@ -55,9 +72,7 @@ export default function ShipmentConfirmation({
           <ArrowLeftIcon className="w-6" />
           Edit Orders
         </div>
-        <button className="w-52 cursor-pointer items-start rounded-md bg-purple p-4 text-center disabled:opacity-50">
-          Purchase ${labelPrices.reduce((a, b) => Number(a) + Number(b), 0).toFixed(2)}
-        </button>
+        <button className="w-52 cursor-pointer items-start rounded-md bg-purple p-4 text-center disabled:opacity-50">Purchase ${}</button>
       </section>
     </>
   );

@@ -11,7 +11,7 @@ import * as Sentry from "@sentry/nextjs";
 import { DuoplaneAxiosRedirectError } from "~/lib/customErrors";
 import { useOrganizationList } from "@clerk/nextjs";
 
-export default function DuoplaneTable({ pricing }: { pricing: Pricing }) {
+export default function DuoplaneTable({ pricing, balance }: { pricing: Pricing; balance: number }) {
   const { userMemberships, isLoaded: isOrgLoaded } = useOrganizationList({ userMemberships: true });
   const { data, isLoading, isError, error } = api.duoplane.getDuoplaneOrders.useQuery(undefined, { retry: 2 });
   const { duoplaneState, poOrders, addShipment, deleteShipment, showShipments, handleWeightChange } = useDuoplane(data);
@@ -94,7 +94,12 @@ export default function DuoplaneTable({ pricing }: { pricing: Pricing }) {
           decrementPage={decrementPage}
         />
       ) : (
-        <ShipmentConfirmation poOrders={poOrders} labelPrices={labelPrices} setIsConfirmationDisplayed={setIsConfirmationDisplayed} />
+        <ShipmentConfirmation
+          poOrders={poOrders}
+          labelPrices={labelPrices}
+          balance={balance}
+          setIsConfirmationDisplayed={setIsConfirmationDisplayed}
+        />
       )}
     </>
   );
