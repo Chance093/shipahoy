@@ -3,7 +3,7 @@ import axios from "axios";
 import { api } from "~/trpc/react";
 import { type FormData, type ResponseData, type Links, type Payload } from "../lib/definitions";
 import { env } from "~/env.mjs";
-import { WeShipError } from "~/lib/customErrors";
+import { LabelUploadError, OrderAndLabelCountError, WeShipError } from "~/lib/customErrors";
 
 export default function useCreateLabels() {
   const key = env.NEXT_PUBLIC_MOKA_KEY;
@@ -45,11 +45,22 @@ export default function useCreateLabels() {
     return { links, tracking };
   }
 
-  const createLabelGroup = api.label.createLabel.useMutation();
-  const setCounts = api.userData.updateOrderAndLabelCount.useMutation();
+  const createLabelGroup = api.label.createLabel.useMutation({
+    onError: (err) => {
+      if (err instanceof Error) {
+        throw new LabelUploadError(`Labels were created but never uploaded to our database: ${err.message}`);
+      }
+    },
+  });
+  const setCounts = api.userData.updateOrderAndLabelCount.useMutation({
+    onError: (err) => {
+      if (err instanceof Error) {
+        throw new OrderAndLabelCountError(`Database counts were not incremented properly: ${err.message}`);
+      }
+    },
+  });
 
   const storeData = (tracking: string[], links: Links, payload: FormData[], price: string[]) => {
-    if (!links || !tracking) return;
     createLabelGroup.mutate({ orders: payload, links: links, tracking: tracking, labelPrices: price });
     setCounts.mutate({ incrementOrderValue: 1, incrementLabelValue: payload.length });
   };

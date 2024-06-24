@@ -55,3 +55,31 @@ export class FormUIError extends Error {
     this.name = "FormUIError";
   }
 }
+
+export class BalanceUpdateError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "BalanceUpdateError";
+  }
+}
+
+export class DuoplaneCreateShipmentError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "DuoplaneCreateShipmentError";
+  }
+}
+
+export class LabelUploadError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "LabelUploadError";
+  }
+}
+
+export class OrderAndLabelCountError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "OrderAndLabelCountError";
+  }
+}

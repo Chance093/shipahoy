@@ -1,7 +1,11 @@
 "use client";
 import { ArrowLeftIcon, ArrowUturnUpIcon } from "@heroicons/react/24/solid";
+import { useRouter } from "next/navigation";
 import { Fragment, type Dispatch, type SetStateAction } from "react";
-import { type PoOrders } from "~/lib/definitions";
+import useCreateLabels from "~/hooks/useCreateLabels";
+import { BalanceUpdateError, DuoplaneCreateShipmentError } from "~/lib/customErrors";
+import { type DuoplanePayload, type FormData, type PoOrders } from "~/lib/definitions";
+import { api } from "~/trpc/react";
 
 export default function ShipmentConfirmation({
   poOrders,
@@ -15,18 +19,111 @@ export default function ShipmentConfirmation({
   balance: number;
 }) {
   const totalPrice = labelPrices.reduce((a, b) => Number(a) + Number(b), 0).toFixed(2);
-  const submitPoOrders = () => {
-    // Disable button if $0
-    // Throw error if balance isn't high enough
-    if (Number(totalPrice) > balance) throw new Error("Insufficient balance");
-    // Post to weship
-    // Post to db
-    // * Use create labels and store data functions in useCreateLabels() hook
-    // * Update error handling for functions
-    // * Create default from address
-    // Post to duoplane
-    // Update balance
-    // Redirect to home page
+  const { createLabels, storeData } = useCreateLabels();
+  const router = useRouter();
+
+  const getWeshipPayload = (payload: PoOrders) => {
+    const formData: FormData[] = [];
+    payload.forEach((pload) =>
+      pload.shipments.forEach((shipment) => {
+        const newShipment = {
+          FromCountry: "US",
+          FromName: "VWU Fulfillment",
+          FromCompany: "",
+          FromPhone: "1-800-500-8486",
+          FromStreet: "3395 S Jones Blvd",
+          FromStreet2: "PMB #180",
+          FromCity: "Las Vegas",
+          FromZip: "89146",
+          FromState: "NV",
+          ToCountry: pload.address.country,
+          ToName: pload.address.first_name + " " + pload.address.last_name,
+          ToCompany: pload.address.company_name ? pload.address.company_name : "",
+          ToPhone: pload.id,
+          ToStreet: pload.address.address_1,
+          ToStreet2: pload.address.address_2 ? pload.address.address_2 : "",
+          ToCity: pload.address.city,
+          ToZip: pload.address.post_code,
+          ToState: pload.address.province_iso,
+          Length: "1",
+          Height: "1",
+          Width: "1",
+          Weight: shipment.weight,
+        };
+        formData.push(newShipment);
+      }),
+    );
+
+    return formData;
+  };
+
+  const getDuoplanePayload = (poOrders: PoOrders, tracking: string[]) => {
+    const payloads: DuoplanePayload[] = [];
+    let trackingIdx = 0;
+    poOrders.forEach((order) => {
+      console.log(trackingIdx);
+      const payload: DuoplanePayload = {
+        shipper_name: "US Postal",
+        shipment_items_attributes: [],
+        shipment_tracking_attributes: [],
+      };
+      order.order_items.forEach((orderItem) => payload.shipment_items_attributes.push({ order_item_id: orderItem.id, quantity: orderItem.quantity }));
+      for (let i = trackingIdx; i < order.shipments.length + trackingIdx; i++) {
+        payload.shipment_tracking_attributes.push({ tracking: tracking[i]! });
+      }
+      trackingIdx += order.shipments.length;
+      payloads.push(payload);
+    });
+    return payloads;
+  };
+
+  const updateBalance = api.balance.update.useMutation({
+    onError: (err) => {
+      if (err instanceof Error) {
+        throw new BalanceUpdateError(`Couldn't Update Balance: ${err.message}`);
+      }
+    },
+  });
+
+  const updateDuoplane = api.duoplane.createShipment.useMutation({
+    onError: (err) => {
+      if (err instanceof Error) {
+        throw new DuoplaneCreateShipmentError(`Couldn't Create Duoplane Shipment: ${err.message}`);
+      }
+    },
+  });
+
+  const submitPoOrders = async () => {
+    try {
+      // * If label creation price is 0, throw error
+      if (Number(totalPrice) === 0) throw new Error("Please create a shipment");
+
+      // * If not enough balance, throw error
+      if (Number(totalPrice) > balance) throw new Error("Insufficient balance");
+
+      // * Create labels with weship
+      const weshipPayload = getWeshipPayload(poOrders);
+      const { tracking, links } = await createLabels(weshipPayload);
+
+      // * Store shipping labels in db
+      storeData(tracking, links, weshipPayload, labelPrices);
+
+      // * Upload tracking information to duoplane
+      const duoplanePayload = getDuoplanePayload(poOrders, tracking);
+      updateDuoplane.mutate(duoplanePayload);
+
+      // * Update balance in db
+      const newBalance = balance - Number(totalPrice);
+      updateBalance.mutate({ amount: newBalance.toString() });
+
+      // * Redirect to home page
+      router.push("/user/dashboard");
+      router.refresh();
+    } catch (err) {
+      if (err instanceof Error) {
+        // TODO: Handle errors
+      }
+    }
   };
 
   let idx = -1;
@@ -72,7 +169,13 @@ export default function ShipmentConfirmation({
           <ArrowLeftIcon className="w-6" />
           Edit Orders
         </div>
-        <button className="w-52 cursor-pointer items-start rounded-md bg-purple p-4 text-center disabled:opacity-50">Purchase ${}</button>
+        <button
+          className="w-52 cursor-pointer items-start rounded-md bg-purple p-4 text-center disabled:opacity-50"
+          disabled={Number(totalPrice) <= 0}
+          onClick={submitPoOrders}
+        >
+          Purchase ${totalPrice}
+        </button>
       </section>
     </>
   );

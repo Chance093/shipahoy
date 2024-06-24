@@ -48,7 +48,7 @@ export default function useDuoplane(
         id,
         address,
         shipments: [INITIALIZED_SHIPMENT],
-        orderItems: orderItems,
+        order_items: orderItems,
       };
 
       setPoOrders((prev) => [...prev, newPO]);

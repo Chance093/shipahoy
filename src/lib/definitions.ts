@@ -165,6 +165,7 @@ export type PO = {
   id: string;
   address: DuoplaneAddress;
   shipments: Shipment[];
+  order_items: OrderItems;
 };
 
 export type PoOrders = PO[];
@@ -194,4 +195,15 @@ export type DuoplaneResponseHeaders = {
   "duoplane-has-next-page": boolean;
   "duoplane-requests-left": string;
   "duoplane-retry-after-seconds": string;
+};
+
+export type DuoplanePayload = {
+  shipper_name: string;
+  shipment_items_attributes: {
+    order_item_id: string;
+    quantity: number;
+  }[];
+  shipment_tracking_attributes: {
+    tracking: string;
+  }[];
 };

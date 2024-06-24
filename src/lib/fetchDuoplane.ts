@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { DuoplaneAxiosClientError, DuoplaneAxiosRedirectError } from "./customErrors";
-import { type DuoplaneResponseHeaders, type DuoplaneResponseData } from "./definitions";
+import { type DuoplaneResponseHeaders, type DuoplaneResponseData, type DuoplanePayload } from "./definitions";
 
 export const fetchDuoplaneData = async ({ key, password }: { key: string; password: string }) => {
   try {
@@ -33,5 +33,23 @@ export const fetchDuoplaneData = async ({ key, password }: { key: string; passwo
       }
     }
     throw err;
+  }
+};
+
+export const updateDuoplane = async (payload: DuoplanePayload[], { key, password }: { key: string; password: string }) => {
+  try {
+    // TODO: Create post request for every payload
+    const encodedString = btoa(`${key}:${password}`);
+    await axios({
+      method: "post",
+      url: "https://app.duoplane.com/purchase_orders.json?search[fulfilled]=false",
+      headers: {
+        Authorization: "Basic " + encodedString,
+      },
+    });
+  } catch (err) {
+    if (err instanceof Error) {
+      // TODO: handle errors
+    }
   }
 };
