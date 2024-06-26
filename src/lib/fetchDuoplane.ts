@@ -1,5 +1,5 @@
-import axios, { AxiosError } from "axios";
-import { DuoplaneAxiosClientError, DuoplaneAxiosRedirectError } from "./customErrors";
+import axios, { AxiosError, type AxiosResponse } from "axios";
+import { DuoplaneAxiosClientError, DuoplaneAxiosRedirectError, DuoplaneCreateShipmentError } from "./customErrors";
 import { type DuoplaneResponseHeaders, type DuoplaneResponseData, type DuoplanePayload } from "./definitions";
 
 export const fetchDuoplaneData = async ({ key, password }: { key: string; password: string }) => {
@@ -36,20 +36,49 @@ export const fetchDuoplaneData = async ({ key, password }: { key: string; passwo
   }
 };
 
-export const updateDuoplane = async (payload: DuoplanePayload[], { key, password }: { key: string; password: string }) => {
-  try {
-    // TODO: Create post request for every payload
-    const encodedString = btoa(`${key}:${password}`);
-    await axios({
+type DuoplaneSettledPromise = {
+  status: "rejected" | "fulfilled";
+  reason: {
+    request: {
+      path: string;
+    };
+    response: {
+      statusText: string;
+    };
+  };
+}[];
+
+export const updateDuoplane = async (
+  { poIds, payloads }: { poIds: string[]; payloads: DuoplanePayload[] },
+  { key, password }: { key: string; password: string },
+) => {
+  // * Create base64 encoded string for auth header
+  const encodedString = btoa(`${key}:${password}`);
+
+  // * Set all axios post requests inside array to be used in promise
+  const axiosPosts: Promise<AxiosResponse>[] = [];
+  payloads.forEach((payload, idx) => {
+    const config = {
       method: "post",
-      url: "https://app.duoplane.com/purchase_orders.json?search[fulfilled]=false",
+      url: `https://app.duoplane.com/purchase_orders/${poIds[idx]}/shipments.json`,
       headers: {
-        Authorization: "Basic " + encodedString,
+        "Content-Type": "application/json",
+        // Authorization: "Basic " + encodedString,
       },
+      data: payload,
+    };
+    axiosPosts.push(axios(config));
+  });
+
+  // * Execute all axios post requests, then take all the failed responses and throw error to user
+  const results = (await Promise.allSettled(axiosPosts)) as DuoplaneSettledPromise;
+  const failedRequests = results
+    .filter((result) => result.status === "rejected")
+    .map((result) => {
+      return { poId: result.reason.request.path.split("/")[2], code: result.reason.response.statusText };
     });
-  } catch (err) {
-    if (err instanceof Error) {
-      // TODO: handle errors
-    }
+  if (failedRequests.length === results.length) throw new DuoplaneCreateShipmentError("Shipments were made but failed to upload to duoplane");
+  if (failedRequests.length !== 0) {
+    throw new DuoplaneCreateShipmentError(`These shipments were made but failed to upload to duoplane: ${JSON.stringify(failedRequests)}`);
   }
 };

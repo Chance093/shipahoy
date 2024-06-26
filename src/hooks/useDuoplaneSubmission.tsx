@@ -1,6 +1,6 @@
 "use client";
 import { type FormEvent, useState } from "react";
-import { CostCalculationError, DuoplaneError } from "~/lib/customErrors";
+import { CostCalculationError, FormUIError } from "~/lib/customErrors";
 import { type Pricing, type PoOrders } from "~/lib/definitions";
 
 export default function useDuoplaneSubmission(poOrders: PoOrders, pricing: Pricing) {
@@ -23,7 +23,7 @@ export default function useDuoplaneSubmission(poOrders: PoOrders, pricing: Prici
 
       setIsConfirmationDisplayed(true);
     } catch (err) {
-      if (err instanceof DuoplaneError) {
+      if (err instanceof FormUIError) {
         setErrorMessage(err.message);
       } else {
         throw err;
@@ -32,16 +32,16 @@ export default function useDuoplaneSubmission(poOrders: PoOrders, pricing: Prici
   };
 
   const validateShipments = (poOrders: PoOrders) => {
-    if (poOrders.length === 0) throw new DuoplaneError("Please add a shipment.");
+    if (poOrders.length === 0) throw new FormUIError("Please add a shipment.");
 
     poOrders.forEach((poOrder) => {
       poOrder.shipments.forEach((shipment) => {
-        if (shipment.weight === "") throw new DuoplaneError(`PO ${poOrder.id}: Empty weight fields must be filled out or deleted.`);
+        if (shipment.weight === "") throw new FormUIError(`PO ${poOrder.id}: Empty weight fields must be filled out or deleted.`);
         if (!Number.isInteger(Number(shipment.weight)) || Number.isNaN(Number(shipment.weight)))
-          throw new DuoplaneError(`PO ${poOrder.id}: All weight fields must be whole numbers`);
+          throw new FormUIError(`PO ${poOrder.id}: All weight fields must be whole numbers`);
 
         if (Number(shipment.weight) <= 0 || Number(shipment.weight) > 70)
-          throw new DuoplaneError(`PO ${poOrder.id}: All weight fields must be between 0 - 70 lbs.`);
+          throw new FormUIError(`PO ${poOrder.id}: All weight fields must be between 0 - 70 lbs.`);
       });
     });
   };

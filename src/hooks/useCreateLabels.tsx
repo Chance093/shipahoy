@@ -3,7 +3,7 @@ import axios from "axios";
 import { api } from "~/trpc/react";
 import { type FormData, type ResponseData, type Links, type Payload } from "../lib/definitions";
 import { env } from "~/env.mjs";
-import { LabelUploadError, OrderAndLabelCountError, WeShipError } from "~/lib/customErrors";
+import { LabelUploadError, OrderAndLabelCountError } from "~/lib/customErrors";
 
 export default function useCreateLabels() {
   const key = env.NEXT_PUBLIC_MOKA_KEY;
@@ -29,7 +29,6 @@ export default function useCreateLabels() {
 
     // * Grab all tracking numbers from weship
     const tracking = [];
-    if (orders.length === 0) throw new WeShipError("No orders found in response");
     for (const order of orders) {
       const trackingNumber = order.tracking;
       tracking.push(trackingNumber);

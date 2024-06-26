@@ -2,7 +2,7 @@ import { fetchDuoplaneData, updateDuoplane } from "~/lib/fetchDuoplane";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { type DuoplaneResponseHeaders, type DuoplaneState } from "~/lib/definitions";
 import { TRPCError } from "@trpc/server";
-import { DuoplaneAxiosClientError, DuoplaneAxiosRedirectError } from "~/lib/customErrors";
+import { DuoplaneAxiosClientError, DuoplaneAxiosRedirectError, DuoplaneCreateShipmentError } from "~/lib/customErrors";
 import { eq } from "drizzle-orm";
 import { duoplaneKey } from "~/server/db/schema";
 import { z } from "zod";
@@ -49,22 +49,25 @@ export const duoplaneRouter = createTRPCRouter({
 
   createShipment: protectedProcedure
     .input(
-      z.array(
-        z.object({
-          shipper_name: z.string(),
-          shipment_items_attributes: z.array(
-            z.object({
-              order_item_id: z.string(),
-              quantity: z.number(),
-            }),
-          ),
-          shipment_tracking_attributes: z.array(
-            z.object({
-              tracking: z.string(),
-            }),
-          ),
-        }),
-      ),
+      z.object({
+        poIds: z.array(z.string()),
+        payloads: z.array(
+          z.object({
+            shipper_name: z.string(),
+            shipment_items_attributes: z.array(
+              z.object({
+                order_item_id: z.number(),
+                quantity: z.number(),
+              }),
+            ),
+            shipment_tracking_attributes: z.array(
+              z.object({
+                tracking: z.string(),
+              }),
+            ),
+          }),
+        ),
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
@@ -79,11 +82,27 @@ export const duoplaneRouter = createTRPCRouter({
           throw new DuoplaneAxiosRedirectError("Missing Duoplane Key - This user does not have a key");
         }
 
+        // * Update duoplane with shipment tracking numbers
         await updateDuoplane(input, keyPass);
       } catch (err) {
-        if (err instanceof Error) {
-          // TODO: Handle errors
+        // * Create custom TRPC Error based on error type
+        if (err instanceof DuoplaneCreateShipmentError) {
+          throw new TRPCError({
+            message: err.message,
+            code: "NOT_IMPLEMENTED",
+          });
         }
+        if (err instanceof DuoplaneAxiosRedirectError) {
+          throw new TRPCError({
+            message: err.message,
+            code: "CONFLICT",
+          });
+        }
+        if (err instanceof Error)
+          throw new TRPCError({
+            message: err.message,
+            code: "INTERNAL_SERVER_ERROR",
+          });
       }
     }),
 });

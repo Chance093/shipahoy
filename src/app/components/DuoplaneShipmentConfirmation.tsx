@@ -3,7 +3,7 @@ import { ArrowLeftIcon, ArrowUturnUpIcon } from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
 import { Fragment, type Dispatch, type SetStateAction } from "react";
 import useCreateLabels from "~/hooks/useCreateLabels";
-import { BalanceUpdateError, DuoplaneCreateShipmentError } from "~/lib/customErrors";
+import { BalanceUpdateError, FormUIError } from "~/lib/customErrors";
 import { type DuoplanePayload, type FormData, type PoOrders } from "~/lib/definitions";
 import { api } from "~/trpc/react";
 
@@ -59,22 +59,25 @@ export default function ShipmentConfirmation({
 
   const getDuoplanePayload = (poOrders: PoOrders, tracking: string[]) => {
     const payloads: DuoplanePayload[] = [];
+    const poIds: string[] = [];
     let trackingIdx = 0;
     poOrders.forEach((order) => {
-      console.log(trackingIdx);
+      poIds.push(order.id);
       const payload: DuoplanePayload = {
         shipper_name: "US Postal",
         shipment_items_attributes: [],
         shipment_tracking_attributes: [],
       };
-      order.order_items.forEach((orderItem) => payload.shipment_items_attributes.push({ order_item_id: orderItem.id, quantity: orderItem.quantity }));
+      order.order_items.forEach((orderItem) =>
+        payload.shipment_items_attributes.push({ order_item_id: Number(orderItem.id), quantity: orderItem.quantity }),
+      );
       for (let i = trackingIdx; i < order.shipments.length + trackingIdx; i++) {
         payload.shipment_tracking_attributes.push({ tracking: tracking[i]! });
       }
       trackingIdx += order.shipments.length;
       payloads.push(payload);
     });
-    return payloads;
+    return { poIds, payloads };
   };
 
   const updateBalance = api.balance.update.useMutation({
@@ -86,20 +89,18 @@ export default function ShipmentConfirmation({
   });
 
   const updateDuoplane = api.duoplane.createShipment.useMutation({
-    onError: (err) => {
-      if (err instanceof Error) {
-        throw new DuoplaneCreateShipmentError(`Couldn't Create Duoplane Shipment: ${err.message}`);
-      }
+    onError: () => {
+      // TODO: error handling
     },
   });
 
   const submitPoOrders = async () => {
     try {
       // * If label creation price is 0, throw error
-      if (Number(totalPrice) === 0) throw new Error("Please create a shipment");
+      if (Number(totalPrice) === 0) throw new FormUIError("Please create a shipment");
 
       // * If not enough balance, throw error
-      if (Number(totalPrice) > balance) throw new Error("Insufficient balance");
+      if (Number(totalPrice) > balance) throw new FormUIError("Insufficient balance");
 
       // * Create labels with weship
       const weshipPayload = getWeshipPayload(poOrders);
@@ -120,9 +121,7 @@ export default function ShipmentConfirmation({
       router.push("/user/dashboard");
       router.refresh();
     } catch (err) {
-      if (err instanceof Error) {
-        // TODO: Handle errors
-      }
+      throw err;
     }
   };
 

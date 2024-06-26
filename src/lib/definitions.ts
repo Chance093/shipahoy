@@ -200,7 +200,7 @@ export type DuoplaneResponseHeaders = {
 export type DuoplanePayload = {
   shipper_name: string;
   shipment_items_attributes: {
-    order_item_id: string;
+    order_item_id: number;
     quantity: number;
   }[];
   shipment_tracking_attributes: {

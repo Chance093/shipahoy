@@ -1,5 +1,7 @@
 import { AxiosError } from "axios";
 
+// * Error used for bad request with Smarty Parsing API
+// TODO: Use this error properly. Replace all instances with FormUIError
 export class AddressParsingError extends Error {
   constructor(message: string) {
     super(message);
@@ -7,13 +9,7 @@ export class AddressParsingError extends Error {
   }
 }
 
-export class DuoplaneError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "DuoplaneError";
-  }
-}
-
+// * Error used when I want duoplane error to be displayed on duoplane table
 export class DuoplaneAxiosClientError extends AxiosError {
   constructor(message: string) {
     super(message);
@@ -21,6 +17,7 @@ export class DuoplaneAxiosClientError extends AxiosError {
   }
 }
 
+// * Error used when I want duoplane error to be displayed on error.tsx page
 export class DuoplaneAxiosRedirectError extends AxiosError {
   constructor(message: string) {
     super(message);
@@ -28,6 +25,7 @@ export class DuoplaneAxiosRedirectError extends AxiosError {
   }
 }
 
+// * Error used when something goes wrong in cost calculation function
 export class CostCalculationError extends Error {
   constructor(message: string) {
     super(message);
@@ -35,13 +33,7 @@ export class CostCalculationError extends Error {
   }
 }
 
-export class WeShipError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "WeShipError";
-  }
-}
-
+// * Error used when labels were created in weship but failed to store in db
 export class LabelCreationError extends Error {
   constructor(message: string) {
     super(message);
@@ -49,6 +41,7 @@ export class LabelCreationError extends Error {
   }
 }
 
+// * Error used when an error needs to be rendered on form
 export class FormUIError extends Error {
   constructor(message: string) {
     super(message);
@@ -56,6 +49,7 @@ export class FormUIError extends Error {
   }
 }
 
+// * Error for Balance Update TRPC Procedure
 export class BalanceUpdateError extends Error {
   constructor(message: string) {
     super(message);
@@ -63,6 +57,7 @@ export class BalanceUpdateError extends Error {
   }
 }
 
+// * Error for creating a shipment through duoplane api
 export class DuoplaneCreateShipmentError extends Error {
   constructor(message: string) {
     super(message);
@@ -70,6 +65,7 @@ export class DuoplaneCreateShipmentError extends Error {
   }
 }
 
+// * Error for Label Upload TRPC Procedure
 export class LabelUploadError extends Error {
   constructor(message: string) {
     super(message);
@@ -77,6 +73,7 @@ export class LabelUploadError extends Error {
   }
 }
 
+// * Error for Order and Label Count TRPC procedure
 export class OrderAndLabelCountError extends Error {
   constructor(message: string) {
     super(message);
