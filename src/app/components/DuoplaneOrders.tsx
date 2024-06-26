@@ -50,8 +50,8 @@ export default function DuoplaneOrders({
           />
         ))}
       </form>
-      <div className="ml-4 text-red-400">{errorMessage}</div>
-      <section className="mt-auto flex justify-between">
+      <div className="ml-4 mt-auto text-red-400">{errorMessage}</div>
+      <section className="flex justify-between">
         <Pagination page={page} totalPages={totalPages} incrementPage={incrementPage} decrementPage={decrementPage} />
         <input
           type="submit"

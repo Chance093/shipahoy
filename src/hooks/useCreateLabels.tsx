@@ -59,9 +59,9 @@ export default function useCreateLabels() {
     },
   });
 
-  const storeData = (tracking: string[], links: Links, payload: FormData[], price: string[]) => {
-    createLabelGroup.mutate({ orders: payload, links: links, tracking: tracking, labelPrices: price });
-    setCounts.mutate({ incrementOrderValue: 1, incrementLabelValue: payload.length });
+  const storeData = async (tracking: string[], links: Links, payload: FormData[], price: string[]) => {
+    await createLabelGroup.mutateAsync({ orders: payload, links: links, tracking: tracking, labelPrices: price });
+    await setCounts.mutateAsync({ incrementOrderValue: 1, incrementLabelValue: payload.length });
   };
 
   return { createLabels, storeData };

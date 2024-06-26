@@ -77,7 +77,11 @@ export const updateDuoplane = async (
     .map((result) => {
       return { poId: result.reason.request.path.split("/")[2], code: result.reason.response.statusText };
     });
+
+  // * If every request fails, throw this error
   if (failedRequests.length === results.length) throw new DuoplaneCreateShipmentError("Shipments were made but failed to upload to duoplane");
+
+  // * If only some requests fail, throw this error
   if (failedRequests.length !== 0) {
     throw new DuoplaneCreateShipmentError(`These shipments were made but failed to upload to duoplane: ${JSON.stringify(failedRequests)}`);
   }

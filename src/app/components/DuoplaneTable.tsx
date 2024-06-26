@@ -15,7 +15,10 @@ export default function DuoplaneTable({ pricing, balance }: { pricing: Pricing; 
   const { userMemberships, isLoaded: isOrgLoaded } = useOrganizationList({ userMemberships: true });
   const { data, isLoading, isError, error } = api.duoplane.getDuoplaneOrders.useQuery(undefined, { retry: 2 });
   const { duoplaneState, poOrders, addShipment, deleteShipment, showShipments, handleWeightChange } = useDuoplane(data);
-  const { labelPrices, errorMessage, isConfirmationDisplayed, setIsConfirmationDisplayed, submitDuoplane } = useDuoplaneSubmission(poOrders, pricing);
+  const { labelPrices, errorMessage, setErrorMessage, isConfirmationDisplayed, setIsConfirmationDisplayed, submitDuoplane } = useDuoplaneSubmission(
+    poOrders,
+    pricing,
+  );
   const duoplaneTotalCount = data?.headers["duoplane-total-count"] ? Number(data.headers["duoplane-total-count"]) : 1;
   const { page, totalPages, incrementPage, decrementPage } = usePagination(duoplaneTotalCount, 20);
 
@@ -99,6 +102,8 @@ export default function DuoplaneTable({ pricing, balance }: { pricing: Pricing; 
           labelPrices={labelPrices}
           balance={balance}
           setIsConfirmationDisplayed={setIsConfirmationDisplayed}
+          errorMessage={errorMessage}
+          setErrorMessage={setErrorMessage}
         />
       )}
     </>

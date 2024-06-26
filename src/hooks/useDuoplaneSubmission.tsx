@@ -80,5 +80,5 @@ export default function useDuoplaneSubmission(poOrders: PoOrders, pricing: Prici
 
     return prices;
   };
-  return { labelPrices, errorMessage, isConfirmationDisplayed, setIsConfirmationDisplayed, submitDuoplane };
+  return { labelPrices, errorMessage, setErrorMessage, isConfirmationDisplayed, setIsConfirmationDisplayed, submitDuoplane };
 }
