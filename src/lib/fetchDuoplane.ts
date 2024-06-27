@@ -63,7 +63,7 @@ export const updateDuoplane = async (
       url: `https://app.duoplane.com/purchase_orders/${poIds[idx]}/shipments.json`,
       headers: {
         "Content-Type": "application/json",
-        // Authorization: "Basic " + encodedString,
+        Authorization: "Basic " + encodedString,
       },
       data: payload,
     };

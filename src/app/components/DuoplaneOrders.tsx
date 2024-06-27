@@ -30,6 +30,8 @@ export default function DuoplaneOrders({
   incrementPage: () => void;
   decrementPage: () => void;
 }) {
+  const startingOrder = page * 20 - 19;
+  const endingOrder = page * 20;
   return (
     <>
       <h2 className="p-2 text-2xl">Duoplane Orders</h2>
@@ -38,17 +40,21 @@ export default function DuoplaneOrders({
         <h3 className="col-start-2 p-4 pb-6 font-normal">PO ID</h3>
         <h3 className="col-start-3 p-4 pb-6 font-normal">Buyer</h3>
         <h3 className="col-start-4 p-4 pb-6 font-normal">Address</h3>
-        {duoplaneState.map((po) => (
-          <PO
-            key={po.public_reference}
-            po={po}
-            poOrders={poOrders}
-            handleWeightChange={handleWeightChange}
-            showShipments={showShipments}
-            deleteShipment={deleteShipment}
-            addShipment={addShipment}
-          />
-        ))}
+        {duoplaneState.map((po, idx) => {
+          if (idx + 1 >= startingOrder && idx + 1 <= endingOrder) {
+            return (
+              <PO
+                key={po.public_reference}
+                po={po}
+                poOrders={poOrders}
+                handleWeightChange={handleWeightChange}
+                showShipments={showShipments}
+                deleteShipment={deleteShipment}
+                addShipment={addShipment}
+              />
+            );
+          }
+        })}
       </form>
       <div className="ml-4 mt-auto text-red-400">{errorMessage}</div>
       <section className="flex justify-between">
