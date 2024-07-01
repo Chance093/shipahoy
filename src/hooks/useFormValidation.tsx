@@ -117,7 +117,7 @@ export default function useFormValidation() {
       const newBalance = parseFloat(balance.amount) - parseFloat(price);
 
       // * Update db with shipping labels and new balance
-      storeData(tracking, links, [formData], [price]);
+      await storeData(tracking, links, [formData], [price]);
       updateBalance.mutate({ amount: newBalance.toString() });
 
       // * Reset states and redirect to home page

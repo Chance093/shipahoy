@@ -277,7 +277,7 @@ export default function useHandleCSV() {
       const newBalance = parseFloat(balance.amount) - parseFloat(totalPrice);
 
       // * Update db with shipping labels and new balance
-      storeData(tracking, links, payload, labelPrices);
+      await storeData(tracking, links, payload, labelPrices);
       updateBalance.mutate({ amount: newBalance.toString() });
 
       // * Reset state
