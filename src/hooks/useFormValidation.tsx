@@ -5,6 +5,8 @@ import { api } from "~/trpc/react";
 import useCreateLabels from "~/hooks/useCreateLabels";
 import { useRouter } from "next/navigation";
 import { initialState } from "~/lib/lists";
+import { FormUIError, LabelCreationError } from "~/lib/customErrors";
+import { AxiosError } from "axios";
 
 export default function useFormValidation() {
   const router = useRouter();
@@ -90,31 +92,47 @@ export default function useFormValidation() {
   const { data: balance, isError: isBalanceError, error: balanceError } = api.balance.getAmount.useQuery();
 
   const onFormSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!balance?.amount) return;
-    if (parseFloat(price) === 0) return;
-    if (formData.FromStreet === formData.ToStreet) {
-      setErrorMessage("Sender Address cannot be the same as Recipient Address.");
-      return;
+    try {
+      e.preventDefault();
+      setErrorMessage("");
+
+      // * If no balance found, end execution
+      if (!balance?.amount) return;
+
+      // * If label creation price is 0, throw error
+      if (parseFloat(price) === 0) throw new FormUIError("Price must be greater than 0 to create a shipment");
+
+      // * If from and to address match, throw error
+      if (formData.FromStreet === formData.ToStreet) {
+        throw new FormUIError("Sender Address cannot be the same as Recipient Address.");
+      }
+
+      // * If not enough balance, throw error
+      if (parseFloat(balance.amount) < parseFloat(price)) {
+        throw new FormUIError("Insufficient funds. Please add more to your balance.");
+      }
+
+      // * Create labels with weship
+      const { tracking, links } = await createLabels([formData]);
+      const newBalance = parseFloat(balance.amount) - parseFloat(price);
+
+      // * Update db with shipping labels and new balance
+      await storeData(tracking, links, [formData], [price]);
+      updateBalance.mutate({ amount: newBalance.toString() });
+
+      // * Reset states and redirect to home page
+      setPrice("0.00");
+      setFormData(initialState);
+      router.push("/user/dashboard");
+      router.refresh();
+    } catch (err) {
+      if (err instanceof FormUIError) {
+        setErrorMessage(err.message);
+      } else if (err instanceof AxiosError) {
+        throw err;
+      }
+      throw new LabelCreationError("Labels have been created but were not successfully stored. Contact us to retrieve them.");
     }
-    if (parseFloat(balance.amount) < parseFloat(price)) {
-      setErrorMessage("Insufficient funds. Please add more to your balance.");
-      return;
-    }
-    const apiResponse = await createLabels([formData]);
-    if (apiResponse instanceof Error) {
-      setErrorMessage(`${JSON.stringify(apiResponse)}`);
-      return;
-    }
-    const { tracking, links } = apiResponse;
-    storeData(tracking, links, [formData], [price]);
-    setPrice("0.00");
-    setFormData(initialState);
-    const newBalance = parseFloat(balance.amount) - parseFloat(price);
-    updateBalance.mutate({ amount: newBalance.toString() });
-    setErrorMessage("");
-    router.push("/user/dashboard");
-    router.refresh();
   };
 
   return {

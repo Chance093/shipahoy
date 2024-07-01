@@ -3,20 +3,17 @@
 import { FaceFrownIcon } from "@heroicons/react/24/solid";
 import { useEffect } from "react";
 import * as Sentry from "@sentry/nextjs";
-import { LabelCreationError } from "~/lib/customErrors";
-import { AxiosError } from "axios";
+import { DuoplaneAxiosRedirectError } from "~/lib/customErrors";
 
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
+    // Log the error to an error reporting service
     Sentry.captureException(error);
     console.error(error);
   }, [error]);
 
   const displayedError = () => {
-    if (error instanceof AxiosError) {
-      return <p className="pb-4 text-xl text-red-400">The server for our service provider is down!</p>;
-    }
-    if (error instanceof LabelCreationError) {
+    if (error instanceof DuoplaneAxiosRedirectError) {
       return <p className="pb-4 text-xl text-red-400">{error.message}</p>;
     }
   };

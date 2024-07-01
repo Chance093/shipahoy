@@ -6,12 +6,16 @@ import handleValidation from "~/lib/handleValidation";
 import { useRouter } from "next/navigation";
 import { type FormData } from "~/lib/definitions";
 import { initialState } from "~/lib/lists";
+import { calculateCost } from "~/lib/calculateCost";
+import { AxiosError } from "axios";
+import { LabelCreationError } from "~/lib/customErrors";
 
 export default function useHandleCSV() {
   const [fileName, setFileName] = useState("Choose a CSV");
   const [payload, setPayload] = useState<FormData[]>([]);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [renderableErrorFlags, setRenderableErrorFlags] = useState<string[]>([]);
+  const [labelPrices, setLabelPrices] = useState<string[]>([]);
   const [totalPrice, setTotalPrice] = useState("0.00");
   const checkpoints: string[] = [];
   const { createLabels, storeData } = useCreateLabels();
@@ -148,6 +152,7 @@ export default function useHandleCSV() {
     return payload;
   }
 
+  // ! This isn't being used anymore
   // TODO: Refactor to implement with other weight checking function
   // TODO: Write test case for this
   function calculateTotalPrice(data: string[]) {
@@ -236,38 +241,69 @@ export default function useHandleCSV() {
       const payloadSize: number = getPayloadSize(transformedCsvContents);
       const payload = createPayload(transformedCsvContents, payloadSize);
       const weights = payload.map((order) => order.Weight ?? "0");
-      const price = calculateTotalPrice(weights);
+      if (userPricing === undefined) return;
+      const prices = calculateCost(weights, userPricing);
+      const totalPrice = prices.reduce((a, b) => Number(a) + Number(b), 0).toFixed(2);
       setPayload(payload);
-      setTotalPrice(price);
+      setLabelPrices(prices);
+      setTotalPrice(totalPrice);
 
       // console.log(checkpoints.join("\n\n")); //* uncomment when debugging
-      console.log(payload); //* uncomment when debugging
+      // console.log(payload); //* uncomment when debugging
     };
   }
 
   async function submitOrder(e: FormEvent) {
-    e.preventDefault();
-    if (!balance?.amount) return;
-    if (parseFloat(totalPrice) === 0) return;
-    if (parseFloat(balance.amount) < parseFloat(totalPrice)) {
-      setRenderableErrorFlags((prev) => [...prev, "Insufficient funds. Please add more to your balance."]);
-      return;
+    try {
+      e.preventDefault();
+
+      // * If no balance found, end execution
+      if (!balance?.amount) return;
+
+      // * If total price is 0, throw error
+      if (parseFloat(totalPrice) === 0) {
+        setRenderableErrorFlags((prev) => [...prev, "Price must be greater than 0 to create a shipment"]);
+        return;
+      }
+
+      // * If not enough balance, set Error flags
+      if (parseFloat(balance.amount) < parseFloat(totalPrice)) {
+        setRenderableErrorFlags((prev) => [...prev, "Insufficient funds. Please add more to your balance."]);
+        return;
+      }
+
+      // * Create labels with weship
+      const { tracking, links } = await createLabels(payload);
+      const newBalance = parseFloat(balance.amount) - parseFloat(totalPrice);
+
+      // * Update db with shipping labels and new balance
+      await storeData(tracking, links, payload, labelPrices);
+      updateBalance.mutate({ amount: newBalance.toString() });
+
+      // * Reset state
+      setTotalPrice("0.00");
+      setPayload([]);
+      setRenderableErrorFlags([]);
+      router.push("/user/dashboard");
+      router.refresh();
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        throw err;
+      }
+      throw new LabelCreationError("Labels have been created but were not successfully stored. Contact us to retrieve them.");
     }
-    const apiResponse = await createLabels(payload);
-    if (apiResponse instanceof Error) {
-      setRenderableErrorFlags((prev) => [...prev, `${JSON.stringify(apiResponse)}`]);
-      return;
-    }
-    const { tracking, links, labelPrices } = apiResponse;
-    storeData(tracking, links, payload, labelPrices);
-    setTotalPrice("0.00");
-    setPayload([]);
-    const newBalance = parseFloat(balance.amount) - parseFloat(totalPrice);
-    updateBalance.mutate({ amount: newBalance.toString() });
-    setRenderableErrorFlags([]);
-    router.push("/user/dashboard");
-    router.refresh();
   }
 
-  return { submitOrder, fileName, csvHandlingHelper, totalPrice, showErrorModal, renderableErrorFlags, isBalanceError, isUserPricingError, balanceError, userPricingError };
+  return {
+    submitOrder,
+    fileName,
+    csvHandlingHelper,
+    totalPrice,
+    showErrorModal,
+    renderableErrorFlags,
+    isBalanceError,
+    isUserPricingError,
+    balanceError,
+    userPricingError,
+  };
 }
