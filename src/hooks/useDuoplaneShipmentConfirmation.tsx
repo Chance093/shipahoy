@@ -58,28 +58,30 @@ export default function useDuoplaneShipmentConfirmation(
   // * Transform payload into duoplane acceptable payload
   const getDuoplanePayload = (poOrders: PoOrders, tracking: string[]) => {
     const payloads: DuoplanePayload[] = [];
-    const poIds: string[] = [];
+    const poIds: number[] = [];
     let trackingIdx = 0;
 
     // * For each po order, create payloads and push to payloads array
     poOrders.forEach((order) => {
-      poIds.push(order.id);
+      poIds.push(order.duoplaneId);
 
       // * Initialize payload
       const payload: DuoplanePayload = {
-        shipper_name: "US Postal",
-        shipment_items_attributes: [],
-        shipment_tracking_attributes: [],
+        shipment: {
+          shipper_name: "US Postal",
+          shipment_items_attributes: [],
+          shipment_trackings_attributes: [],
+        },
       };
 
       // * For each order item, push the id and quantity of the order item to payload
       order.order_items.forEach((orderItem) =>
-        payload.shipment_items_attributes.push({ order_item_id: Number(orderItem.id), quantity: orderItem.quantity }),
+        payload.shipment.shipment_items_attributes.push({ order_item_id: Number(orderItem.id), quantity: orderItem.quantity }),
       );
 
       // * For each tracking number associated with po, push the tracking numbers into payload
       for (let i = trackingIdx; i < order.shipments.length + trackingIdx; i++) {
-        payload.shipment_tracking_attributes.push({ tracking: tracking[i]! });
+        payload.shipment.shipment_trackings_attributes.push({ tracking: tracking[i]! });
       }
 
       trackingIdx += order.shipments.length;

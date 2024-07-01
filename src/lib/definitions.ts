@@ -151,6 +151,7 @@ export type FormattedAddress = {
 };
 
 export type DuoplaneResponseData = {
+  id: number;
   public_reference: string;
   shipping_address: DuoplaneAddress;
   order_items: OrderItems;
@@ -162,6 +163,7 @@ export type Shipment = {
 };
 
 export type PO = {
+  duoplaneId: number;
   id: string;
   address: DuoplaneAddress;
   shipments: Shipment[];
@@ -198,12 +200,14 @@ export type DuoplaneResponseHeaders = {
 };
 
 export type DuoplanePayload = {
-  shipper_name: string;
-  shipment_items_attributes: {
-    order_item_id: number;
-    quantity: number;
-  }[];
-  shipment_tracking_attributes: {
-    tracking: string;
-  }[];
+  shipment: {
+    shipper_name: string;
+    shipment_items_attributes: {
+      order_item_id: number;
+      quantity: number;
+    }[];
+    shipment_trackings_attributes: {
+      tracking: string;
+    }[];
+  };
 };

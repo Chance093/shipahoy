@@ -24,7 +24,7 @@ export default function useDuoplane(
     setDuoplaneState(data?.data);
   }, [data]);
 
-  const addShipment = (id: string, address: DuoplaneAddress, orderItems: OrderItems) => {
+  const addShipment = (duoplaneId: number, id: string, address: DuoplaneAddress, orderItems: OrderItems) => {
     const INITIALIZED_SHIPMENT = {
       id: Math.random() * 100000,
       weight: "",
@@ -45,6 +45,7 @@ export default function useDuoplane(
     // * If PO order hasn't been made, initialize PO order with new shipment
     else {
       const newPO = {
+        duoplaneId,
         id,
         address,
         shipments: [INITIALIZED_SHIPMENT],

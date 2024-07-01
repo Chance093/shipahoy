@@ -49,7 +49,7 @@ type DuoplaneSettledPromise = {
 }[];
 
 export const updateDuoplane = async (
-  { poIds, payloads }: { poIds: string[]; payloads: DuoplanePayload[] },
+  { poIds, payloads }: { poIds: number[]; payloads: DuoplanePayload[] },
   { key, password }: { key: string; password: string },
 ) => {
   // * Create base64 encoded string for auth header
@@ -77,6 +77,9 @@ export const updateDuoplane = async (
     .map((result) => {
       return { poId: result.reason.request.path.split("/")[2], code: result.reason.response.statusText };
     });
+
+  console.log(failedRequests);
+  console.log(results[0]);
 
   // * If every request fails, throw this error
   if (failedRequests.length === results.length) throw new DuoplaneCreateShipmentError("Shipments were made but failed to upload to duoplane");

@@ -50,21 +50,23 @@ export const duoplaneRouter = createTRPCRouter({
   createShipment: protectedProcedure
     .input(
       z.object({
-        poIds: z.array(z.string()),
+        poIds: z.array(z.number()),
         payloads: z.array(
           z.object({
-            shipper_name: z.string(),
-            shipment_items_attributes: z.array(
-              z.object({
-                order_item_id: z.number(),
-                quantity: z.number(),
-              }),
-            ),
-            shipment_tracking_attributes: z.array(
-              z.object({
-                tracking: z.string(),
-              }),
-            ),
+            shipment: z.object({
+              shipper_name: z.string(),
+              shipment_items_attributes: z.array(
+                z.object({
+                  order_item_id: z.number(),
+                  quantity: z.number(),
+                }),
+              ),
+              shipment_trackings_attributes: z.array(
+                z.object({
+                  tracking: z.string(),
+                }),
+              ),
+            }),
           }),
         ),
       }),

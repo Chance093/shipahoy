@@ -21,7 +21,7 @@ export default function DuoplaneOrders({
   poOrders: PoOrders;
   handleWeightChange: (field: Partial<Shipment>, poOrderId: string, shipmentId: number) => void;
   showShipments: (id: string) => void;
-  addShipment: (id: string, address: DuoplaneAddress, orderItems: OrderItems) => void;
+  addShipment: (duoplaneId: number, id: string, address: DuoplaneAddress, orderItems: OrderItems) => void;
   deleteShipment: (poOrderId: string, shipmentId: number) => void;
   submitDuoplane: (e: FormEvent<Element>) => void;
   errorMessage: string;
@@ -83,7 +83,7 @@ function PO({
   handleWeightChange: (field: Partial<Shipment>, poOrderId: string, shipmentId: number) => void;
   showShipments: (id: string) => void;
   deleteShipment: (poOrderId: string, shipmentId: number) => void;
-  addShipment: (id: string, address: DuoplaneAddress, orderItems: OrderItems) => void;
+  addShipment: (duoplaneId: number, id: string, address: DuoplaneAddress, orderItems: OrderItems) => void;
 }) {
   return (
     <>
@@ -112,7 +112,7 @@ function PO({
           })}
           <button
             className="col-span-4 mb-6 ml-20 w-40 cursor-pointer rounded-md bg-[#b4a3d8] p-1 text-black"
-            onClick={() => addShipment(po.public_reference, po.shipping_address, po.order_items)}
+            onClick={() => addShipment(po.id, po.public_reference, po.shipping_address, po.order_items)}
             type="button"
           >
             Add Shipment
