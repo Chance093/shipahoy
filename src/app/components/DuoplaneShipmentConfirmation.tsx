@@ -19,7 +19,12 @@ export default function ShipmentConfirmation({
   errorMessage: string;
   setErrorMessage: Dispatch<SetStateAction<string>>;
 }) {
-  const { duoplaneError, totalPrice, submitPoOrders } = useDuoplaneShipmentConfirmation(poOrders, setErrorMessage, balance, labelPrices);
+  const { duoplaneError, totalPrice, submitPoOrders, isButtonLoading } = useDuoplaneShipmentConfirmation(
+    poOrders,
+    setErrorMessage,
+    balance,
+    labelPrices,
+  );
 
   if (duoplaneError) {
     throw duoplaneError;
@@ -74,9 +79,19 @@ export default function ShipmentConfirmation({
         </div>
         <button
           className="w-52 cursor-pointer items-start rounded-md bg-purple p-4 text-center disabled:cursor-default disabled:opacity-50"
-          disabled={Number(totalPrice) <= 0 || Number(totalPrice) > balance}
+          disabled={Number(totalPrice) <= 0 || Number(totalPrice) > balance || isButtonLoading}
           onClick={submitPoOrders}
         >
+          {isButtonLoading ? (
+            <div className="lds-ring-button">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          ) : (
+            `Purchase $${totalPrice}`
+          )}
           Purchase ${totalPrice}
         </button>
       </section>

@@ -18,6 +18,7 @@ export default function useDuoplaneShipmentConfirmation(
   const router = useRouter();
   const totalPrice = labelPrices.reduce((a, b) => Number(a) + Number(b), 0).toFixed(2);
   const [duoplaneError, setDuoplaneError] = useState<Error | null>();
+  const [isButtonLoading, setIsButtonLoading] = useState(true);
 
   // * Transform payload into weship acceptable payload
   const getWeshipPayload = (payload: PoOrders) => {
@@ -107,6 +108,9 @@ export default function useDuoplaneShipmentConfirmation(
       setErrorMessage("");
       setDuoplaneError(null);
 
+      // * Start loading state
+      setIsButtonLoading(true);
+
       // * If label creation price is 0, throw error
       if (Number(totalPrice) === 0) throw new FormUIError("Please create a shipment");
 
@@ -128,10 +132,14 @@ export default function useDuoplaneShipmentConfirmation(
       const newBalance = balance - Number(totalPrice);
       await updateBalance.mutateAsync({ amount: newBalance.toString() });
 
+      // * End loading state
+      setIsButtonLoading(false);
+
       // * Redirect to home page
       router.push("/user/dashboard");
       router.refresh();
     } catch (err) {
+      setIsButtonLoading(false);
       // * If error is FormUIError, display error on duoplane page
       if (err instanceof FormUIError) {
         setErrorMessage(err.message);
@@ -162,5 +170,5 @@ export default function useDuoplaneShipmentConfirmation(
     }
   };
 
-  return { duoplaneError, totalPrice, submitPoOrders };
+  return { duoplaneError, totalPrice, submitPoOrders, isButtonLoading };
 }
