@@ -149,3 +149,65 @@ export type FormattedAddress = {
   city: string;
   state: string;
 };
+
+export type DuoplaneResponseData = {
+  id: number;
+  public_reference: string;
+  shipping_address: DuoplaneAddress;
+  order_items: OrderItems;
+}[];
+
+export type Shipment = {
+  id: number;
+  weight: string;
+};
+
+export type PO = {
+  duoplaneId: number;
+  id: string;
+  address: DuoplaneAddress;
+  shipments: Shipment[];
+  order_items: OrderItems;
+};
+
+export type PoOrders = PO[];
+
+export type DuoplaneState = DuoplaneResponseData[number] & { active: boolean };
+
+export type OrderItems = {
+  id: string;
+  quantity: number;
+}[];
+
+export type DuoplaneAddress = {
+  first_name: string;
+  last_name: string;
+  company_name: string;
+  address_1: string;
+  address_2: string | null;
+  city: string;
+  province: string;
+  province_iso: string;
+  post_code: string;
+  country: string;
+};
+
+export type DuoplaneResponseHeaders = {
+  "duoplane-total-count": string;
+  "duoplane-has-next-page": boolean;
+  "duoplane-requests-left": string;
+  "duoplane-retry-after-seconds": string;
+};
+
+export type DuoplanePayload = {
+  shipment: {
+    shipper_name: string;
+    shipment_items_attributes: {
+      order_item_id: number;
+      quantity: number;
+    }[];
+    shipment_trackings_attributes: {
+      tracking: string;
+    }[];
+  };
+};

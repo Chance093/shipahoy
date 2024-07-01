@@ -27,7 +27,7 @@
     "@trpc/next": "^10.40.0",
     "@trpc/react-query": "^10.40.0",
     "@trpc/server": "^10.40.0",
-    "axios": "^1.5.1",
+    "axios": "^1.6.8",
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
     "drizzle-orm": "^0.28.6",

@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
 
-export default function usePagination(count: number) {
+export default function usePagination(totalCount: number, countPerPage = 10) {
   const [page, setPage] = useState(1);
-  const totalPages = Math.ceil(count / 10);
+  const totalPages = Math.ceil(totalCount / countPerPage);
 
   const incrementPage = () => {
     if (page >= totalPages) return;
