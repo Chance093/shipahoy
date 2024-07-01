@@ -7,6 +7,7 @@ import useCreateLabels from "~/hooks/useCreateLabels";
 import { useRouter } from "next/navigation";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { AxiosError } from "axios";
+import { TRPCClientError } from "@trpc/client";
 
 export default function useDuoplaneShipmentConfirmation(
   poOrders: PoOrders,
@@ -152,9 +153,12 @@ export default function useDuoplaneShipmentConfirmation(
 
       // * All other errors
       else if (err instanceof Error) {
-        // * If TRPC error, redirect to error page and display message
-        if (err.data.code === "NOT_IMPLEMENTED" || err.data.code === "CONFLICT") {
-          setDuoplaneError(new DuoplaneAxiosRedirectError(err.message));
+        if (err instanceof TRPCClientError) {
+          // * If TRPC error, redirect to error page and display message
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          if (err.data.code === "NOT_IMPLEMENTED" || err.data.code === "CONFLICT") {
+            setDuoplaneError(new DuoplaneAxiosRedirectError(err.message));
+          }
         }
 
         // * If Axios error, let user know weship servers are down
