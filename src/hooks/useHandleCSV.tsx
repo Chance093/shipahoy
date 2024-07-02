@@ -17,6 +17,7 @@ export default function useHandleCSV() {
   const [renderableErrorFlags, setRenderableErrorFlags] = useState<string[]>([]);
   const [labelPrices, setLabelPrices] = useState<string[]>([]);
   const [totalPrice, setTotalPrice] = useState("0.00");
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
   const checkpoints: string[] = [];
   const { createLabels, storeData } = useCreateLabels();
   const { data: balance, isError: isBalanceError, error: balanceError } = api.balance.getAmount.useQuery();
@@ -257,6 +258,9 @@ export default function useHandleCSV() {
     try {
       e.preventDefault();
 
+      // * Set loading state
+      setIsButtonLoading(true);
+
       // * If no balance found, end execution
       if (!balance?.amount) return;
 
@@ -284,9 +288,11 @@ export default function useHandleCSV() {
       setTotalPrice("0.00");
       setPayload([]);
       setRenderableErrorFlags([]);
+      setIsButtonLoading(false);
       router.push("/user/dashboard");
       router.refresh();
     } catch (err) {
+      setIsButtonLoading(false);
       if (err instanceof AxiosError) {
         throw err;
       }
@@ -305,5 +311,6 @@ export default function useHandleCSV() {
     isUserPricingError,
     balanceError,
     userPricingError,
+    isButtonLoading,
   };
 }

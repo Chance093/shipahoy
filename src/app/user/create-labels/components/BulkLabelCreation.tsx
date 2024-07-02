@@ -14,6 +14,7 @@ export default function BulkLabelCreation() {
     isUserPricingError,
     balanceError,
     userPricingError,
+    isButtonLoading,
   } = useHandleCSV();
 
   if (isUserPricingError) {
@@ -48,10 +49,19 @@ export default function BulkLabelCreation() {
             </label>
             <input onChange={csvHandlingHelper} id="upload_csv" type="file" accept=".csv" className="hidden" />
             <button
-              disabled={totalPrice === "0.00" ? true : false}
+              disabled={totalPrice === "0.00" || isButtonLoading}
               className="w-52 cursor-pointer items-start rounded-md bg-purple p-4 text-center disabled:opacity-50"
             >
-              Purchase ${totalPrice}
+              {isButtonLoading ? (
+                <div className="lds-ring-button">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+              ) : (
+                `Purchase $${totalPrice}`
+              )}
             </button>
           </div>
         </div>
