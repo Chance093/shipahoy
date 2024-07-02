@@ -5,7 +5,8 @@ import { api } from "~/trpc/react";
 import useCreateLabels from "~/hooks/useCreateLabels";
 import { useRouter } from "next/navigation";
 import { initialState } from "~/lib/lists";
-import { FormUIError, LabelCreationError } from "~/lib/customErrors";
+import { FormUIError } from "~/lib/customErrors";
+// import { LabelCreationError } from "~/lib/customErrors";
 import { AxiosError } from "axios";
 
 export default function useFormValidation() {
@@ -137,7 +138,7 @@ export default function useFormValidation() {
       } else if (err instanceof AxiosError) {
         throw err;
       }
-      throw new LabelCreationError("Labels have been created but were not successfully stored. Contact us to retrieve them.");
+      throw err;
     }
   };
 
