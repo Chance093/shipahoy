@@ -50,7 +50,7 @@ export default function BulkLabelCreation() {
             <input onChange={csvHandlingHelper} id="upload_csv" type="file" accept=".csv" className="hidden" />
             <button
               disabled={totalPrice === "0.00" || isButtonLoading}
-              className="w-52 cursor-pointer items-start rounded-md bg-purple p-4 text-center disabled:opacity-50"
+              className="w-52 cursor-pointer items-start rounded-md bg-purple p-4 text-center disabled:cursor-default disabled:opacity-50"
             >
               {isButtonLoading ? (
                 <div className="lds-ring-button">
