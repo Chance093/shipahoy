@@ -1,4 +1,3 @@
-import { Payload } from "~/lib/definitions";
 import { api } from "~/trpc/server";
 
 interface LabelRequest {
@@ -138,7 +137,7 @@ export const POST = async (request: Request) => {
   const validationResults = processInvalidProperties(invalidProperties);
   if (validationResults instanceof Response) return validationResults;
   const payload = convertDataToPayload(data);
-  const whatever = api.label.createLabel.mutate();
+  // TODO: Create labels with this payload
 }
 
 // post localhost:3000/api/temp '{"key": "abcxyz", "orderNumber": "000140500-2", "shipFrom": { "name": "fulfillment center", "company": "fulfillment center", "street1": "3395 s. jones blvd.", "street2": "pmb#180", "city": "las vegas", "state": "nv", "postalCode": "89146", "country": "us", "phone": "8005008486" }, "shipTo": { "name": "jessica grantham", "company": "", "street1": "927 n queen st", "street2": "", "city": "martinsburg", "state": "wv", "postalCode": "25404-3544", "country": "us", "phone": "3049010284" }, "weight": 4 }'
