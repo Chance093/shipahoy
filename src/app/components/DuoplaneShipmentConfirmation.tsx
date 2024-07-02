@@ -92,7 +92,6 @@ export default function ShipmentConfirmation({
           ) : (
             `Purchase $${totalPrice}`
           )}
-          Purchase ${totalPrice}
         </button>
       </section>
     </>

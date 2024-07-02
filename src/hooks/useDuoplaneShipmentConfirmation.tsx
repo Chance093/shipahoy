@@ -19,7 +19,7 @@ export default function useDuoplaneShipmentConfirmation(
   const router = useRouter();
   const totalPrice = labelPrices.reduce((a, b) => Number(a) + Number(b), 0).toFixed(2);
   const [duoplaneError, setDuoplaneError] = useState<Error | null>();
-  const [isButtonLoading, setIsButtonLoading] = useState(true);
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
 
   // * Transform payload into weship acceptable payload
   const getWeshipPayload = (payload: PoOrders) => {
