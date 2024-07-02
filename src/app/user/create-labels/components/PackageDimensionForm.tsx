@@ -6,12 +6,14 @@ export default function PackageDimensionForm({
   updateWeight,
   errorMessage,
   price,
+  isButtonLoading,
 }: {
   formData: FormData;
   handleChange: HandleChange;
   updateWeight: UpdateWeight;
   errorMessage: string;
   price: string;
+  isButtonLoading: boolean;
 }) {
   return (
     <section className="col-start-1 col-end-3 rounded-2xl bg-linear-gradient">
@@ -87,10 +89,19 @@ export default function PackageDimensionForm({
           <p className="pl-4 text-xl text-red-400">{errorMessage}</p>
           <button
             type="submit"
-            disabled={price === "0.00" ? true : false}
-            className="w-48 cursor-pointer rounded-md bg-purple p-4 text-center disabled:opacity-50"
+            disabled={price === "0.00" || isButtonLoading}
+            className="w-48 cursor-pointer rounded-md bg-purple p-4 text-center disabled:cursor-default disabled:opacity-50"
           >
-            Purchase ${price}
+            {isButtonLoading ? (
+              <div className="lds-ring-button">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+            ) : (
+              `Purchase $${price}`
+            )}
           </button>
         </section>
       </div>

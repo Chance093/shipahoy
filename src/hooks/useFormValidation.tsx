@@ -14,6 +14,7 @@ export default function useFormValidation() {
   const [formData, setFormData] = useState(initialState);
   const [price, setPrice] = useState("0.00");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
 
   const { createLabels, storeData } = useCreateLabels();
 
@@ -96,6 +97,9 @@ export default function useFormValidation() {
       e.preventDefault();
       setErrorMessage("");
 
+      // * Start loading state
+      setIsButtonLoading(true);
+
       // * If no balance found, end execution
       if (!balance?.amount) return;
 
@@ -123,9 +127,11 @@ export default function useFormValidation() {
       // * Reset states and redirect to home page
       setPrice("0.00");
       setFormData(initialState);
+      setIsButtonLoading(false);
       router.push("/user/dashboard");
       router.refresh();
     } catch (err) {
+      setIsButtonLoading(false);
       if (err instanceof FormUIError) {
         setErrorMessage(err.message);
       } else if (err instanceof AxiosError) {
@@ -146,5 +152,6 @@ export default function useFormValidation() {
     isUserPricingError,
     balanceError,
     userPricingError,
+    isButtonLoading,
   };
 }

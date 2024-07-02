@@ -16,6 +16,7 @@ export default function SingleLabelCreation() {
     isUserPricingError,
     balanceError,
     userPricingError,
+    isButtonLoading,
   } = useFormValidation();
 
   if (isBalanceError) throw balanceError;
@@ -27,7 +28,14 @@ export default function SingleLabelCreation() {
       <form onSubmit={(e) => onFormSubmit(e)} className="grid grid-cols-2 grid-rows-[1fr_auto] gap-6">
         <AddressForm label="From" handleChange={handleChange} formData={formData} />
         <AddressForm label="To" handleChange={handleChange} formData={formData} />
-        <PackageDimensionForm handleChange={handleChange} formData={formData} updateWeight={updateWeight} errorMessage={errorMessage} price={price} />
+        <PackageDimensionForm
+          handleChange={handleChange}
+          formData={formData}
+          updateWeight={updateWeight}
+          errorMessage={errorMessage}
+          price={price}
+          isButtonLoading={isButtonLoading}
+        />
       </form>
     </>
   );
