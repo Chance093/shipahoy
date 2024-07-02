@@ -110,9 +110,9 @@ export const initialState = {
   ToCity: "",
   ToZip: "",
   ToState: "",
-  Length: "",
-  Height: "",
-  Width: "",
+  Length: "18",
+  Height: "18",
+  Width: "18",
   Weight: "",
 };
 
