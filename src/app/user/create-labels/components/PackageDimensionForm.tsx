@@ -43,6 +43,7 @@ export default function PackageDimensionForm({
                 onChange={(e) => handleChange({ Height: e.target.value })}
                 autoComplete="off"
                 min="1"
+                required
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -69,6 +70,7 @@ export default function PackageDimensionForm({
                 onChange={(e) => handleChange({ Length: e.target.value })}
                 autoComplete="off"
                 min="1"
+                required
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -81,6 +83,7 @@ export default function PackageDimensionForm({
                 onChange={(e) => handleChange({ Width: e.target.value })}
                 autoComplete="off"
                 min="1"
+                required
               />
             </div>
           </div>
