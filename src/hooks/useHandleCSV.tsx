@@ -8,9 +8,10 @@ import { type FormData } from "~/lib/definitions";
 import { initialState } from "~/lib/lists";
 import { calculateCost } from "~/lib/calculateCost";
 import { AxiosError } from "axios";
-import { LabelCreationError } from "~/lib/customErrors";
+// import { LabelCreationError } from "~/lib/customErrors";
 
 export default function useHandleCSV() {
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
   const [fileName, setFileName] = useState("Choose a CSV");
   const [payload, setPayload] = useState<FormData[]>([]);
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -155,64 +156,64 @@ export default function useHandleCSV() {
   // ! This isn't being used anymore
   // TODO: Refactor to implement with other weight checking function
   // TODO: Write test case for this
-  function calculateTotalPrice(data: string[]) {
-    const weights = data.map((x) => +x);
-    const prices: number[] = [];
-    weights.map((weight) => {
-      switch (true) {
-        case 0 < weight && weight <= 3.99: {
-          const price = userPricing?.zeroToFour;
-          prices.push(Number(price));
-          break;
-        }
-        case 4 <= weight && weight <= 7.99: {
-          const price = userPricing?.fourToEight;
-          prices.push(Number(price));
-          break;
-        }
-        case 8 <= weight && weight <= 14.99: {
-          const price = userPricing?.eightToFifteen;
-          prices.push(Number(price));
-          break;
-        }
-        case 15 <= weight && weight <= 24.99: {
-          const price = userPricing?.fifteenToTwentyFive;
-          prices.push(Number(price));
-          break;
-        }
-        case 25 <= weight && weight <= 34.99: {
-          const price = userPricing?.twentyFiveToThirtyFive;
-          prices.push(Number(price));
-          break;
-        }
-        case 35 <= weight && weight <= 44.99: {
-          const price = userPricing?.thirtyFiveToFortyFive;
-          prices.push(Number(price));
-          break;
-        }
-        case 45 <= weight && weight <= 54.99: {
-          const price = userPricing?.fortyFiveToFiftyFive;
-          prices.push(Number(price));
-          break;
-        }
-        case 55 <= weight && weight <= 64.99: {
-          const price = userPricing?.fiftyFiveToSixtyFive;
-          prices.push(Number(price));
-          break;
-        }
-        case 65 <= weight && weight <= 70: {
-          const price = userPricing?.sixtyFiveToSeventy;
-          prices.push(Number(price));
-          break;
-        }
-        default: {
-          throw new Error("Weight is out of range");
-        }
-      }
-    });
-    const totalPrice = prices.reduce((a, b) => a + b);
-    return totalPrice.toFixed(2);
-  }
+  // function calculateTotalPrice(data: string[]) {
+  //   const weights = data.map((x) => +x);
+  //   const prices: number[] = [];
+  //   weights.map((weight) => {
+  //     switch (true) {
+  //       case 0 < weight && weight <= 3.99: {
+  //         const price = userPricing?.zeroToFour;
+  //         prices.push(Number(price));
+  //         break;
+  //       }
+  //       case 4 <= weight && weight <= 7.99: {
+  //         const price = userPricing?.fourToEight;
+  //         prices.push(Number(price));
+  //         break;
+  //       }
+  //       case 8 <= weight && weight <= 14.99: {
+  //         const price = userPricing?.eightToFifteen;
+  //         prices.push(Number(price));
+  //         break;
+  //       }
+  //       case 15 <= weight && weight <= 24.99: {
+  //         const price = userPricing?.fifteenToTwentyFive;
+  //         prices.push(Number(price));
+  //         break;
+  //       }
+  //       case 25 <= weight && weight <= 34.99: {
+  //         const price = userPricing?.twentyFiveToThirtyFive;
+  //         prices.push(Number(price));
+  //         break;
+  //       }
+  //       case 35 <= weight && weight <= 44.99: {
+  //         const price = userPricing?.thirtyFiveToFortyFive;
+  //         prices.push(Number(price));
+  //         break;
+  //       }
+  //       case 45 <= weight && weight <= 54.99: {
+  //         const price = userPricing?.fortyFiveToFiftyFive;
+  //         prices.push(Number(price));
+  //         break;
+  //       }
+  //       case 55 <= weight && weight <= 64.99: {
+  //         const price = userPricing?.fiftyFiveToSixtyFive;
+  //         prices.push(Number(price));
+  //         break;
+  //       }
+  //       case 65 <= weight && weight <= 70: {
+  //         const price = userPricing?.sixtyFiveToSeventy;
+  //         prices.push(Number(price));
+  //         break;
+  //       }
+  //       default: {
+  //         throw new Error("Weight is out of range");
+  //       }
+  //     }
+  //   });
+  //   const totalPrice = prices.reduce((a, b) => a + b);
+  //   return totalPrice.toFixed(2);
+  // }
 
   function csvHandlingHelper(event: React.ChangeEvent<HTMLInputElement>): void {
     setShowErrorModal(false);
@@ -256,6 +257,8 @@ export default function useHandleCSV() {
   async function submitOrder(e: FormEvent) {
     try {
       e.preventDefault();
+      // * Start loading state
+      setIsButtonLoading(true);
 
       // * If no balance found, end execution
       if (!balance?.amount) return;
@@ -305,5 +308,6 @@ export default function useHandleCSV() {
     isUserPricingError,
     balanceError,
     userPricingError,
+    isButtonLoading,
   };
 }
