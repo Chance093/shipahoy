@@ -1,6 +1,9 @@
 import axios from "axios";
-import { type Links, type ResponseData, type Payload } from "~/lib/definitions";
+import { type Links, type ResponseData } from "~/lib/definitions";
 import { env } from "~/env.mjs";
+import { db } from "~/server/db";
+import { balance, label, labelAddress, labelGroup, parcel, userData } from "~/server/db/schema";
+import { eq, sql } from "drizzle-orm";
 
 type LabelRequest = {
   key: string;
@@ -31,6 +34,32 @@ type InvalidProperties = {
   shipFrom: string[];
   shipTo: string[];
   weight: string | null;
+};
+
+type Payload = {
+  labelType: string;
+  ToCountry: string;
+  ToName: string;
+  ToCompany: string;
+  ToStreet: string;
+  ToStreet2: string;
+  ToCity: string;
+  ToZip: string;
+  ToState: string;
+  ToPhone: string;
+  FromCountry: string;
+  FromName: string;
+  FromCompany: string;
+  FromStreet: string;
+  FromStreet2: string;
+  FromCity: string;
+  FromZip: string;
+  FromState: string;
+  FromPhone: string;
+  Weight: number;
+  Length: number;
+  Height: number;
+  Width: number;
 };
 
 // * Function to return error code and message to client
@@ -111,6 +140,7 @@ const convertDataToPayload = (data: LabelRequest) => {
   const { shipFrom, shipTo, weight } = data;
   const payload = {
     labelType: "priority",
+    ToCountry: shipTo.country,
     ToName: shipTo.name,
     ToCompany: shipTo.company,
     ToStreet: shipTo.street1,
@@ -119,6 +149,7 @@ const convertDataToPayload = (data: LabelRequest) => {
     ToZip: shipTo.postalCode,
     ToState: shipTo.state,
     ToPhone: shipTo.phone,
+    FromCountry: shipFrom.country,
     FromName: shipFrom.name,
     FromCompany: shipTo.company,
     FromStreet: shipTo.street1,
@@ -127,10 +158,10 @@ const convertDataToPayload = (data: LabelRequest) => {
     FromZip: shipTo.postalCode,
     FromState: shipTo.state,
     FromPhone: shipTo.phone,
-    Weight: weight.toString(),
-    Length: "18",
-    Height: "18",
-    Width: "18",
+    Weight: weight,
+    Length: 18,
+    Height: 18,
+    Width: 18,
   };
   return payload;
 };
@@ -172,6 +203,86 @@ async function createLabels(payload: Payload[]) {
   return { links, tracking };
 }
 
+const uploadLabelToDatabase = async (payload: Payload, links: Links, tracking: string, price: string) => {
+  // * Create label group
+  const newLabelGroup = await db.insert(labelGroup).values({
+    userId: "USER ID HERE",
+    shippingServiceId: 1,
+    labelCount: 1,
+    totalPrice: price,
+    pdfLink: links.pdf,
+    csvLink: links.csv,
+    zipLink: links.zip,
+  });
+  const labelGroupId = newLabelGroup.insertId;
+
+  // * Create label and associate with label group
+  const newLabel = await db.insert(label).values({
+    labelGroupId: parseInt(labelGroupId),
+    uspsServiceId: 1,
+    price,
+    tracking,
+  });
+  const labelId = newLabel.insertId;
+
+  // * Create parcel and associate with label
+  await db.insert(parcel).values({
+    labelId: parseInt(labelId),
+    weight: payload.Weight,
+    length: payload.Length,
+    width: payload.Width,
+    height: payload.Height,
+  });
+
+  // * Create both to and from address and associate with label
+  await db.insert(labelAddress).values({
+    labelId: parseInt(labelId),
+    isSender: true,
+    name: payload.FromName,
+    company: payload.FromCompany,
+    streetOne: payload.FromStreet,
+    streetTwo: payload.FromStreet2,
+    city: payload.FromCity,
+    state: payload.FromState,
+    zipCode: payload.FromZip,
+    country: payload.FromCountry,
+    phoneNumber: payload.FromPhone,
+  });
+
+  await db.insert(labelAddress).values({
+    labelId: parseInt(labelId),
+    isSender: false,
+    name: payload.FromName,
+    company: payload.FromCompany,
+    streetOne: payload.FromStreet,
+    streetTwo: payload.FromStreet2,
+    city: payload.FromCity,
+    state: payload.FromState,
+    zipCode: payload.FromZip,
+    country: payload.FromCountry,
+    phoneNumber: payload.FromPhone,
+  });
+
+  // * Update order and label count
+  await db
+    .update(userData)
+    .set({
+      orderCount: sql`${userData.orderCount} + 1`,
+      labelCount: sql`${userData.labelCount} + 1`,
+    })
+    .where(eq(userData.userId, "USER ID HERE"));
+};
+
+const updateBalance = async (currentBalance: number, price: number, userId: string) => {
+  const updatedBalance = currentBalance - price;
+  await db
+    .update(balance)
+    .set({
+      amount: updatedBalance.toString(),
+    })
+    .where(eq(balance.userId, "USER ID HERE"));
+};
+
 export const POST = async (request: Request) => {
   // * Capture client payload
   const data = (await request.json()) as LabelRequest;
@@ -188,11 +299,15 @@ export const POST = async (request: Request) => {
   if (validationResults instanceof Response) return validationResults;
 
   const payload = convertDataToPayload(data);
+  // TODO: Fetch balance and check price of payload
+
   // TODO: Create labels with this payload
   // * Send post request to weship (build another weship request function)
   const { tracking, links } = await createLabels([payload]);
   // * Take tracking and links and upload to our db
   // * Update order and label counts for user
+  await uploadLabelToDatabase(payload, links, tracking[0], price, userId);
+  await updateBalance(currentBalance, price, userId);
   // * Update balance
   // * Return tracking to client
 };
