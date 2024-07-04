@@ -1,4 +1,6 @@
-import { api } from "~/trpc/server";
+import axios from "axios";
+import { type Links, type ResponseData, type Payload } from "~/lib/definitions";
+import { env } from "~/env.mjs";
 
 type LabelRequest = {
   key: string;
@@ -125,13 +127,50 @@ const convertDataToPayload = (data: LabelRequest) => {
     FromZip: shipTo.postalCode,
     FromState: shipTo.state,
     FromPhone: shipTo.phone,
-    Weight: weight,
-    Length: "",
-    Height: "",
-    Width: "",
+    Weight: weight.toString(),
+    Length: "18",
+    Height: "18",
+    Width: "18",
   };
   return payload;
 };
+
+async function createLabels(payload: Payload[]) {
+  const url = "https://api.weshipsmart.com/api/v2/order/create-bulk-order";
+  const data = {
+    labelType: "priority",
+    data: payload,
+  };
+  const config = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": env.NEXT_PUBLIC_MOKA_KEY,
+    },
+    body: JSON.stringify(data),
+  };
+
+  // * Create labels with weship
+  const { data: responseData }: { data: ResponseData } = await axios.post(url, data, config);
+  const bulkOrder = responseData.bulkOrder;
+  const orders = bulkOrder.orders;
+
+  // * Grab all tracking numbers from weship
+  const tracking = [];
+  for (const order of orders) {
+    const trackingNumber = order.tracking;
+    tracking.push(trackingNumber);
+  }
+
+  // * Grab all links from weship
+  const links: Links = {
+    pdf: bulkOrder.pdfLink,
+    csv: bulkOrder.csvLink,
+    zip: bulkOrder.zipLink,
+  };
+
+  return { links, tracking };
+}
 
 export const POST = async (request: Request) => {
   // * Capture client payload
@@ -151,6 +190,7 @@ export const POST = async (request: Request) => {
   const payload = convertDataToPayload(data);
   // TODO: Create labels with this payload
   // * Send post request to weship (build another weship request function)
+  const { tracking, links } = await createLabels([payload]);
   // * Take tracking and links and upload to our db
   // * Update order and label counts for user
   // * Update balance
