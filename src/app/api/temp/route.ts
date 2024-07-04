@@ -2,8 +2,9 @@ import axios from "axios";
 import { type Links, type ResponseData } from "~/lib/definitions";
 import { env } from "~/env.mjs";
 import { db } from "~/server/db";
-import { balance, label, labelAddress, labelGroup, parcel, userData } from "~/server/db/schema";
+import { balance, label, labelAddress, labelGroup, parcel, pricing, userData } from "~/server/db/schema";
 import { eq, sql } from "drizzle-orm";
+import { calculateCost } from "~/lib/calculateCost";
 
 type LabelRequest = {
   key: string;
@@ -203,10 +204,10 @@ async function createLabels(payload: Payload[]) {
   return { links, tracking };
 }
 
-const uploadLabelToDatabase = async (payload: Payload, links: Links, tracking: string, price: string) => {
+const uploadLabelToDatabase = async (payload: Payload, links: Links, tracking: string, price: string, userId: string) => {
   // * Create label group
   const newLabelGroup = await db.insert(labelGroup).values({
-    userId: "USER ID HERE",
+    userId,
     shippingServiceId: 1,
     labelCount: 1,
     totalPrice: price,
@@ -270,17 +271,45 @@ const uploadLabelToDatabase = async (payload: Payload, links: Links, tracking: s
       orderCount: sql`${userData.orderCount} + 1`,
       labelCount: sql`${userData.labelCount} + 1`,
     })
-    .where(eq(userData.userId, "USER ID HERE"));
+    .where(eq(userData.userId, userId));
 };
 
-const updateBalance = async (currentBalance: number, price: number, userId: string) => {
-  const updatedBalance = currentBalance - price;
+const updateBalance = async (currentBalance: string, price: string, userId: string) => {
+  const updatedBalance = Number(currentBalance) - Number(price);
   await db
     .update(balance)
     .set({
       amount: updatedBalance.toString(),
     })
-    .where(eq(balance.userId, "USER ID HERE"));
+    .where(eq(balance.userId, userId));
+};
+
+const getBalance = async (userId: string) => {
+  const amount = await db.query.balance.findFirst({
+    where: eq(balance.userId, userId),
+    columns: { amount: true },
+  });
+
+  return amount;
+};
+
+const getUserPricing = async (userId: string) => {
+  const pricingTable = await db.query.pricing.findFirst({
+    where: eq(pricing.userId, userId),
+    columns: {
+      zeroToFour: true,
+      fourToEight: true,
+      eightToFifteen: true,
+      fifteenToTwentyFive: true,
+      twentyFiveToThirtyFive: true,
+      thirtyFiveToFortyFive: true,
+      fortyFiveToFiftyFive: true,
+      fiftyFiveToSixtyFive: true,
+      sixtyFiveToSeventy: true,
+    },
+  });
+
+  return pricingTable;
 };
 
 export const POST = async (request: Request) => {
@@ -292,24 +321,43 @@ export const POST = async (request: Request) => {
   const { key } = data;
   if (key !== "abcxyz") return handleRequestError({ error: "Invalid key" }, 403);
   // TODO: Get userid from db using key
+  const userId = "user_2etL5H45HQG4PpV6xHwZ1udCmWE";
 
   // * Validate payload
   const invalidProperties = getInvalidProperties(data);
   const validationResults = processInvalidProperties(invalidProperties);
   if (validationResults instanceof Response) return validationResults;
 
+  // * Convert payload
   const payload = convertDataToPayload(data);
-  // TODO: Fetch balance and check price of payload
 
-  // TODO: Create labels with this payload
-  // * Send post request to weship (build another weship request function)
+  // * Get user balance and label pricing
+  const balance = await getBalance(userId);
+  const userPricing = await getUserPricing(userId);
+  // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+  if (balance === undefined || balance.amount === null) return handleRequestError({ error: "Balance not found" }, 100);
+  if (userPricing === undefined) return handleRequestError({ error: "User pricing not found" }, 100);
+
+  // * Calculate price and check if user has sufficient balance
+  const price = calculateCost([payload.Weight.toString()], userPricing);
+  if (price[0] === undefined) return handleRequestError({ error: "Price not found" }, 100);
+  if (Number(balance.amount) < Number(price[0])) return handleRequestError({ error: "Insufficient balance" }, 402);
+
+  // * Create labels in weship
   const { tracking, links } = await createLabels([payload]);
-  // * Take tracking and links and upload to our db
-  // * Update order and label counts for user
-  await uploadLabelToDatabase(payload, links, tracking[0], price, userId);
-  await updateBalance(currentBalance, price, userId);
-  // * Update balance
+  if (tracking[0] === undefined) return handleRequestError({ error: "Tracking not found" }, 100);
+
+  // * Upload labels in DB and update balance
+  await uploadLabelToDatabase(payload, links, tracking[0], price[0], userId);
+  await updateBalance(balance.amount, price[0], userId);
+
   // * Return tracking to client
+  const responseData = {
+    trackingNumber: tracking[0],
+    label: links.pdf,
+  };
+
+  return Response.json(responseData);
 };
 
 // post localhost:3000/api/temp '{"key": "abcxyz", "orderNumber": "000140500-2", "shipFrom": { "name": "fulfillment center", "company": "fulfillment center", "street1": "3395 s. jones blvd.", "street2": "pmb#180", "city": "las vegas", "state": "nv", "postalCode": "89146", "country": "us", "phone": "8005008486" }, "shipTo": { "name": "jessica grantham", "company": "", "street1": "927 n queen st", "street2": "", "city": "martinsburg", "state": "wv", "postalCode": "25404-3544", "country": "us", "phone": "3049010284" }, "weight": 4 }'
