@@ -1,5 +1,12 @@
+import { type Metadata } from "next";
 import DuoplaneTable from "~/app/components/DuoplaneTable";
 import { api } from "~/trpc/server";
+
+export const metadata: Metadata = {
+  title: "Duoplane Orders | Proglo Shipping",
+  description:
+    "Easily integrate your Duoplane account to manage and import all your orders. Create and print labels for your Duoplane orders seamlessly from one platform.",
+};
 
 export default async function Duoplane() {
   const pricing = await api.pricing.getPricing.query();
