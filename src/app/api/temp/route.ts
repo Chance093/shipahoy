@@ -63,6 +63,22 @@ type Payload = {
   Width: number;
 };
 
+type Balance = {
+  amount: string;
+};
+
+type UserPricing = {
+  zeroToFour: string;
+  fourToEight: string;
+  eightToFifteen: string;
+  fifteenToTwentyFive: string;
+  twentyFiveToThirtyFive: string;
+  thirtyFiveToFortyFive: string;
+  fortyFiveToFiftyFive: string;
+  fiftyFiveToSixtyFive: string;
+  sixtyFiveToSeventy: string;
+};
+
 // * Function to return error code and message to client
 const handleRequestError = (errorMessage: ErrorMessage, code: number) => {
   const responseBody = JSON.stringify(errorMessage);
@@ -285,31 +301,55 @@ const updateBalance = async (currentBalance: string, price: string, userId: stri
 };
 
 const getBalance = async (userId: string) => {
-  const amount = await db.query.balance.findFirst({
-    where: eq(balance.userId, userId),
-    columns: { amount: true },
-  });
-
-  return amount;
+  try {
+    const amount = await db.query.balance.findFirst({
+      where: eq(balance.userId, userId),
+      columns: { amount: true },
+    });
+    if (amount?.amount === null) {
+      const balanceError = new Error();
+      balanceError.message = `Balance not found`;
+      return balanceError;
+    }
+    return amount;
+  } catch (error) {
+    if (error instanceof Error) {
+      const getBalanceError = new Error();
+      getBalanceError.message = `Error while getting balance: ${error.message}`;
+      return getBalanceError;
+    }
+  }
 };
 
 const getUserPricing = async (userId: string) => {
-  const pricingTable = await db.query.pricing.findFirst({
-    where: eq(pricing.userId, userId),
-    columns: {
-      zeroToFour: true,
-      fourToEight: true,
-      eightToFifteen: true,
-      fifteenToTwentyFive: true,
-      twentyFiveToThirtyFive: true,
-      thirtyFiveToFortyFive: true,
-      fortyFiveToFiftyFive: true,
-      fiftyFiveToSixtyFive: true,
-      sixtyFiveToSeventy: true,
-    },
-  });
-
-  return pricingTable;
+  try {
+    const pricingTable = await db.query.pricing.findFirst({
+      where: eq(pricing.userId, userId),
+      columns: {
+        zeroToFour: true,
+        fourToEight: true,
+        eightToFifteen: true,
+        fifteenToTwentyFive: true,
+        twentyFiveToThirtyFive: true,
+        thirtyFiveToFortyFive: true,
+        fortyFiveToFiftyFive: true,
+        fiftyFiveToSixtyFive: true,
+        sixtyFiveToSeventy: true,
+      },
+    });
+    if (pricingTable === undefined) {
+      const userPricingError = new Error();
+      userPricingError.message = `User pricing not found`;
+      return userPricingError;
+    }
+    return pricingTable;
+  } catch (error) {
+    if (error instanceof Error) {
+      const getUserPricingError = new Error();
+      getUserPricingError.message = `Error while getting user pricing: ${error.message}`;
+      return getUserPricingError;
+    }
+  }
 };
 
 export const POST = async (request: Request) => {
@@ -320,7 +360,7 @@ export const POST = async (request: Request) => {
   // TODO: Pass key as basic authentication (better security)
   const { key } = data;
   if (key !== "abcxyz") return handleRequestError({ error: "Invalid key" }, 403);
-  // TODO: Get userid from db using key
+  // TODO: Get userId from env variable
   const userId = "user_2etL5H45HQG4PpV6xHwZ1udCmWE";
 
   // * Validate payload
@@ -332,11 +372,10 @@ export const POST = async (request: Request) => {
   const payload = convertDataToPayload(data);
 
   // * Get user balance and label pricing
-  const balance = await getBalance(userId);
-  const userPricing = await getUserPricing(userId);
-  // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
-  if (balance === undefined || balance.amount === null) return handleRequestError({ error: "Balance not found" }, 100);
-  if (userPricing === undefined) return handleRequestError({ error: "User pricing not found" }, 100);
+  const balance = await getBalance(userId) as Balance | Error;
+  if (balance instanceof Error) return handleRequestError({ error: "Balance not found" }, 100);
+  const userPricing = await getUserPricing(userId) as UserPricing | Error;
+  if (userPricing instanceof Error) return handleRequestError({ error: "User pricing not found" }, 100);
 
   // * Calculate price and check if user has sufficient balance
   const price = calculateCost([payload.Weight.toString()], userPricing);
@@ -356,7 +395,6 @@ export const POST = async (request: Request) => {
     trackingNumber: tracking[0],
     label: links.pdf,
   };
-
   return Response.json(responseData);
 };
 
