@@ -5,9 +5,10 @@ import { api } from "~/trpc/react";
 import useCreateLabels from "~/hooks/useCreateLabels";
 import { useRouter } from "next/navigation";
 import { initialState } from "~/lib/lists";
-import { FormUIError } from "~/lib/customErrors";
+import { CostCalculationError, FormUIError } from "~/lib/customErrors";
 // import { LabelCreationError } from "~/lib/customErrors";
 import { AxiosError } from "axios";
+import { calculateCost } from "~/lib/calculateCost";
 
 export default function useFormValidation() {
   const router = useRouter();
@@ -27,60 +28,30 @@ export default function useFormValidation() {
 
   const { data: userPricing, isError: isUserPricingError, error: userPricingError } = api.pricing.getPricing.useQuery();
 
-  // TODO: Refactor to implement with other weight checking function
   const updateWeight = (value: string) => {
-    setFormData((prev) => {
-      return { ...prev, Weight: value };
-    });
-    const weight = Number(value);
-    switch (true) {
-      case 0 < weight && weight <= 3.99: {
-        const price = userPricing?.zeroToFour;
-        setPrice(`${price}`);
-        break;
+    try {
+      // * Set weight state
+      setFormData((prev) => {
+        return { ...prev, Weight: value };
+      });
+
+      // * Check if user has pricing
+      if (userPricing === undefined) {
+        setErrorMessage("Could not get user pricing");
+        setPrice("0.00");
+        return;
       }
-      case 4 <= weight && weight <= 7.99: {
-        const price = userPricing?.fourToEight;
-        setPrice(`${price}`);
-        break;
-      }
-      case 8 <= weight && weight <= 14.99: {
-        const price = userPricing?.eightToFifteen;
-        setPrice(`${price}`);
-        break;
-      }
-      case 15 <= weight && weight <= 24.99: {
-        const price = userPricing?.fifteenToTwentyFive;
-        setPrice(`${price}`);
-        break;
-      }
-      case 25 <= weight && weight <= 34.99: {
-        const price = userPricing?.twentyFiveToThirtyFive;
-        setPrice(`${price}`);
-        break;
-      }
-      case 35 <= weight && weight <= 44.99: {
-        const price = userPricing?.thirtyFiveToFortyFive;
-        setPrice(`${price}`);
-        break;
-      }
-      case 45 <= weight && weight <= 54.99: {
-        const price = userPricing?.fortyFiveToFiftyFive;
-        setPrice(`${price}`);
-        break;
-      }
-      case 55 <= weight && weight <= 64.99: {
-        const price = userPricing?.fiftyFiveToSixtyFive;
-        setPrice(`${price}`);
-        break;
-      }
-      case 65 <= weight && weight <= 70: {
-        const price = userPricing?.sixtyFiveToSeventy;
-        setPrice(`${price}`);
-        break;
-      }
-      default: {
-        throw new Error("Weight is out of range");
+
+      // * Calculate cost of label and set price
+      const prices = calculateCost([value], userPricing);
+      setPrice(Number(prices[0]).toFixed(2).toString());
+      setErrorMessage("");
+    } catch (err) {
+      if (err instanceof CostCalculationError) {
+        setErrorMessage(err.message);
+        setPrice("0.00");
+      } else {
+        throw err;
       }
     }
   };
