@@ -183,7 +183,7 @@ const convertDataToPayload = (data: LabelRequest) => {
   return payload;
 };
 
-async function createLabels(payload: Payload[]) {
+const getResponseData = async (payload: Payload[]) => {
   const url = "https://api.weshipsmart.com/api/v2/order/create-bulk-order";
   const data = {
     labelType: "priority",
@@ -198,8 +198,24 @@ async function createLabels(payload: Payload[]) {
     body: JSON.stringify(data),
   };
 
+  try {
+    const { data: responseData }: { data: ResponseData } = await axios.post(url, data, config);
+    return responseData;
+  } catch {
+    const postError = new Error();
+    postError.message = `Error while attempting to label data to USPS`;
+    return postError;
+  }
+}
+
+async function createLabels(payload: Payload[]) {
   // * Create labels with weship
-  const { data: responseData }: { data: ResponseData } = await axios.post(url, data, config);
+  const responseData = await getResponseData(payload);
+  if (responseData instanceof Error) {
+    const labelCreationError = new Error();
+    labelCreationError.message = `Error while creating labels: ${responseData.message}`;
+    return labelCreationError;
+  }
   const bulkOrder = responseData.bulkOrder;
   const orders = bulkOrder.orders;
 
@@ -340,7 +356,7 @@ const getUserPricing = async (userId: string) => {
     if (pricingTable === undefined) {
       const userPricingError = new Error();
       userPricingError.message = `User pricing not found`;
-      return userPricingError;
+      throw userPricingError;
     }
     return pricingTable;
   } catch (error) {
@@ -383,7 +399,9 @@ export const POST = async (request: Request) => {
   if (Number(balance.amount) < Number(price[0])) return handleRequestError({ error: "Insufficient balance" }, 402);
 
   // * Create labels in weship
-  const { tracking, links } = await createLabels([payload]);
+  const labelCreationResults = await createLabels([payload]);
+  if (labelCreationResults instanceof Error) return handleRequestError({ error: `labelCreationResults.message` }, 500);
+  const { tracking, links } = labelCreationResults;
   if (tracking[0] === undefined) return handleRequestError({ error: "Tracking not found" }, 100);
 
   // * Upload labels in DB and update balance
