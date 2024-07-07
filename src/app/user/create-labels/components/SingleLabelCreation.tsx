@@ -17,10 +17,13 @@ export default function SingleLabelCreation() {
     balanceError,
     userPricingError,
     isButtonLoading,
+    thrownError,
   } = useFormValidation();
 
   if (isBalanceError) throw balanceError;
   if (isUserPricingError) throw userPricingError;
+
+  if (thrownError) throw thrownError;
 
   return (
     <>
