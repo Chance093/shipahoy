@@ -114,6 +114,7 @@ export const initialState = {
   Height: "18",
   Width: "18",
   Weight: "",
+  Reference: "",
 };
 
 export const EXPECTED_COLUMN_HEADERS = [
