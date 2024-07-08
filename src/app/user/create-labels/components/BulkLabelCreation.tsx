@@ -15,6 +15,7 @@ export default function BulkLabelCreation() {
     balanceError,
     userPricingError,
     isButtonLoading,
+    thrownError,
   } = useHandleCSV();
 
   if (isUserPricingError) {
@@ -24,6 +25,8 @@ export default function BulkLabelCreation() {
   if (isBalanceError) {
     throw balanceError;
   }
+
+  if (thrownError) throw thrownError;
 
   return (
     <>

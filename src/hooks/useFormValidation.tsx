@@ -5,7 +5,7 @@ import { api } from "~/trpc/react";
 import useCreateLabels from "~/hooks/useCreateLabels";
 import { useRouter } from "next/navigation";
 import { initialState } from "~/lib/lists";
-import { FormUIError } from "~/lib/customErrors";
+import { FormUIError, LabelUploadError, OrderAndLabelCountError, RedirectError } from "~/lib/customErrors";
 // import { LabelCreationError } from "~/lib/customErrors";
 import { AxiosError } from "axios";
 
@@ -16,6 +16,7 @@ export default function useFormValidation() {
   const [price, setPrice] = useState("0.00");
   const [errorMessage, setErrorMessage] = useState("");
   const [isButtonLoading, setIsButtonLoading] = useState(false);
+  const [thrownError, setThrownError] = useState<Error | null>();
 
   const { createLabels, storeData } = useCreateLabels();
 
@@ -95,8 +96,10 @@ export default function useFormValidation() {
 
   const onFormSubmit = async (e: FormEvent) => {
     try {
+      // * Reset state
       e.preventDefault();
       setErrorMessage("");
+      setThrownError(null);
 
       // * Start loading state
       setIsButtonLoading(true);
@@ -133,12 +136,27 @@ export default function useFormValidation() {
       router.refresh();
     } catch (err) {
       setIsButtonLoading(false);
-      if (err instanceof FormUIError) {
-        setErrorMessage(err.message);
-      } else if (err instanceof AxiosError) {
-        throw err;
+      if (err instanceof Error) {
+        // * If error is FormUIError, display error to user
+        if (err instanceof FormUIError) {
+          setErrorMessage(err.message);
+        }
+
+        // * If error was from store data, redirect to error page and display error
+        else if (err instanceof LabelUploadError || err instanceof OrderAndLabelCountError) {
+          setThrownError(new RedirectError(err.message));
+        }
+
+        // * If error is weship, redirect to error page and display error
+        else if (err instanceof AxiosError) {
+          setThrownError(new RedirectError("The server for our service provider is down. Please contact us."));
+        }
+
+        // * Catch all error
+        else {
+          setThrownError(new Error(err.message));
+        }
       }
-      throw err;
     }
   };
 
@@ -154,5 +172,6 @@ export default function useFormValidation() {
     balanceError,
     userPricingError,
     isButtonLoading,
+    thrownError,
   };
 }
