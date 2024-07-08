@@ -238,72 +238,100 @@ async function createLabels(payload: Payload[]) {
 
 const uploadLabelToDatabase = async (payload: Payload, links: Links, tracking: string, price: string, userId: string) => {
   // * Create label group
-  const newLabelGroup = await db.insert(labelGroup).values({
-    userId,
-    shippingServiceId: 1,
-    labelCount: 1,
-    totalPrice: price,
-    pdfLink: links.pdf,
-    csvLink: links.csv,
-    zipLink: links.zip,
-  });
+  let newLabelGroup;
+  try {
+    newLabelGroup = await db.insert(labelGroup).values({
+      userId,
+      shippingServiceId: 1,
+      labelCount: 1,
+      totalPrice: price,
+      pdfLink: links.pdf,
+      csvLink: links.csv,
+      zipLink: links.zip,
+    });
+  } catch (error) {
+    const labelGroupError = new Error();
+    labelGroupError.message = `Error while creating label group: ${error instanceof Error ? error.message : 'Unknown error'}`;
+    return labelGroupError;
+  }
   const labelGroupId = newLabelGroup.insertId;
 
   // * Create label and associate with label group
-  const newLabel = await db.insert(label).values({
-    labelGroupId: parseInt(labelGroupId),
-    uspsServiceId: 1,
-    price,
-    tracking,
-  });
+  let newLabel;
+  try {
+    newLabel = await db.insert(label).values({
+      labelGroupId: parseInt(labelGroupId),
+      uspsServiceId: 1,
+      price,
+      tracking,
+    });
+  } catch (error) {
+    const labelError = new Error();
+    labelError.message = `Error while creating label: ${error instanceof Error ? error.message : 'Unknown error'}`;
+    return labelError;
+  }
   const labelId = newLabel.insertId;
 
-  // * Create parcel and associate with label
-  await db.insert(parcel).values({
-    labelId: parseInt(labelId),
-    weight: payload.Weight,
-    length: payload.Length,
-    width: payload.Width,
-    height: payload.Height,
-  });
-
-  // * Create both to and from address and associate with label
-  await db.insert(labelAddress).values({
-    labelId: parseInt(labelId),
-    isSender: true,
-    name: payload.FromName,
-    company: payload.FromCompany,
-    streetOne: payload.FromStreet,
-    streetTwo: payload.FromStreet2,
-    city: payload.FromCity,
-    state: payload.FromState,
-    zipCode: payload.FromZip,
-    country: payload.FromCountry,
-    phoneNumber: payload.FromPhone,
-  });
-
-  await db.insert(labelAddress).values({
-    labelId: parseInt(labelId),
-    isSender: false,
-    name: payload.FromName,
-    company: payload.FromCompany,
-    streetOne: payload.FromStreet,
-    streetTwo: payload.FromStreet2,
-    city: payload.FromCity,
-    state: payload.FromState,
-    zipCode: payload.FromZip,
-    country: payload.FromCountry,
-    phoneNumber: payload.FromPhone,
-  });
-
-  // * Update order and label count
-  await db
-    .update(userData)
-    .set({
-      orderCount: sql`${userData.orderCount} + 1`,
-      labelCount: sql`${userData.labelCount} + 1`,
-    })
-    .where(eq(userData.userId, userId));
+  try {
+    const results = await Promise.allSettled([
+      db.insert(parcel).values({
+        labelId: parseInt(labelId),
+        weight: payload.Weight,
+        length: payload.Length,
+        width: payload.Width,
+        height: payload.Height,
+      }),
+      db.insert(labelAddress).values({
+        labelId: parseInt(labelId),
+        isSender: true,
+        name: payload.FromName,
+        company: payload.FromCompany,
+        streetOne: payload.FromStreet,
+        streetTwo: payload.FromStreet2,
+        city: payload.FromCity,
+        state: payload.FromState,
+        zipCode: payload.FromZip,
+        country: payload.FromCountry,
+        phoneNumber: payload.FromPhone,
+      }),
+      db.insert(labelAddress).values({
+        labelId: parseInt(labelId),
+        isSender: false,
+        name: payload.ToName,
+        company: payload.ToCompany,
+        streetOne: payload.ToStreet,
+        streetTwo: payload.ToStreet2,
+        city: payload.ToCity,
+        state: payload.ToState,
+        zipCode: payload.ToZip,
+        country: payload.ToCountry,
+        phoneNumber: payload.ToPhone,
+      }),
+      db.update(userData).set({
+        orderCount: sql`${userData.orderCount} + 1`,
+        labelCount: sql`${userData.labelCount} + 1`,
+      }).where(eq(userData.userId, userId)),
+    ]);
+    const rejectedOperations = [];
+    for (let x = 0; x < results.length; ++x) {
+      const result = results[x];
+      // ? Figure out why TypeScript wants optional chaining here
+      const status = result?.status;
+      if (status === "rejected") {
+        rejectedOperations.push(`${x}. ${result?.reason}`);
+        continue;
+      }
+    }
+    if (rejectedOperations.length) {
+      const operationsError = new Error();
+      operationsError.message = `Error while uploading label to database: ${rejectedOperations.join(", ")} `;
+      throw operationsError;
+    }
+  } catch (error) {
+    const uploadError = new Error();
+    uploadError.message = `Error while uploading label data to our database: ${error instanceof Error ? error.message : 'Unknown error'}`;
+    return uploadError;
+  }
 };
 
 const updateBalance = async (currentBalance: string, price: string, userId: string) => {
@@ -331,7 +359,7 @@ const getBalance = async (userId: string) => {
   } catch (error) {
     if (error instanceof Error) {
       const getBalanceError = new Error();
-      getBalanceError.message = `Error while getting balance: ${error.message}`;
+      getBalanceError.message = `Error while getting balance: ${error.message} `;
       return getBalanceError;
     }
   }
@@ -362,7 +390,7 @@ const getUserPricing = async (userId: string) => {
   } catch (error) {
     if (error instanceof Error) {
       const getUserPricingError = new Error();
-      getUserPricingError.message = `Error while getting user pricing: ${error.message}`;
+      getUserPricingError.message = `Error while getting user pricing: ${error.message} `;
       return getUserPricingError;
     }
   }
