@@ -435,13 +435,14 @@ export const POST = async (request: Request) => {
 
   // * Get user balance and label pricing
   const balance = await getBalance(userId) as Balance | Error;
-  if (balance instanceof Error) return handleRequestError({ error: "Balance not found" }, 100);
+  if (balance instanceof Error) return handleRequestError({ error: "Balance not found" }, 402);
   const userPricing = await getUserPricing(userId) as UserPricing | Error;
-  if (userPricing instanceof Error) return handleRequestError({ error: "User pricing not found" }, 100);
+  if (userPricing instanceof Error) return handleRequestError({ error: "User pricing not found" }, 500);
 
   // * Calculate price and check if user has sufficient balance
-  const price = calculateCost([payload.Weight.toString()], userPricing);
-  if (price[0] === undefined) return handleRequestError({ error: "Price not found" }, 100);
+  const price = getPrice(payload, userPricing);
+  if (price instanceof Response) return price;
+  if (price[0] === undefined) return handleRequestError({ error: "Price not found" }, 500);
   if (Number(balance.amount) < Number(price[0])) return handleRequestError({ error: "Insufficient balance" }, 402);
 
   // * Create labels in weship
@@ -459,8 +460,7 @@ export const POST = async (request: Request) => {
     trackingNumber: tracking[0],
     label: links.pdf,
   };
-  return Response.json(responseData);
+  const responseBody = JSON.stringify(responseData);
+  const responseParams = { status: 201, "Content-Type": "application/json" };
+  return new Response(responseBody, responseParams);
 };
-
-// post localhost:3000/api/temp '{"key": "abcxyz", "orderNumber": "000140500-2", "shipFrom": { "name": "fulfillment center", "company": "fulfillment center", "street1": "3395 s. jones blvd.", "street2": "pmb#180", "city": "las vegas", "state": "nv", "postalCode": "89146", "country": "us", "phone": "8005008486" }, "shipTo": { "name": "jessica grantham", "company": "", "street1": "927 n queen st", "street2": "", "city": "martinsburg", "state": "wv", "postalCode": "25404-3544", "country": "us", "phone": "3049010284" }, "weight": 4 }'
-// post 127.0.0.1:3000/api/temp '{"key": "abcxyz", "orderNumber": "", "shipFrom": { "name": "fulfillment center", "company": "fulfillment center", "street1": "", "street2": "pmb#180", "city": "las vegas", "state": "", "postalCode": "89146", "country": "", "phone": "8005008486" }, "shipTo": { "name": "", "company": "", "street1": "927 n queen st", "street2": "", "city": "martinsburg", "state": "wv", "postalCode": "25404-3544", "country": "us", "phone": "3049010284" }, "weight": 0 }'
