@@ -336,13 +336,20 @@ const uploadLabelToDatabase = async (payload: Payload, links: Links, tracking: s
 
 const updateBalance = async (currentBalance: string, price: string, userId: string) => {
   const updatedBalance = Number(currentBalance) - Number(price);
-  await db
-    .update(balance)
-    .set({
-      amount: updatedBalance.toString(),
-    })
-    .where(eq(balance.userId, userId));
-};
+  try {
+    await db
+      .update(balance)
+      .set({
+        amount: updatedBalance.toString(),
+      })
+      .where(eq(balance.userId, userId));
+  } catch (error) {
+    const updateBalanceError = new Error();
+    updateBalanceError.message = `Error while updating balance: ${error instanceof Error ? error.message : 'Unknown error'}`;
+    return updateBalanceError;
+  }
+
+}
 
 const getBalance = async (userId: string) => {
   try {
