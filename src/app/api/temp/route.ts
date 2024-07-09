@@ -403,16 +403,27 @@ const getUserPricing = async (userId: string) => {
   }
 };
 
+const getPrice = (payload: Record<string, string | number>, userPricing: UserPricing) => {
+  try {
+    const pricing = calculateCost([String(payload.Weight!)], userPricing);
+    return pricing;
+  } catch (error) {
+    const priceError = new Error();
+    priceError.message = `Error while calculating price: ${error instanceof Error ? error.message : 'Unknown error'}`;
+    return handleRequestError({ error: priceError.message }, 500);
+  }
+}
+
 export const POST = async (request: Request) => {
+
   // * Capture client payload
   const data = (await request.json()) as LabelRequest;
 
   // * Validate client key
-  // TODO: Pass key as basic authentication (better security)
-  const { key } = data;
-  if (key !== "abcxyz") return handleRequestError({ error: "Invalid key" }, 403);
-  // TODO: Get userId from env variable
-  const userId = "user_2etL5H45HQG4PpV6xHwZ1udCmWE";
+  const authHeader = request.headers.get("Authorization");
+  const key = process.env.KARTER_KEY;
+  if (authHeader !== key) return handleRequestError({ error: `Invalid key. Contact Kan if you believe this is a mistake.` }, 403);
+  const userId = process.env.KARTER_USER_ID!;
 
   // * Validate payload
   const invalidProperties = getInvalidProperties(data);
