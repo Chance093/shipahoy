@@ -449,7 +449,7 @@ export const POST = async (request: Request) => {
   const labelCreationResults = await createLabels([payload]);
   if (labelCreationResults instanceof Error) return handleRequestError({ error: `labelCreationResults.message` }, 500);
   const { tracking, links } = labelCreationResults;
-  if (tracking[0] === undefined) return handleRequestError({ error: "Tracking not found" }, 100);
+  if (tracking[0] === undefined) return handleRequestError({ error: "Tracking not found" }, 500);
 
   // * Upload labels in DB and update balance
   await uploadLabelToDatabase(payload, links, tracking[0], price[0], userId);
