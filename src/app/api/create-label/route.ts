@@ -42,6 +42,9 @@ type InvalidProperties = {
   shipFrom: string[];
   shipTo: string[];
   weight: string | null;
+  length: string | null;
+  width: string | null;
+  height: string | null;
 };
 
 type Payload = {
@@ -112,9 +115,12 @@ const getInvalidProperties = (data: LabelRequest) => {
     shipFrom: [],
     shipTo: [],
     weight: null,
+    length: null,
+    width: null,
+    height: null,
   };
   const { orderNumber, shipFrom, shipTo, physicalProperties } = data;
-  const { weight: weightProperty } = physicalProperties;
+  const { weight: weightProperty, length: lengthProperty, width: widthProperty, height: heightProperty } = physicalProperties;
 
   // * If order number missing, set invalid order number property
   if (!orderNumber) {
@@ -139,6 +145,10 @@ const getInvalidProperties = (data: LabelRequest) => {
     }
   }
 
+  if (isNaN(lengthProperty)) invalidProperties.length = "length should be a valid number";
+  if (isNaN(widthProperty)) invalidProperties.width = "width should be a valid number";
+  if (isNaN(heightProperty)) invalidProperties.height = "height should be a valid number";
+
   // * Set invalid address properties
   validateShipment(shipFrom, invalidProperties.shipFrom);
   validateShipment(shipTo, invalidProperties.shipTo);
@@ -148,10 +158,13 @@ const getInvalidProperties = (data: LabelRequest) => {
 
 // * Take invalid props and make it a readable message
 const processInvalidProperties = (invalidProperties: InvalidProperties) => {
-  const { orderNumber, shipFrom, shipTo, weight } = invalidProperties;
+  const { orderNumber, shipFrom, shipTo, weight, length, width, height } = invalidProperties;
   const errors: string[] = [];
   if (orderNumber) errors.push(orderNumber);
   if (weight) errors.push(weight);
+  if (length) errors.push(length);
+  if (width) errors.push(width);
+  if (height) errors.push(height);
   if (shipFrom.length) errors.push(`Invalid properties of shipFrom: ${shipFrom.join(", ")}`);
   if (shipTo.length) errors.push(`Invalid properties of shipTo: ${shipTo.join(", ")}`);
   if (!errors.length) return void 0;
@@ -423,6 +436,15 @@ const getPrice = (payload: Record<string, string | number>, userPricing: UserPri
   }
 }
 
+const getLabelLink = (rawLabelLink: string) => {
+  const linkRegex = /\/labels\/(.*)\/(.*)\.pdf/;
+  const linkMatch = rawLabelLink.match(linkRegex);
+  const slug = linkMatch![1];
+  const slub = linkMatch![2];
+  const labelLink = `https://progloshipping.com/api/label/${slug}/${slub}.pdf`;
+  return labelLink;
+}
+
 export const POST = async (request: Request) => {
 
   // * Capture client payload
@@ -431,9 +453,8 @@ export const POST = async (request: Request) => {
   // * Validate client key
   const authHeader = request.headers.get("Authorization");
   const key = process.env.KARTER_KEY;
-  if (authHeader !== key) return handleRequestError({ error: `Invalid key. Contact Kan if you believe this is a mistake.` }, 403);
-  // const userId = process.env.KARTER_USER_ID!;
-  const userId = 'user_2ezOnAZTrkGGKIeXwSIKGo482hT';
+  if (authHeader !== key) return handleRequestError({ error: `Invalid authorization header.` }, 403);
+  const userId = process.env.KARTER_USER_ID!;
 
   // * Validate payload
   const invalidProperties = getInvalidProperties(data);
@@ -445,34 +466,34 @@ export const POST = async (request: Request) => {
 
   // * Get user balance and label pricing
   const balance = await getBalance(userId) as Balance | Error;
-  if (balance instanceof Error) return handleRequestError({ error: "Balance not found" }, 402);
+  if (balance instanceof Error) return handleRequestError({ error: "Balance not found" }, 500);
   const userPricing = await getUserPricing(userId) as UserPricing | Error;
   if (userPricing instanceof Error) return handleRequestError({ error: "User pricing not found" }, 500);
 
   // * Calculate price and check if user has sufficient balance
   const price = getPrice(payload, userPricing);
   if (price instanceof Response) return price;
-  if (price[0] === undefined) return handleRequestError({ error: "Price not found" }, 500);
-  if (Number(balance.amount) < Number(price[0])) return handleRequestError({ error: "Insufficient balance" }, 402);
+  if (Number(balance.amount) < Number(price[0])) return handleRequestError({ error: "Insufficient balance. Please make a payment before attempting again." }, 402);
 
   // * Create labels in weship
   const labelCreationResults = await createLabels([payload]);
-  if (labelCreationResults instanceof Error) return handleRequestError({ error: `labelCreationResults.message` }, 500);
+  if (labelCreationResults instanceof Error) return handleRequestError({ error: `${labelCreationResults.message}` }, 500);
   const { tracking, links } = labelCreationResults;
-  if (tracking[0] === undefined) return handleRequestError({ error: "Tracking not found" }, 500);
 
   // * Upload labels in DB and update balance
-  await uploadLabelToDatabase(payload, links, tracking[0], price[0], userId);
-  await updateBalance(balance.amount, price[0], userId);
+  await uploadLabelToDatabase(payload, links, tracking[0]!, price[0]!, userId);
+  await updateBalance(balance.amount, price[0]!, userId);
+
+  // * Get the label link in our format
+  const rawLabelLink = links.pdf;
+  const labelLink = getLabelLink(rawLabelLink);
 
   // * Return tracking to client
   const responseData = {
     trackingNumber: tracking[0],
-    label: links.pdf,
+    label: labelLink,
   };
   const responseBody = JSON.stringify(responseData);
   const responseParams = { status: 201, "Content-Type": "application/json" };
   return new Response(responseBody, responseParams);
 };
-
-// # curl -X POST "https://progloshipping.com/api/create-labels" -v -H "Accept: application/json,text/plain" -H "Content-Type: application/json" -H "Authorization: Bearer MmZYUnJaUEVUZVlxQ3M3U29SSVVPaXU5cVV2" -L -d '{ "orderNumber": "PG-1234", "shipFrom": { "name": "Kan", "company": "Proglo", "street1": "6038 Topaz St", "street2": "Suite 3", "city": "Las Vegas", "state": "NV", "postalCode": "89120", "country": "US", "phone": "7757640808" }, "shipTo": { "name": "Chance", "company": "", "street1": "4022 Grapefruit St", "street2": "", "city": "Las Vegas", "state": "NV", "postalCode": "89103", "country": "US", "phone": "7025273602" }, "physicalProperties": { "weight": 2, "length": 10, "width": 10, "height": 15 } }' 
