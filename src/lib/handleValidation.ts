@@ -59,7 +59,7 @@ const validateRowValues = (
   newValidationCheckpoint: (checkpoint: string) => number,
 ) => {
   const invalidIndexes = new Map<string, number[]>();
-  const regexToIgnore = /Street2|Company|Phone/;
+  const regexToIgnore = /Street2|Company|Phone|Reference/;
   for (const [headerName, column] of headers) {
     if (regexToIgnore.test(headerName)) continue;
     if (!EXPECTED_COLUMN_HEADERS.includes(headerName)) continue;

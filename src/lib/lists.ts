@@ -140,4 +140,5 @@ export const EXPECTED_COLUMN_HEADERS = [
   "Height",
   "Width",
   "Weight",
+  "Reference",
 ];
