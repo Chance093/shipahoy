@@ -22,6 +22,7 @@ export type FormData = {
   Height: string;
   Width: string;
   Weight: string;
+  Reference: string;
 };
 
 export type Pricing = {

@@ -49,6 +49,7 @@ export default function useDuoplaneShipmentConfirmation(
           Height: "1",
           Width: "1",
           Weight: shipment.weight,
+          Reference: pload.id,
         };
         formData.push(newShipment);
       }),

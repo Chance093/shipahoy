@@ -49,6 +49,7 @@ export const labelRouter = createTRPCRouter({
               .string()
               .trim()
               .transform((val) => parseFloat(val)),
+            Reference: z.string().trim().optional(),
           })
           .array(),
         links: z.object({
@@ -80,6 +81,7 @@ export const labelRouter = createTRPCRouter({
           uspsServiceId: 1,
           price: input.labelPrices[idx],
           tracking: input.tracking[idx],
+          reference: order.Reference,
         });
         const labelId = newLabel.insertId;
         await ctx.db.insert(parcel).values({

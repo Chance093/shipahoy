@@ -31,6 +31,17 @@ export default function PackageDimensionForm({
             <option value="e-VS">e-VS</option>
           </select>
         </div>
+        <div className="flex flex-1 flex-col gap-2">
+          <label htmlFor="reference">Reference (Optional):</label>
+          <input
+            id="reference"
+            type="text"
+            className="rounded-md border border-gray-600/50 bg-black bg-opacity-0 p-2 focus:outline-none"
+            value={formData.Reference}
+            onChange={(e) => handleChange({ Reference: e.target.value })}
+            autoComplete="off"
+          />
+        </div>
         <section className="flex gap-4">
           <div className="flex flex-1 flex-col gap-8">
             <div className="flex flex-1 flex-col gap-2">
