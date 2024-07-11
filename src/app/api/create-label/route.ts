@@ -131,7 +131,7 @@ const getInvalidProperties = (data: LabelRequest) => {
   // * Set invalid weight property
   const weight = Number(weightProperty);
   switch (true) {
-    case isNaN(weight): {
+    case Number.isNaN(weight): {
       invalidProperties.weight = "weight should be a number";
       break;
     }
@@ -145,9 +145,9 @@ const getInvalidProperties = (data: LabelRequest) => {
     }
   }
 
-  if (isNaN(lengthProperty)) invalidProperties.length = "length should be a valid number";
-  if (isNaN(widthProperty)) invalidProperties.width = "width should be a valid number";
-  if (isNaN(heightProperty)) invalidProperties.height = "height should be a valid number";
+  if (Number.isNaN(lengthProperty)) invalidProperties.length = "length should be a valid number";
+  if (Number.isNaN(widthProperty)) invalidProperties.width = "width should be a valid number";
+  if (Number.isNaN(heightProperty)) invalidProperties.height = "height should be a valid number";
 
   // * Set invalid address properties
   validateShipment(shipFrom, invalidProperties.shipFrom);
