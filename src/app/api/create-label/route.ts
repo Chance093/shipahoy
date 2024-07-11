@@ -436,7 +436,7 @@ const getLabelLink = (rawLabelLink: string) => {
   const linkMatch = rawLabelLink.match(linkRegex);
   const slug = linkMatch![1];
   const slub = linkMatch![2];
-  const labelLink = `https://progloshipping.com/api/label/${slug}/${slub}.pdf`;
+  const labelLink = `https://progloshipping.com/api/labels/${slug}/${slub}.pdf`;
   return labelLink;
 }
 
