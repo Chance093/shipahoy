@@ -336,11 +336,10 @@ const uploadLabelToDatabase = async (payload: Payload, links: Links, tracking: s
 
   const rejectedOperations = [];
   for (let x = 0; x < results.length; ++x) {
-    const result = results[x];
-    // ? Figure out why TypeScript wants optional chaining here
-    const status = result?.status;
+    const result = results[x]!;
+    const status = result.status;
     if (status === "rejected") {
-      rejectedOperations.push(`${x}. ${result?.reason}`);
+      rejectedOperations.push(`${x + 1}. ${result?.reason}`);
       continue;
     }
   }
