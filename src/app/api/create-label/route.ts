@@ -294,65 +294,61 @@ const uploadLabelToDatabase = async (payload: Payload, links: Links, tracking: s
   }
   const labelId = newLabel.insertId;
 
-  try {
-    const results = await Promise.allSettled([
-      db.insert(parcel).values({
-        labelId: parseInt(labelId),
-        weight: payload.Weight,
-        length: payload.Length,
-        width: payload.Width,
-        height: payload.Height,
-      }),
-      db.insert(labelAddress).values({
-        labelId: parseInt(labelId),
-        isSender: true,
-        name: payload.FromName,
-        company: payload.FromCompany,
-        streetOne: payload.FromStreet,
-        streetTwo: payload.FromStreet2,
-        city: payload.FromCity,
-        state: payload.FromState,
-        zipCode: payload.FromZip,
-        country: payload.FromCountry,
-        phoneNumber: payload.FromPhone,
-      }),
-      db.insert(labelAddress).values({
-        labelId: parseInt(labelId),
-        isSender: false,
-        name: payload.ToName,
-        company: payload.ToCompany,
-        streetOne: payload.ToStreet,
-        streetTwo: payload.ToStreet2,
-        city: payload.ToCity,
-        state: payload.ToState,
-        zipCode: payload.ToZip,
-        country: payload.ToCountry,
-        phoneNumber: payload.ToPhone,
-      }),
-      db.update(userData).set({
-        orderCount: sql`${userData.orderCount} + 1`,
-        labelCount: sql`${userData.labelCount} + 1`,
-      }).where(eq(userData.userId, userId)),
-    ]);
-    const rejectedOperations = [];
-    for (let x = 0; x < results.length; ++x) {
-      const result = results[x];
-      // ? Figure out why TypeScript wants optional chaining here
-      const status = result?.status;
-      if (status === "rejected") {
-        rejectedOperations.push(`${x}. ${result?.reason}`);
-        continue;
-      }
+  const results = await Promise.allSettled([
+    db.insert(parcel).values({
+      labelId: parseInt(labelId),
+      weight: payload.Weight,
+      length: payload.Length,
+      width: payload.Width,
+      height: payload.Height,
+    }),
+    db.insert(labelAddress).values({
+      labelId: parseInt(labelId),
+      isSender: true,
+      name: payload.FromName,
+      company: payload.FromCompany,
+      streetOne: payload.FromStreet,
+      streetTwo: payload.FromStreet2,
+      city: payload.FromCity,
+      state: payload.FromState,
+      zipCode: payload.FromZip,
+      country: payload.FromCountry,
+      phoneNumber: payload.FromPhone,
+    }),
+    db.insert(labelAddress).values({
+      labelId: parseInt(labelId),
+      isSender: false,
+      name: payload.ToName,
+      company: payload.ToCompany,
+      streetOne: payload.ToStreet,
+      streetTwo: payload.ToStreet2,
+      city: payload.ToCity,
+      state: payload.ToState,
+      zipCode: payload.ToZip,
+      country: payload.ToCountry,
+      phoneNumber: payload.ToPhone,
+    }),
+    db.update(userData).set({
+      orderCount: sql`${userData.orderCount} + 1`,
+      labelCount: sql`${userData.labelCount} + 1`,
+    }).where(eq(userData.userId, userId)),
+  ]);
+
+  const rejectedOperations = [];
+  for (let x = 0; x < results.length; ++x) {
+    const result = results[x];
+    // ? Figure out why TypeScript wants optional chaining here
+    const status = result?.status;
+    if (status === "rejected") {
+      rejectedOperations.push(`${x}. ${result?.reason}`);
+      continue;
     }
-    if (rejectedOperations.length) {
-      const operationsError = new Error();
-      operationsError.message = `Error while uploading label to database: ${rejectedOperations.join(", ")} `;
-      throw operationsError;
-    }
-  } catch (error) {
-    const uploadError = new Error();
-    uploadError.message = `Error while uploading label data to our database: ${error instanceof Error ? error.message : 'Unknown error'}`;
-    return uploadError;
+  }
+
+  if (rejectedOperations.length) {
+    const operationsError = new Error();
+    operationsError.message = `Error while uploading label data to our database: ${rejectedOperations.join(", ")}`;
+    throw operationsError;
   }
 };
 
