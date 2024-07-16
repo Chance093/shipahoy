@@ -63,7 +63,7 @@ export const labelRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const orderCount = input.orders.length;
-      const totalPrice = input.labelPrices.reduce((a, b) => (Number(a) + Number(b)).toString());
+      const totalPrice = input.labelPrices.reduce((a, b) => String(Number(a) + Number(b)));
       const newLabelGroup = await ctx.db.insert(labelGroup).values({
         userId: ctx.auth.userId,
         shippingServiceId: 1,

@@ -285,7 +285,7 @@ export default function useHandleCSV() {
 
       // * Update db with shipping labels and new balance
       await storeData(tracking, links, payload, labelPrices);
-      updateBalance.mutate({ amount: newBalance.toString() });
+      updateBalance.mutate({ amount: String(newBalance) });
 
       // * Reset state
       setTotalPrice("0.00");

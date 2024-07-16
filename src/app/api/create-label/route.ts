@@ -357,7 +357,7 @@ const updateBalance = async (currentBalance: string, price: string, userId: stri
     await db
       .update(balance)
       .set({
-        amount: updatedBalance.toString(),
+        amount: String(updatedBalance),
       })
       .where(eq(balance.userId, userId));
   } catch (error) {

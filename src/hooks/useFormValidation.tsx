@@ -126,7 +126,7 @@ export default function useFormValidation() {
 
       // * Update db with shipping labels and new balance
       await storeData(tracking, links, [formData], [price]);
-      updateBalance.mutate({ amount: newBalance.toString() });
+      updateBalance.mutate({ amount: String(newBalance) });
 
       // * Reset states and redirect to home page
       setPrice("0.00");
