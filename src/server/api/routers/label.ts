@@ -48,7 +48,7 @@ export const labelRouter = createTRPCRouter({
             Weight: z
               .string()
               .trim()
-              .transform((val) => parseFloat(val)),
+              .transform((val) => Number(val)),
             Reference: z.string().trim().optional(),
           })
           .array(),

@@ -108,7 +108,7 @@ export default function useFormValidation() {
       if (!balance?.amount) return;
 
       // * If label creation price is 0, throw error
-      if (parseFloat(price) === 0) throw new FormUIError("Price must be greater than 0 to create a shipment");
+      if (Number(price) === 0) throw new FormUIError("Price must be greater than 0 to create a shipment");
 
       // * If from and to address match, throw error
       if (formData.FromStreet === formData.ToStreet) {
@@ -116,13 +116,13 @@ export default function useFormValidation() {
       }
 
       // * If not enough balance, throw error
-      if (parseFloat(balance.amount) < parseFloat(price)) {
+      if (Number(balance.amount) < Number(price)) {
         throw new FormUIError("Insufficient funds. Please add more to your balance.");
       }
 
       // * Create labels with weship
       const { tracking, links } = await createLabels([formData]);
-      const newBalance = parseFloat(balance.amount) - parseFloat(price);
+      const newBalance = Number(balance.amount) - Number(price);
 
       // * Update db with shipping labels and new balance
       await storeData(tracking, links, [formData], [price]);
