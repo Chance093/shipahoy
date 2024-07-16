@@ -282,7 +282,7 @@ const uploadLabelToDatabase = async (payload: Payload, links: Links, tracking: s
   let newLabel;
   try {
     newLabel = await db.insert(label).values({
-      labelGroupId: parseInt(labelGroupId),
+      labelGroupId: Number(labelGroupId),
       uspsServiceId: 1,
       price,
       tracking,
@@ -296,14 +296,14 @@ const uploadLabelToDatabase = async (payload: Payload, links: Links, tracking: s
 
   const results = await Promise.allSettled([
     db.insert(parcel).values({
-      labelId: parseInt(labelId),
+      labelId: Number(labelId),
       weight: payload.Weight,
       length: payload.Length,
       width: payload.Width,
       height: payload.Height,
     }),
     db.insert(labelAddress).values({
-      labelId: parseInt(labelId),
+      labelId: Number(labelId),
       isSender: true,
       name: payload.FromName,
       company: payload.FromCompany,
@@ -316,7 +316,7 @@ const uploadLabelToDatabase = async (payload: Payload, links: Links, tracking: s
       phoneNumber: payload.FromPhone,
     }),
     db.insert(labelAddress).values({
-      labelId: parseInt(labelId),
+      labelId: Number(labelId),
       isSender: false,
       name: payload.ToName,
       company: payload.ToCompany,
