@@ -51,7 +51,7 @@ export default function useAdmin() {
     if (!amount?.amount) return;
     if (!amount?.id) return;
     if (!addedBalance) return;
-    updateBalance.mutate({ amount: (Number(amount.amount) + Number(addedBalance)).toString(), userId: userId });
+    updateBalance.mutate({ amount: String(Number(amount.amount) + Number(addedBalance)), userId: userId });
     addInvoice.mutate({ userId: userId, balanceId: Number(amount.id), amount: addedBalance, paymentMethod: paymentMethod, paymentStatusId: 1 });
     incrementInvoiceCount.mutate({ incrementValue: 1 });
   }

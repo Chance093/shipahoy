@@ -36,19 +36,19 @@ export const labelRouter = createTRPCRouter({
             Length: z
               .string()
               .trim()
-              .transform((val) => parseInt(val)),
+              .transform((val) => Number(val)),
             Height: z
               .string()
               .trim()
-              .transform((val) => parseInt(val)),
+              .transform((val) => Number(val)),
             Width: z
               .string()
               .trim()
-              .transform((val) => parseInt(val)),
+              .transform((val) => Number(val)),
             Weight: z
               .string()
               .trim()
-              .transform((val) => parseFloat(val)),
+              .transform((val) => Number(val)),
             Reference: z.string().trim().optional(),
           })
           .array(),
@@ -63,7 +63,7 @@ export const labelRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const orderCount = input.orders.length;
-      const totalPrice = input.labelPrices.reduce((a, b) => (+a + +b).toString());
+      const totalPrice = input.labelPrices.reduce((a, b) => String(Number(a) + Number(b)));
       const newLabelGroup = await ctx.db.insert(labelGroup).values({
         userId: ctx.auth.userId,
         shippingServiceId: 1,
@@ -77,7 +77,7 @@ export const labelRouter = createTRPCRouter({
 
       for (const [idx, order] of input.orders.entries()) {
         const newLabel = await ctx.db.insert(label).values({
-          labelGroupId: parseInt(labelGroupId),
+          labelGroupId: Number(labelGroupId),
           uspsServiceId: 1,
           price: input.labelPrices[idx],
           tracking: input.tracking[idx],
@@ -85,14 +85,14 @@ export const labelRouter = createTRPCRouter({
         });
         const labelId = newLabel.insertId;
         await ctx.db.insert(parcel).values({
-          labelId: parseInt(labelId),
+          labelId: Number(labelId),
           weight: order.Weight,
           length: order.Length,
           width: order.Width,
           height: order.Height,
         });
         await ctx.db.insert(labelAddress).values({
-          labelId: parseInt(labelId),
+          labelId: Number(labelId),
           isSender: true,
           name: order.FromName,
           company: order.FromCompany,
@@ -105,7 +105,7 @@ export const labelRouter = createTRPCRouter({
           phoneNumber: order.FromPhone,
         });
         await ctx.db.insert(labelAddress).values({
-          labelId: parseInt(labelId),
+          labelId: Number(labelId),
           isSender: false,
           name: order.ToName,
           company: order.ToCompany,

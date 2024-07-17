@@ -268,24 +268,24 @@ export default function useHandleCSV() {
       if (!balance?.amount) return;
 
       // * If total price is 0, throw error
-      if (parseFloat(totalPrice) === 0) {
+      if (Number(totalPrice) === 0) {
         setRenderableErrorFlags((prev) => [...prev, "Price must be greater than 0 to create a shipment"]);
         return;
       }
 
       // * If not enough balance, set Error flags
-      if (parseFloat(balance.amount) < parseFloat(totalPrice)) {
+      if (Number(balance.amount) < Number(totalPrice)) {
         setRenderableErrorFlags((prev) => [...prev, "Insufficient funds. Please add more to your balance."]);
         return;
       }
 
       // * Create labels with weship
       const { tracking, links } = await createLabels(payload);
-      const newBalance = parseFloat(balance.amount) - parseFloat(totalPrice);
+      const newBalance = Number(balance.amount) - Number(totalPrice);
 
       // * Update db with shipping labels and new balance
       await storeData(tracking, links, payload, labelPrices);
-      updateBalance.mutate({ amount: newBalance.toString() });
+      updateBalance.mutate({ amount: String(newBalance) });
 
       // * Reset state
       setTotalPrice("0.00");
