@@ -5,8 +5,7 @@ import { api } from "~/trpc/react";
 import useCreateLabels from "~/hooks/useCreateLabels";
 import { useRouter } from "next/navigation";
 import { initialState } from "~/lib/lists";
-import { CostCalculationError, FormUIError } from "~/lib/customErrors";
-// import { LabelCreationError } from "~/lib/customErrors";
+import { FormUIError, LabelUploadError, OrderAndLabelCountError, RedirectError, CostCalculationError } from "~/lib/customErrors";
 import { AxiosError } from "axios";
 import { calculateCost } from "~/lib/calculateCost";
 
@@ -17,6 +16,7 @@ export default function useFormValidation() {
   const [price, setPrice] = useState("0.00");
   const [errorMessage, setErrorMessage] = useState("");
   const [isButtonLoading, setIsButtonLoading] = useState(false);
+  const [thrownError, setThrownError] = useState<Error | null>();
 
   const { createLabels, storeData } = useCreateLabels();
 
@@ -66,8 +66,10 @@ export default function useFormValidation() {
 
   const onFormSubmit = async (e: FormEvent) => {
     try {
+      // * Reset state
       e.preventDefault();
       setErrorMessage("");
+      setThrownError(null);
 
       // * Start loading state
       setIsButtonLoading(true);
@@ -76,7 +78,7 @@ export default function useFormValidation() {
       if (!balance?.amount) return;
 
       // * If label creation price is 0, throw error
-      if (parseFloat(price) === 0) throw new FormUIError("Price must be greater than 0 to create a shipment");
+      if (Number(price) === 0) throw new FormUIError("Price must be greater than 0 to create a shipment");
 
       // * If from and to address match, throw error
       if (formData.FromStreet === formData.ToStreet) {
@@ -84,17 +86,17 @@ export default function useFormValidation() {
       }
 
       // * If not enough balance, throw error
-      if (parseFloat(balance.amount) < parseFloat(price)) {
+      if (Number(balance.amount) < Number(price)) {
         throw new FormUIError("Insufficient funds. Please add more to your balance.");
       }
 
       // * Create labels with weship
       const { tracking, links } = await createLabels([formData]);
-      const newBalance = parseFloat(balance.amount) - parseFloat(price);
+      const newBalance = Number(balance.amount) - Number(price);
 
       // * Update db with shipping labels and new balance
       await storeData(tracking, links, [formData], [price]);
-      updateBalance.mutate({ amount: newBalance.toString() });
+      updateBalance.mutate({ amount: String(newBalance) });
 
       // * Reset states and redirect to home page
       setPrice("0.00");
@@ -104,12 +106,28 @@ export default function useFormValidation() {
       router.refresh();
     } catch (err) {
       setIsButtonLoading(false);
-      if (err instanceof FormUIError) {
-        setErrorMessage(err.message);
-      } else if (err instanceof AxiosError) {
-        throw err;
+      if (err instanceof Error) {
+        // * If error is FormUIError, display error to user
+        if (err instanceof FormUIError) {
+          setErrorMessage(err.message);
+        }
+
+        // * If error was from store data, redirect to error page and display error
+        else if (err instanceof LabelUploadError || err instanceof OrderAndLabelCountError) {
+          setThrownError(new RedirectError(err.message));
+        }
+
+        // * If error is weship, redirect to error page and display error
+        else if (err instanceof AxiosError) {
+          setThrownError(new RedirectError("The server for our service provider is down. Please contact us."));
+          console.error(err);
+        }
+
+        // * Catch all error
+        else {
+          setThrownError(new Error(err.message));
+        }
       }
-      throw err;
     }
   };
 
@@ -125,5 +143,6 @@ export default function useFormValidation() {
     balanceError,
     userPricingError,
     isButtonLoading,
+    thrownError,
   };
 }

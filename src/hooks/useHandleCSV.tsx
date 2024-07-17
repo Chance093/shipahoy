@@ -8,6 +8,7 @@ import { type FormData } from "~/lib/definitions";
 import { initialState } from "~/lib/lists";
 import { calculateCost } from "~/lib/calculateCost";
 import { AxiosError } from "axios";
+import { LabelUploadError, OrderAndLabelCountError, RedirectError } from "~/lib/customErrors";
 // import { LabelCreationError } from "~/lib/customErrors";
 
 export default function useHandleCSV() {
@@ -18,6 +19,7 @@ export default function useHandleCSV() {
   const [renderableErrorFlags, setRenderableErrorFlags] = useState<string[]>([]);
   const [labelPrices, setLabelPrices] = useState<string[]>([]);
   const [totalPrice, setTotalPrice] = useState("0.00");
+  const [thrownError, setThrownError] = useState<Error | null>();
   const checkpoints: string[] = [];
   const { createLabels, storeData } = useCreateLabels();
   const { data: balance, isError: isBalanceError, error: balanceError } = api.balance.getAmount.useQuery();
@@ -257,6 +259,8 @@ export default function useHandleCSV() {
   async function submitOrder(e: FormEvent) {
     try {
       e.preventDefault();
+      setThrownError(null);
+
       // * Start loading state
       setIsButtonLoading(true);
 
@@ -264,24 +268,24 @@ export default function useHandleCSV() {
       if (!balance?.amount) return;
 
       // * If total price is 0, throw error
-      if (parseFloat(totalPrice) === 0) {
+      if (Number(totalPrice) === 0) {
         setRenderableErrorFlags((prev) => [...prev, "Price must be greater than 0 to create a shipment"]);
         return;
       }
 
       // * If not enough balance, set Error flags
-      if (parseFloat(balance.amount) < parseFloat(totalPrice)) {
+      if (Number(balance.amount) < Number(totalPrice)) {
         setRenderableErrorFlags((prev) => [...prev, "Insufficient funds. Please add more to your balance."]);
         return;
       }
 
       // * Create labels with weship
       const { tracking, links } = await createLabels(payload);
-      const newBalance = parseFloat(balance.amount) - parseFloat(totalPrice);
+      const newBalance = Number(balance.amount) - Number(totalPrice);
 
       // * Update db with shipping labels and new balance
       await storeData(tracking, links, payload, labelPrices);
-      updateBalance.mutate({ amount: newBalance.toString() });
+      updateBalance.mutate({ amount: String(newBalance) });
 
       // * Reset state
       setTotalPrice("0.00");
@@ -290,10 +294,22 @@ export default function useHandleCSV() {
       router.push("/user/dashboard");
       router.refresh();
     } catch (err) {
-      if (err instanceof AxiosError) {
-        throw err;
+      if (err instanceof Error) {
+        // * If error was from store data, redirect to error page and display error
+        if (err instanceof LabelUploadError || err instanceof OrderAndLabelCountError) {
+          setThrownError(new RedirectError(err.message));
+        }
+
+        // * If error is weship, redirect to error page and display error
+        else if (err instanceof AxiosError) {
+          setThrownError(new RedirectError("The server for our service provider is down. Please contact us."));
+        }
+
+        // * Catch all error
+        else {
+          setThrownError(new Error(err.message));
+        }
       }
-      throw err;
     }
   }
 
@@ -309,5 +325,6 @@ export default function useHandleCSV() {
     balanceError,
     userPricingError,
     isButtonLoading,
+    thrownError,
   };
 }

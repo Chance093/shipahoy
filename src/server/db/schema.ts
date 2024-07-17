@@ -95,6 +95,7 @@ export const label = mysqlTable("label", {
   labelGroupId: int("label_group_id").notNull(),
   uspsServiceId: int("usps_service_id"),
   uspsExternalServiceId: int("usps_external_service_id"),
+  reference: varchar("reference", { length: 60 }),
   price: decimal("price", { precision: 4, scale: 2 }),
   tracking: varchar("tracking", { length: 40 }),
 });
@@ -106,7 +107,7 @@ export const labelAddress = mysqlTable("label_address", {
   name: varchar("name", { length: 100 }).notNull(),
   company: varchar("company", { length: 100 }),
   streetOne: varchar("street_one", { length: 100 }).notNull(),
-  streetTwo: varchar("street_two", { length: 100 }).notNull(),
+  streetTwo: varchar("street_two", { length: 100 }),
   city: varchar("city", { length: 100 }).notNull(),
   state: char("state", { length: 20 }).notNull(),
   zipCode: varchar("zip_code", { length: 10 }).notNull(),

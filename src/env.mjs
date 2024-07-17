@@ -17,6 +17,8 @@ export const env = createEnv({
     // VERCEL_URL: z.string().url().optional(),
     WEBHOOK_SECRET: z.string(),
     DOMAIN: z.string().optional(),
+    KARTER_KEY: z.string(),
+    KARTER_USER_ID: z.string(),
   },
 
   /**
@@ -41,6 +43,8 @@ export const env = createEnv({
    */
   runtimeEnv: {
     // VERCEL_URL: process.env.VERCEL_URL,
+    KARTER_KEY: process.env.KARTER_KEY,
+    KARTER_USER_ID: process.env.KARTER_USER_ID,
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,

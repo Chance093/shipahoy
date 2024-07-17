@@ -49,6 +49,7 @@ export default function useDuoplaneShipmentConfirmation(
           Height: "1",
           Width: "1",
           Weight: shipment.weight,
+          Reference: pload.id,
         };
         formData.push(newShipment);
       }),
@@ -131,7 +132,7 @@ export default function useDuoplaneShipmentConfirmation(
 
       // * Update balance in db
       const newBalance = balance - Number(totalPrice);
-      await updateBalance.mutateAsync({ amount: newBalance.toString() });
+      await updateBalance.mutateAsync({ amount: String(newBalance) });
 
       // * End loading state
       setIsButtonLoading(false);
