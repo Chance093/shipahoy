@@ -150,6 +150,7 @@ export default function useFormValidation() {
         // * If error is weship, redirect to error page and display error
         else if (err instanceof AxiosError) {
           setThrownError(new RedirectError("The server for our service provider is down. Please contact us."));
+          console.error(err);
         }
 
         // * Catch all error
