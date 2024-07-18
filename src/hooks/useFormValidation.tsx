@@ -81,7 +81,7 @@ export default function useFormValidation() {
       if (Number(price) === 0) throw new FormUIError("Price must be greater than 0 to create a shipment");
 
       // * If from and to address match, throw error
-      if (formData.FromStreet === formData.ToStreet) {
+      if (formData.FromStreet1 === formData.ToStreet1) {
         throw new FormUIError("Sender Address cannot be the same as Recipient Address.");
       }
 

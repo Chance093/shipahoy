@@ -16,7 +16,7 @@ export const labelRouter = createTRPCRouter({
               .string()
               .trim()
               .transform((val) => (val === "" ? undefined : val)),
-            FromStreet: z.string().trim(),
+            FromStreet1: z.string().trim(),
             FromStreet2: z.string().trim(),
             FromCity: z.string().trim(),
             FromZip: z.string().trim().regex(zipCodeRegex, { message: "Must enter valid zip code" }),
@@ -28,7 +28,7 @@ export const labelRouter = createTRPCRouter({
               .string()
               .trim()
               .transform((val) => (val === "" ? undefined : val)),
-            ToStreet: z.string().trim(),
+            ToStreet1: z.string().trim(),
             ToStreet2: z.string().trim(),
             ToCity: z.string().trim(),
             ToZip: z.string().trim().regex(zipCodeRegex, { message: "Must enter valid zip code" }),
@@ -96,7 +96,7 @@ export const labelRouter = createTRPCRouter({
           isSender: true,
           name: order.FromName,
           company: order.FromCompany,
-          streetOne: order.FromStreet,
+          streetOne: order.FromStreet1,
           streetTwo: order.FromStreet2,
           city: order.FromCity,
           state: order.FromState,
@@ -109,7 +109,7 @@ export const labelRouter = createTRPCRouter({
           isSender: false,
           name: order.ToName,
           company: order.ToCompany,
-          streetOne: order.ToStreet,
+          streetOne: order.ToStreet1,
           streetTwo: order.ToStreet2,
           city: order.ToCity,
           state: order.ToState,
