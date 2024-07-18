@@ -35,9 +35,9 @@ const dataResponse = {
     createdAt: "2024-02-16T02:04:17.921Z",
     updatedAt: "2024-02-16T02:04:18.491Z",
     __v: 0,
-    csvLink: "https://api.weshipsmart.com/./labels/6511c995eac45b5e35c1d6a7/3fadc629-229d-48f9-afee-1cd5b9866296.csv",
-    pdfLink: "https://api.weshipsmart.com/./labels/6511c995eac45b5e35c1d6a7/3fadc629-229d-48f9-afee-1cd5b9866296.pdf",
-    zipLink: "https://api.weshipsmart.com/./labels/6511c995eac45b5e35c1d6a7/3fadc629-229d-48f9-afee-1cd5b9866296.zip",
+    csvLink: "https://api.ezyship.org/./labels/6511c995eac45b5e35c1d6a7/3fadc629-229d-48f9-afee-1cd5b9866296.csv",
+    pdfLink: "https://api.ezyship.org/./labels/6511c995eac45b5e35c1d6a7/3fadc629-229d-48f9-afee-1cd5b9866296.pdf",
+    zipLink: "https://api.ezyship.org/./labels/6511c995eac45b5e35c1d6a7/3fadc629-229d-48f9-afee-1cd5b9866296.zip",
   },
 };
 

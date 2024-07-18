@@ -206,7 +206,7 @@ const convertDataToPayload = (data: LabelRequest) => {
 };
 
 const getResponseData = async (payload: Payload[]) => {
-  const url = "https://api.weshipsmart.com/api/v2/order/create-bulk-order";
+  const url = "https://api.ezyship.org/api/v2/order/create-bulk-order";
   const data = {
     labelType: "priority",
     data: payload,
