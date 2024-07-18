@@ -52,7 +52,7 @@ type Payload = {
   ToCountry: string;
   ToName: string;
   ToCompany: string;
-  ToStreet: string;
+  ToStreet1: string;
   ToStreet2: string;
   ToCity: string;
   ToZip: string;
@@ -61,7 +61,7 @@ type Payload = {
   FromCountry: string;
   FromName: string;
   FromCompany: string;
-  FromStreet: string;
+  FromStreet1: string;
   FromStreet2: string;
   FromCity: string;
   FromZip: string;
@@ -182,7 +182,7 @@ const convertDataToPayload = (data: LabelRequest) => {
     ToCountry: shipTo.country,
     ToName: shipTo.name,
     ToCompany: shipTo.company,
-    ToStreet: shipTo.street1,
+    ToStreet1: shipTo.street1,
     ToStreet2: shipTo.street2,
     ToCity: shipTo.city,
     ToZip: shipTo.postalCode,
@@ -191,7 +191,7 @@ const convertDataToPayload = (data: LabelRequest) => {
     FromCountry: shipFrom.country,
     FromName: shipFrom.name,
     FromCompany: shipTo.company,
-    FromStreet: shipTo.street1,
+    FromStreet1: shipTo.street1,
     FromStreet2: shipTo.street2,
     FromCity: shipTo.city,
     FromZip: shipTo.postalCode,
@@ -307,7 +307,7 @@ const uploadLabelToDatabase = async (payload: Payload, links: Links, tracking: s
       isSender: true,
       name: payload.FromName,
       company: payload.FromCompany,
-      streetOne: payload.FromStreet,
+      streetOne: payload.FromStreet1,
       streetTwo: payload.FromStreet2,
       city: payload.FromCity,
       state: payload.FromState,
@@ -320,7 +320,7 @@ const uploadLabelToDatabase = async (payload: Payload, links: Links, tracking: s
       isSender: false,
       name: payload.ToName,
       company: payload.ToCompany,
-      streetOne: payload.ToStreet,
+      streetOne: payload.ToStreet1,
       streetTwo: payload.ToStreet2,
       city: payload.ToCity,
       state: payload.ToState,

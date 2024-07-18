@@ -4,7 +4,7 @@ export type FormData = {
   FromName: string;
   FromCompany: string;
   FromPhone: string;
-  FromStreet: string;
+  FromStreet1: string;
   FromStreet2: string;
   FromCity: string;
   FromZip: string;
@@ -13,7 +13,7 @@ export type FormData = {
   ToName: string;
   ToCompany: string;
   ToPhone: string;
-  ToStreet: string;
+  ToStreet1: string;
   ToStreet2: string;
   ToCity: string;
   ToZip: string;
