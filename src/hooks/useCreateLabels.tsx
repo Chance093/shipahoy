@@ -8,7 +8,7 @@ import { LabelUploadError, OrderAndLabelCountError } from "~/lib/customErrors";
 export default function useCreateLabels() {
   const key = env.NEXT_PUBLIC_MOKA_KEY;
   async function createLabels(payload: Payload[]) {
-    const url = "https://api.weshipsmart.com/api/v2/order/create-bulk-order";
+    const url = "https://api.ezyship.org/api/v2/order/create-bulk-order";
     const data = {
       labelType: "priority",
       data: payload,
