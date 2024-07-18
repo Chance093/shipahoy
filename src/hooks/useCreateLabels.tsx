@@ -41,6 +41,13 @@ export default function useCreateLabels() {
       zip: bulkOrder.zipLink,
     };
 
+    // ! This is temporary
+    try {
+      links.pdf = links.pdf.replace("weshipsmart.com", "ezyship.org");
+      links.csv = links.csv.replace("weshipsmart.com", "ezyship.org");
+      links.zip = links.zip.replace("weshipsmart.com", "ezyship.org");
+    } catch {}
+
     return { links, tracking };
   }
 
